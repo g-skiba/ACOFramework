@@ -24,11 +24,7 @@ class BasicDecisionAlgorithm(
       pheromoneTable.getPheromone(edge).zip(pheromoneWeights).map(_ * _).sum
     val heuristic =
       problem.getHeuristicValue(edge).zip(distanceWeights).map(_ * _).sum
-    Math.pow(pheromone, alpha) * Math.pow(
-      1.0 / heuristic,
-      beta
-    )
-
+    Math.pow(pheromone, alpha) * Math.pow(heuristic, beta)
   }
   override def decide(
       visitedNodes: List[Node],

@@ -25,8 +25,7 @@ class TspProblem(nodes: List[Node], val matrix: Map[Edge, Double])
   }
   
   override def getHeuristicValue(edge: Edge): List[Double] = {
-    val value = matrix(edge)
-    List[Double](value)
+    List(1.0 / matrix(edge))
   }
 
 }
