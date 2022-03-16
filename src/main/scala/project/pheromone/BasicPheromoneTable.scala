@@ -5,13 +5,15 @@ import project.solution.BaseSolution
 import scala.collection.mutable.{Map => MMap}
 
 class BasicPheromoneTable(
-    edges: List[Edge],
-    val increment: Double,
-    val extinction: Double,
-    val pheromoneDimension: Int
+  edges: List[Edge],
+  val increment: Double,
+  val extinction: Double,
+  val pheromoneDimension: Int,
+  minValue: Double = 0.001,
+  maxValue: Double = 0.999
 ) extends BasePheromoneTable {
   val pheromone: List[MMap[Edge, Double]] =
-    List.fill(pheromoneDimension)(edges.map((_, 1.0)).to(MMap))
+    List.fill(pheromoneDimension)(edges.map((_, maxValue)).to(MMap))
   override def getPheromone(edge: Edge): List[Double] = pheromone.map(_(edge))
 
   override def pheromoneUpdate(solution: BaseSolution): Unit = {
@@ -25,8 +27,12 @@ class BasicPheromoneTable(
       )
   }
 
-  override def pheromoneExtinction(): Unit = {
-    pheromone.foreach(_.mapValuesInPlace((y, z) => z * (1 - extinction)))
+  override def afterUpdatesAction(): Unit = {
+    def extinctAndEnsureMinMax(double: Double): Double = {
+      val e = double * (1 - extinction)
+      e.min(maxValue).max(minValue)
+    }
+    pheromone.foreach(_.mapValuesInPlace((_, v) => extinctAndEnsureMinMax(v)))
   }
 
 }

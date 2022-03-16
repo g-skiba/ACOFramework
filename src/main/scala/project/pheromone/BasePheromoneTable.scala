@@ -9,6 +9,6 @@ abstract class BasePheromoneTable {
 
   def pheromoneUpdate(solution: BaseSolution): Unit
 
-  def pheromoneExtinction(): Unit
+  def afterUpdatesAction(): Unit
 
 }
