@@ -42,7 +42,7 @@ class BasicColony(
         )
       )
     }
-    return ants.toList
+    ants.toList
   }
 
   override def run() = {

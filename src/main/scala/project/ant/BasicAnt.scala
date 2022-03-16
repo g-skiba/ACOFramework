@@ -32,7 +32,7 @@ class BasicAnt(
         distanceWeights
       )
     }
-    return BaseSolution(
+    BaseSolution(
       solution.toList,
       problem.evaluate(solution.toList)
     )

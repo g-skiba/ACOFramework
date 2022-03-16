@@ -22,7 +22,7 @@ class Mtsp(nodes: List[Node], val matrices: List[Map[Edge, Double]])
   override def getPossibleMoves(
       visited_nodes: List[Node]
   ): Set[Node] = {
-    return allNodes diff visited_nodes.toSet
+    allNodes diff visited_nodes.toSet
   }
   override def getHeuristicValue(edge: Edge) =
     matrices.map(matrix => matrix(edge))

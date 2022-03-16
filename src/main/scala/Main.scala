@@ -56,6 +56,6 @@ class ProblemConfig {
   @BeanProperty var problemType: String = null
   @BeanProperty var problemFiles = new java.util.ArrayList[String]()
   override def toString: String = {
-    return String.join(",", problemFiles)
+    String.join(",", problemFiles)
   }
 }
