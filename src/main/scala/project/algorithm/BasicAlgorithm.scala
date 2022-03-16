@@ -18,10 +18,10 @@ class BasicAlgorithm(
   val solutionRepo = new BasicSolutionRepo()
 
   override def run(): BaseSolutionRepo = {
-    val increment = 5
-    val alpha = 1.0
-    val beta = 1.0
-    val extinction = 0.2
+    val increment = 0.05
+    val alpha = 2.0
+    val beta = 3.0
+    val extinction = 0.05
 
     val distanceWeights =
       List.fill(problem.dimensions)(1.0 / problem.dimensions)

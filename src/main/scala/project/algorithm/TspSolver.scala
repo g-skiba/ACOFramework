@@ -17,13 +17,13 @@ class TspSolver(
   val solutionRepo = new BasicSolutionRepo()
 
   override def run(): BaseSolutionRepo = {
-    val increment = 5
-    val alpha = 1
-    val beta = 1
-    val extinction = 0.2
+    val increment = 0.05
+    val alpha = 2.0
+    val beta = 3.0
+    val extinction = 0.05
     val distanceWeights = List(1.0)
     val pheromoneWeights = List(1.0)
-    val takenAntsToPheromoneUpdate = 30
+    val takenAntsToPheromoneUpdate = 1
     val pheromone = BasicPheromoneTable(
       problem.edges,
       increment,
