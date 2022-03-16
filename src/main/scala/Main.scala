@@ -15,9 +15,8 @@ import project.algorithm.BaseAlgorithm
 import pareto.getParetoFrontMin
 object Main {
   def main(args: Array[String]): Unit = {
-    println(System.getProperty("user.dir"))
-    val filename = "src//main//config.yaml"
-    val input = new FileInputStream(new File(filename))
+    val filename = "config.yaml"
+    val input = getClass.getResourceAsStream(filename)
     val yaml = new Yaml(new Constructor(classOf[ProblemConfig]))
     val ants_number = 100
     val algorithm_iterations = 100

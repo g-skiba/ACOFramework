@@ -60,7 +60,7 @@ object TspReader {
                   }
 
                 case _ =>
-                  System.err.println(s"WANRING: Unsupported: ${name}")
+                  System.err.println(s"WARNING: Unsupported: ${name}")
 
               }
           }
