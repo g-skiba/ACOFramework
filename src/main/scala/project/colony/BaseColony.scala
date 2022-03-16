@@ -11,7 +11,7 @@ abstract class BaseColony(
     problem: BaseProblem,
     val pheromoneTable: BasePheromoneTable
 ) {
-  var ants: List[BaseAnt] = createAnts()
+  val ants: List[BaseAnt] = createAnts()
   // val pheromoneAggregator = new BasicPheromoneAggregator()
   /** Function that runs all ants to create solutions
     */

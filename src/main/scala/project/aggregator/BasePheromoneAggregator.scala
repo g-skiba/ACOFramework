@@ -6,11 +6,8 @@ import project.solution.BaseSolution
 
 abstract class BasePheromoneAggregator(val pheromones: List[BasePheromone]) {
 
-  def evaluate(): Map[Edge, Float] = {
-    /*
-    Function to aggregate multiple pheromones in to single value per problem Egde
-     */
-    ???
-  }
+  /** Function to aggregate multiple pheromones in to single value per problem Edge
+   */
+  def evaluate(): Map[Edge, Double]
 
 }

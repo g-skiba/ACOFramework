@@ -26,7 +26,7 @@ class BasicPheromoneTable(
   }
 
   override def pheromoneExtinction(): Unit = {
-    pheromone.foreach(_.transform((y, z) => z * (1 - extinction)))
+    pheromone.foreach(_.mapValuesInPlace((y, z) => z * (1 - extinction)))
   }
 
 }

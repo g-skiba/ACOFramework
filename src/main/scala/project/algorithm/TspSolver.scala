@@ -42,15 +42,15 @@ class TspSolver(
       pheromoneWeights
     )
     for (iteration <- 0 until iterations) {
-      val soutions: List[BaseSolution] = colony.run()
+      val solutions: List[BaseSolution] = colony.run()
 //      println(s"Step ${iteration}")
 
       println(
-        soutions.map(_.evaluation.sum).min
+        solutions.map(_.evaluation.sum).min
       )
-      solutionRepo.addSolutions(iteration, soutions)
+      solutionRepo.addSolutions(iteration, solutions)
       colony.pheromoneUpdate(
-        soutions
+        solutions
           .sortBy(_.evaluation.sum)
           .take(takenAntsToPheromoneUpdate)
       )

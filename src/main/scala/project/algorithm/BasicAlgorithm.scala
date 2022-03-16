@@ -48,7 +48,7 @@ class BasicAlgorithm(
       val solutions: List[BaseSolution] = colony.run()
       colony.pheromoneUpdate(solutions)
       println(
-        s"Step ${iteration}:${solutions.map(_.evaluation.zip(distanceWeights).map(_ * _).sum).min}"
+        s"Step $iteration:${solutions.map(_.evaluation.zip(distanceWeights).map(_ * _).sum).min}"
       )
       solutionRepo.addSolutions(
         iteration,

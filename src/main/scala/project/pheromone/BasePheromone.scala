@@ -5,11 +5,8 @@ import project.solution.BaseSolution
 
 abstract class BasePheromone {
 
-  def evaluate(solutions: List[BaseSolution]): Map[Edge, Float] = {
-    /*
-    Function to evaluate pheromone value per egde, based on solutions
-     */
-    ???
-  }
+  /** Function to evaluate pheromone value per edge, based on solutions
+   */
+  def evaluate(solutions: List[BaseSolution]): Map[Edge, Double]
 
 }

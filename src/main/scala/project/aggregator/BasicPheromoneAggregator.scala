@@ -7,7 +7,7 @@ import project.graph.Edge
 class BasicPheromoneAggregator(pheromones: List[BasePheromone])
     extends BasePheromoneAggregator(pheromones) {
 
-  override def evaluate(): Map[Edge, Float] = {
+  override def evaluate(): Map[Edge, Double] = {
     for (pheromone <- pheromones) {
       ???
     }
