@@ -3,10 +3,10 @@ import project.graph.{Edge, Node}
 class Mtsp(nodes: List[Node], val matrices: List[Map[Edge, Double]])
     extends BaseProblem(
       nodes,
-      edges = matrices.head.map(_._1).toList,
+      edges = matrices.head.keys.toList,
       matrices.length
     ) {
-  val allNodes = nodes.toSet
+  private val allNodes = nodes.toSet
   assert(allNodes.size == nodes.size)
   override def evaluate(solution: List[Node]): List[Double] = {
     solution

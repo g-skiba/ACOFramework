@@ -45,7 +45,7 @@ class BasicColony(
     ants.toList
   }
 
-  override def run() = {
+  override def run(): List[BaseSolution] = {
     val solutions = ListBuffer[BaseSolution]()
     for (ant <- ants) {
       val solution: BaseSolution = ant.run()
@@ -54,7 +54,7 @@ class BasicColony(
     solutions.toList
   }
 
-  def pheromoneUpdate(solutions: List[BaseSolution]) = {
+  def pheromoneUpdate(solutions: List[BaseSolution]): Unit = {
     solutions.foreach(pheromoneTable.pheromoneUpdate)
     pheromoneTable.pheromoneExtinction()
   }
