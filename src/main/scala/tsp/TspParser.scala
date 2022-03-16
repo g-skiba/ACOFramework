@@ -11,8 +11,8 @@ def TspToProblem(tsp: Tsp): (Map[Node, CityName], TspProblem) = {
     .map((name, index) => (name, Node(index)))
     .toMap
 
-  val mapped = tsp.nodeCoordSection.map(key_value =>
-    (citiesEnumerated(key_value._1), key_value._2)
+  val mapped = tsp.nodeCoordSection.map(keyValue =>
+    (citiesEnumerated(keyValue._1), keyValue._2)
   )
 
   val tspProblem = TspProblem(

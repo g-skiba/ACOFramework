@@ -11,21 +11,21 @@ import scala.util.Random
 import project.pheromone.BasePheromoneTable
 
 class BasicColony(
-    alpha: Double,
-    beta: Double,
-    random: Random,
-    ant_numb: Int,
-    problem: BaseProblem,
-    pheromoneTable: BasePheromoneTable,
-    distanceWeights: List[Double],
-    pheromoneWeights: List[Double]
-) extends BaseColony(ant_numb, problem, pheromoneTable) {
+  alpha: Double,
+  beta: Double,
+  random: Random,
+  antNumb: Int,
+  problem: BaseProblem,
+  pheromoneTable: BasePheromoneTable,
+  distanceWeights: List[Double],
+  pheromoneWeights: List[Double]
+) extends BaseColony(antNumb, problem, pheromoneTable) {
 
   override def createAnts(): List[BaseAnt] = {
     val ants = ListBuffer[BaseAnt]()
     val startingNode = problem.nodes.head
 
-    for (_ <- 0 until ant_numb) {
+    for (_ <- 0 until antNumb) {
       ants.append(
         new BasicAnt(
           startingNode = startingNode,

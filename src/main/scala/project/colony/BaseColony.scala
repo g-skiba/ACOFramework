@@ -7,9 +7,9 @@ import project.problem.BaseProblem
 import project.solution.BaseSolution
 
 abstract class BaseColony(
-    ant_numb: Int,
-    problem: BaseProblem,
-    val pheromoneTable: BasePheromoneTable
+  antNumb: Int,
+  problem: BaseProblem,
+  val pheromoneTable: BasePheromoneTable
 ) {
   val ants: List[BaseAnt] = createAnts()
   // val pheromoneAggregator = new BasicPheromoneAggregator()

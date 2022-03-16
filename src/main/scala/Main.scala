@@ -23,14 +23,14 @@ object Main {
     val filename = "config.yaml"
     val input = getClass.getResourceAsStream(filename)
     val yaml = new Yaml(new Constructor(classOf[ProblemConfig]))
-    val ants_number = 100
-    val algorithm_iterations = 100
+    val antsNumber = 100
+    val algorithmIterations = 100
     val conf = yaml.load[ProblemConfig](input)
     conf.problemType match {
       case "tsp" =>
         val tsp = TspReader.read(Source.fromResource(conf.problemFiles.get(0)))
         val (reverseNameMap, tspProblem) = TspToProblem(tsp)
-        val algo = TspSolver(ants_number, tspProblem, algorithm_iterations)
+        val algo = TspSolver(antsNumber, tspProblem, algorithmIterations)
         algo.run()
       case "mtsp" =>
         val tsps = for {
@@ -40,7 +40,7 @@ object Main {
         }
         val (reverseNameMap, mtspProblem) = TspsToMtsp(tsps)
         val algo =
-          BasicAlgorithm(ants_number, mtspProblem, algorithm_iterations)
+          BasicAlgorithm(antsNumber, mtspProblem, algorithmIterations)
         algo.run()
       case _ =>
         throw NotImplementedError(

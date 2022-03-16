@@ -43,11 +43,11 @@ class BasicDecisionAlgorithm(
       .map(edge => (edge, initializedAssessment(edge)))
 
     val sumOfWeights = edgesWithCost.map(_._2).sum
-    val selected_random = random.nextDouble() * sumOfWeights
+    val selectedRandom = random.nextDouble() * sumOfWeights
     var sum = 0.0
     for { (move, weight) <- edgesWithCost } {
       sum += weight
-      if (selected_random < sum) {
+      if (selectedRandom < sum) {
         return Some(move.node2)
       }
     }
