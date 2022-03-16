@@ -9,7 +9,7 @@ class Mtsp(nodes: List[Node], val matrices: List[Map[Edge, Double]])
   private val allNodes = nodes.toSet
   assert(allNodes.size == nodes.size)
   override def evaluate(solution: List[Node]): List[Double] = {
-    solution
+    (solution :+ solution.head)
       .sliding(2)
       .map(pair => Edge(pair.head, pair.last))
       .map(edge => matrices.map(matrix => matrix(edge)))

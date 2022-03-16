@@ -11,7 +11,7 @@ class TspProblem(nodes: List[Node], val matrix: Map[Edge, Double])
   assert(allNodes.size == nodes.size)
 
   override def evaluate(solution: List[Node]): List[Double] = {
-    val evaluation = solution
+    val evaluation = (solution :+ solution.head)
                       .sliding(2)
                       .map(pair => Edge(pair.head, pair.last))
                       .map(edge => matrix(edge))
