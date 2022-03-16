@@ -4,10 +4,10 @@ import project.graph.{Edge, Node}
 class TspProblem(nodes: List[Node], val matrix: Map[Edge, Double])
     extends BaseProblem(
       nodes,
-      edges = matrix.map(_._1).toList,
+      edges = matrix.keys.toList,
       1
     ) {
-  val allNodes = nodes.toSet
+  private val allNodes = nodes.toSet
   assert(allNodes.size == nodes.size)
 
   override def evaluate(solution: List[Node]): List[Double] = {
@@ -20,13 +20,11 @@ class TspProblem(nodes: List[Node], val matrix: Map[Edge, Double])
     List[Double](evaluation)
   }
 
-  override def getPossibleMoves(
-      visited_nodes: List[Node]
-  ): Set[Node] = {
-     allNodes diff visited_nodes.toSet
+  override def getPossibleMoves(visitedNodes: List[Node]): Set[Node] = {
+     allNodes.diff(visitedNodes.toSet)
   }
   
-  override def getHeuristicValue(edge: Edge) = {
+  override def getHeuristicValue(edge: Edge): List[Double] = {
     val value = matrix(edge)
     List[Double](value)
   }

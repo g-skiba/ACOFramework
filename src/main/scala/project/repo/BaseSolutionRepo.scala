@@ -1,8 +1,9 @@
 package project.repo
 
 import project.solution.BaseSolution
-import scala.collection.mutable.Map
-abstract class BaseSolutionRepo(val solutions: Map[Int, List[BaseSolution]]) {
+import scala.collection.mutable.{Map => MMap}
 
-  def add_solutions(iteration: Int, new_solutions: List[BaseSolution]): Unit
+abstract class BaseSolutionRepo(val solutions: MMap[Int, List[BaseSolution]]) {
+
+  def addSolutions(iteration: Int, newSolutions: List[BaseSolution]): Unit
 }

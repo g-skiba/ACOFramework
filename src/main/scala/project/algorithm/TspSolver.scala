@@ -48,7 +48,7 @@ class TspSolver(
       println(
         soutions.map(_.evaluation.sum).min
       )
-      solutionRepo.add_solutions(iteration, soutions)
+      solutionRepo.addSolutions(iteration, soutions)
       colony.pheromoneUpdate(
         soutions
           .sortBy(_.evaluation.sum)

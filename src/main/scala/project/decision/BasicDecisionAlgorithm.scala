@@ -14,7 +14,7 @@ class BasicDecisionAlgorithm(
 
   /** calculate heuristic and pheromone value in standard way
     */
-  def assesment(
+  def assessment(
       alpha: Double,
       beta: Double,
       pheromoneWeights: List[Double],
@@ -35,17 +35,16 @@ class BasicDecisionAlgorithm(
       pheromoneWeights: List[Double],
       distanceWeights: List[Double]
   ): Option[Node] = {
-    val initialized_assesment =
-      assesment(alpha, beta, pheromoneWeights, distanceWeights)
+    val initializedAssessment = assessment(alpha, beta, pheromoneWeights, distanceWeights)
     val possibleMoves = problem
       .getPossibleMoves(visitedNodes)
       .toList
-    if (possibleMoves.size == 0) {
+    if (possibleMoves.isEmpty) {
       return None
     }
     val edgesWithCost = possibleMoves
       .map(Edge(visitedNodes.last, _))
-      .map(edge => (edge, initialized_assesment(edge)))
+      .map(edge => (edge, initializedAssessment(edge)))
 
     val sumOfWeights = edgesWithCost.map(_._2).sum
     val selected_random = random.nextDouble() * sumOfWeights

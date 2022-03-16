@@ -50,7 +50,7 @@ class BasicAlgorithm(
       println(
         s"Step ${iteration}:${solutions.map(_.evaluation.zip(distanceWeights).map(_ * _).sum).min}"
       )
-      solutionRepo.add_solutions(
+      solutionRepo.addSolutions(
         iteration,
         solutions.zip(getParetoFrontMin(solutions.map(_.evaluation))).collect {
           case (v, true) => v

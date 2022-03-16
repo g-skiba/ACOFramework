@@ -15,9 +15,7 @@ abstract class BaseProblem(
 
   /** Function that return all possible moves to ant, based on visited nodes
     */
-  def getPossibleMoves(
-      visited_nodes: List[Node]
-  ): Set[Node]
+  def getPossibleMoves(visitedNodes: List[Node]): Set[Node]
 
   /** Function to evaluate distance between nodes into doubles depending from
     * problem dimension

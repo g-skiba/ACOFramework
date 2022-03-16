@@ -6,7 +6,7 @@ import tsp.nodeCoordSectionToMatrix
 
 def TspToProblem(tsp: Tsp): (Map[Node, CityName], TspProblem) = {
   val citiesEnumerated = tsp.nodeCoordSection
-    .map(_._1)
+    .keys
     .zipWithIndex
     .map((name, index) => (name, Node(index)))
     .toMap

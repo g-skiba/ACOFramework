@@ -7,13 +7,13 @@ import tsp.Tsp
 
 def TspsToMtsp(tsps: Iterable[Tsp]): (Map[Node, CityName], Mtsp) = {
   val citiesEnumerated = tsps.head.nodeCoordSection
-    .map(_._1)
+    .keys
     .zipWithIndex
     .map((name, index) => (name, Node(index)))
     .toMap
   val mapped = tsps.map(
-    _.nodeCoordSection.map(key_value =>
-      (citiesEnumerated(key_value._1), key_value._2)
+    _.nodeCoordSection.map(keyValue =>
+      (citiesEnumerated(keyValue._1), keyValue._2)
     )
   )
   val mtsp = Mtsp(
