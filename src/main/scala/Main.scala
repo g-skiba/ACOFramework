@@ -1,7 +1,9 @@
 import org.yaml.snakeyaml.Yaml
 import org.yaml.snakeyaml.constructor.Constructor
-import scala.collection.JavaConverters._
+
+import scala.jdk.CollectionConverters._
 import tsp.TspReader
+
 import java.io.File
 import scala.beans.BeanProperty
 import java.io.FileInputStream
@@ -13,6 +15,9 @@ import project.algorithm.BasicAlgorithm
 import project.algorithm.TspSolver
 import project.algorithm.BaseAlgorithm
 import pareto.getParetoFrontMin
+
+import scala.io.Source
+
 object Main {
   def main(args: Array[String]): Unit = {
     val filename = "config.yaml"
@@ -20,32 +25,26 @@ object Main {
     val yaml = new Yaml(new Constructor(classOf[ProblemConfig]))
     val ants_number = 100
     val algorithm_iterations = 100
-    val e = yaml.load(input).asInstanceOf[ProblemConfig]
-    e.problemType match {
-      case "tsp" => {
-        val tsp = TspReader.read(
-          new File(
-            "src//main//resources//" ++ asScalaBuffer(e.problemFiles).head
-          )
-        )
+    val conf = yaml.load[ProblemConfig](input)
+    conf.problemType match {
+      case "tsp" =>
+        val tsp = TspReader.read(Source.fromResource(conf.problemFiles.get(0)))
         val (reverseNameMap, tspProblem) = TspToProblem(tsp)
         val algo = TspSolver(ants_number, tspProblem, algorithm_iterations)
         algo.run()
-      }
-      case "mtsp" => {
+      case "mtsp" =>
         val tsps = for {
-          file <- asScalaBuffer(e.problemFiles)
+          file <- conf.problemFiles.asScala
         } yield {
-          TspReader.read(new File("src//main//resources//" ++ file))
+          TspReader.read(Source.fromResource(file))
         }
         val (reverseNameMap, mtspProblem) = TspsToMtsp(tsps)
         val algo =
           BasicAlgorithm(ants_number, mtspProblem, algorithm_iterations)
         algo.run()
-      }
       case _ =>
         throw NotImplementedError(
-          "Your method from config.yaml is not implemented!"
+          s"Your method from $filename is not implemented!"
         )
     }
 

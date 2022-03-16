@@ -8,7 +8,7 @@ import scala.util.control.Breaks
 
 object TspReader {
 
-  def read(file: File): Tsp = {
+  def read(source: Source): Tsp = {
     var isReadingNODE_COORD_SECTION: Boolean = false
 
     var tspName: Option[String] = None
@@ -21,7 +21,7 @@ object TspReader {
 
     val b: Breaks = new Breaks
     b.breakable {
-      for (line <- Source.fromFile(file).getLines()) {
+      for (line <- source.getLines()) {
         if (isReadingNODE_COORD_SECTION) {
           line.trim match {
             case "EOF" => b.break()
@@ -60,7 +60,7 @@ object TspReader {
                   }
 
                 case _ =>
-                  System.err.println(s"WARNING: Unsupported: ${name}")
+                  System.err.println(s"WARNING: Unsupported: $name")
 
               }
           }
