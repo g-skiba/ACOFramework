@@ -5,9 +5,9 @@
 ### 1. Introduction:
 
 
-ACO Framework is created for <b><i>"Inteligencja Obliczeniowa"</i></b> course on 
+First version of ACO Framework was created for <b><i>"Inteligencja Obliczeniowa"</i></b> course on 
 <i>University of Science and Technology in Cracow.</i>  
-Created to effective solve Ant Colony Optimization problems in Scala. 
+Created to effectively solve Ant Colony Optimization problems in Scala. 
 It's also prepared for multi objective optimization.
 
 ---
@@ -45,8 +45,8 @@ Where:
 
 2. Used algorithm define all remaining parameters. Quick description:
 - `increment` - defines value that will be added to pheromone table when ant pass selected edge
-- `alpha` - power used in pheromone calculation as ![eqation](https://latex.codecogs.com/svg.image?pheromone^{alpha})
-- `beta` - power used in distance heuristic as ![eqation](https://latex.codecogs.com/svg.image?%5Cfrac%7B1%7D%7Bdistance%5E%7Bbeta%7D%7D)
+- `alpha` - power used in pheromone calculation as ![equation](https://latex.codecogs.com/svg.image?pheromone^{alpha})
+- `beta` - power used in distance heuristic as ![equation](https://latex.codecogs.com/svg.image?%5Cfrac%7B1%7D%7Bdistance%5E%7Bbeta%7D%7D)
 - `extinction` - percentage loss of pheromone value after each algorithm iteration
 - `distanceWeights` - weights used to flatten distances in multi objective calculations, should sum up to 1
 - `pheromoneWeights` - weights used to flatten pheromone values, should sum up to 1
@@ -76,6 +76,10 @@ that can be further evaluated.
 ---
 
 ### 4. Results:
+
+WARNING (TODO): below results are not really accurate - Berlin's solution visualization is obviously not correct and 
+both TSP and MTSP did not include the last segment (from last point back to the first one) in evaluation.
+
 #### TSP
 Testing results:  
 On included into Framework dataset `Berlin 52`, we performed test run. Here are the results:  
@@ -133,11 +137,10 @@ Results:
 
 ---
 
-#### Authors:
-<p>Krzysztof Tylka-Suleja <i> Email: tylkasuleja@student.agh.edu.pl </i><br>
-Tymoteusz Dobrzański <i> Email: tdobrzanski@student.agh.edu.pl </i><br></p>
+#### Creators:
 
-In cooperation with:<br>
-<p>Aleksander Byrski <i> Email: olekb@agh.edu.pl </i> <br>
-Mateusz Starzec <i> Email: starzec.mateusz@gmail.com </i><br>
-Grażyna Starzec <i> Email: gstarzec@agh.edu.pl </i><br></p>
+Krzysztof Tylka-Suleja <i> Email: tylkasuleja@student.agh.edu.pl </i><br>
+Tymoteusz Dobrzański <i> Email: tdobrzanski@student.agh.edu.pl </i><br>
+Grażyna Starzec <i> Email: gstarzec@agh.edu.pl </i><br>
+Mateusz Starzec <i> Email: mstarzec@agh.edu.pl </i><br>
+Aleksander Byrski <i> Email: olekb@agh.edu.pl </i> <br>
