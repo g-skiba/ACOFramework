@@ -46,15 +46,16 @@ class BasicAlgorithm(
     )
     for (iteration <- 0 until iterations) {
       val solutions: List[BaseSolution] = colony.run()
-      colony.pheromoneUpdate(solutions)
+      val iterationParetoFront = solutions.zip(getParetoFrontMin(solutions.map(_.evaluation))).collect {
+        case (v, true) => v
+      }
+      colony.pheromoneUpdate(iterationParetoFront)
       println(
         s"Step $iteration:${solutions.map(_.evaluation.zip(distanceWeights).map(_ * _).sum).min}"
       )
       solutionRepo.addSolutions(
         iteration,
-        solutions.zip(getParetoFrontMin(solutions.map(_.evaluation))).collect {
-          case (v, true) => v
-        }
+        iterationParetoFront
       )
       if (iteration % 10 == 9) {
         println(solutionRepo.solutions(iteration).map(_.evaluation))
