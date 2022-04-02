@@ -7,7 +7,7 @@ abstract class BasePheromoneTable {
 
   def getPheromone(edge: Edge): List[Double]
 
-  def pheromoneUpdate(solution: BaseSolution): Unit
+  def pheromoneUpdate(solutions: List[BaseSolution]): Unit
 
   def afterUpdatesAction(): Unit
 

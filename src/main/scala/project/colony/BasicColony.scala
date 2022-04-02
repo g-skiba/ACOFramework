@@ -55,7 +55,7 @@ class BasicColony(
   }
 
   def pheromoneUpdate(solutions: List[BaseSolution]): Unit = {
-    solutions.foreach(pheromoneTable.pheromoneUpdate)
+    pheromoneTable.pheromoneUpdate(solutions)
     pheromoneTable.afterUpdatesAction()
   }
 }

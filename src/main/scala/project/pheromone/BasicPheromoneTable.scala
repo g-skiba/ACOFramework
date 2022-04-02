@@ -4,6 +4,7 @@ import project.graph.{Edge, Node}
 import project.solution.BaseSolution
 import scala.collection.mutable.{Map => MMap}
 
+//wiele macierzy feromonów nie ma sensu przy takiej implementacji updatu feromonów
 class BasicPheromoneTable(
   edges: List[Edge],
   val increment: Double,
@@ -16,15 +17,17 @@ class BasicPheromoneTable(
     List.fill(pheromoneDimension)(edges.map((_, maxValue)).to(MMap))
   override def getPheromone(edge: Edge): List[Double] = pheromone.map(_(edge))
 
-  override def pheromoneUpdate(solution: BaseSolution): Unit = {
-    solution.solution
-      .sliding(2)
-      .map(x => Edge(x.head, x.last))
-      .foreach(edge =>
-        pheromone.foreach(matrix =>
-          matrix.updateWith(edge)(value => value.map(_ + increment))
+  override def pheromoneUpdate(solutions: List[BaseSolution]): Unit = {
+    solutions.foreach { solution =>
+      solution.solution
+        .sliding(2)
+        .map(x => Edge(x.head, x.last))
+        .foreach(edge =>
+          pheromone.foreach(matrix =>
+            matrix.updateWith(edge)(value => value.map(_ + increment))
+          )
         )
-      )
+    }
   }
 
   override def afterUpdatesAction(): Unit = {
