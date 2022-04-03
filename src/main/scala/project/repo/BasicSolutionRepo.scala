@@ -9,17 +9,14 @@ class BasicSolutionRepo extends BaseSolutionRepo(MMap[Int, List[BaseSolution]]()
   }
 
   override def toString: String = {
-    var string = ""
+    var string = new StringBuilder
     for (key <- solutions.keysIterator) {
-      string = string.concat("Iteration: \n" + key.toString + "\n")
+      string = string.append(s"Iteration: $key\n")
       val bestSolution = solutions(key).minBy(_.evaluation.sum)
-      string = string.concat(
-        "Best Solution: \n" + bestSolution.solution.toString + "\n"
-      )
-      string = string.concat(
-        "Evaluation: \n" + bestSolution.evaluation.toString + "\n"
-      )
+      string = string.append(s"Best Solution: ${bestSolution.solution}\n")
+      string = string.append(s"Evaluation: ${bestSolution.evaluation}\n")
     }
-    string
+    string.append(s"Best ever cost: ${solutions.values.flatten.map(_.evaluation.sum).min}")
+    string.result()
   }
 }
