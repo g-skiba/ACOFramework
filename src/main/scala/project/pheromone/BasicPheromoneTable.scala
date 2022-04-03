@@ -13,9 +13,9 @@ class BasicPheromoneTable(
   minValue: Double = 0.001,
   maxValue: Double = 0.999
 ) extends BasePheromoneTable {
-  val pheromone: List[MMap[Edge, Double]] =
-    List.fill(pheromoneDimension)(edges.map((_, maxValue)).to(MMap))
-  override def getPheromone(edge: Edge): List[Double] = pheromone.map(_(edge))
+  private val pheromone: MMap[Edge, List[Double]] =
+    edges.map((_, List.fill(pheromoneDimension)(maxValue))).to(MMap)
+  override def getPheromone(edge: Edge): List[Double] = pheromone(edge)
 
   override def pheromoneUpdate(solutions: List[BaseSolution]): Unit = {
     solutions.foreach { solution =>
@@ -23,9 +23,7 @@ class BasicPheromoneTable(
         .sliding(2)
         .map(x => Edge(x.head, x.last))
         .foreach(edge =>
-          pheromone.foreach(matrix =>
-            matrix.updateWith(edge)(value => value.map(_ + increment))
-          )
+          pheromone.updateWith(edge)(pheromones => pheromones.map(_.map(_ + increment)))
         )
     }
   }
@@ -35,7 +33,7 @@ class BasicPheromoneTable(
       val e = double * (1 - extinction)
       e.min(maxValue).max(minValue)
     }
-    pheromone.foreach(_.mapValuesInPlace((_, v) => extinctAndEnsureMinMax(v)))
+    pheromone.mapValuesInPlace((_, values) => values.map(extinctAndEnsureMinMax))
   }
 
 }
