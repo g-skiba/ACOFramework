@@ -21,9 +21,9 @@ class BasicDecisionAlgorithm(
       distanceWeights: List[Double]
   )(edge: Edge): Double = {
     val pheromone =
-      pheromoneTable.getPheromone(edge).zip(pheromoneWeights).map(_ * _).sum
+      pheromoneTable.getPheromone(edge).iterator.zip(pheromoneWeights).map(_ * _).sum
     val heuristic =
-      problem.getHeuristicValue(edge).zip(distanceWeights).map(_ * _).sum
+      problem.getHeuristicValue(edge).iterator.zip(distanceWeights).map(_ * _).sum
     Math.pow(pheromone, alpha) * Math.pow(heuristic, beta)
   }
   override def decide(
