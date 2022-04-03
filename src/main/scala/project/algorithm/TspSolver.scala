@@ -12,7 +12,8 @@ import project.repo.BaseSolutionRepo
 class TspSolver(
     antNumb: Int,
     val problem: BaseProblem,
-    val iterations: Int
+    val iterations: Int,
+    fixedRandom: Boolean = false
 ) extends BaseAlgorithm {
   val solutionRepo = new BasicSolutionRepo()
 
@@ -30,7 +31,7 @@ class TspSolver(
       extinction,
       pheromoneWeights.size
     )
-    val rnd = Random(1637)
+    val rnd = if (fixedRandom) Random(1637) else Random()
     val colony = BasicColony(
       alpha,
       beta,
