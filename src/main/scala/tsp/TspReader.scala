@@ -25,8 +25,8 @@ object TspReader {
         if (isReadingNODE_COORD_SECTION) {
           line.trim match {
             case "EOF" => b.break()
-            case _ =>
-              val Array(cityNameStr, xStr, yStr) = line.split(" ")
+            case trimmed =>
+              val Array(cityNameStr, xStr, yStr) = trimmed.split("\\s+")
               val cityName: CityName = CityName(cityNameStr)
               val x: Double = xStr.toDouble
               val y: Double = yStr.toDouble
@@ -36,8 +36,8 @@ object TspReader {
           line.trim match {
             case "NODE_COORD_SECTION" =>
               isReadingNODE_COORD_SECTION = true
-            case _ =>
-              val Array(nameNoChomp, valueNoChomp) = line.split(":")
+            case trimmed =>
+              val Array(nameNoChomp, valueNoChomp) = trimmed.split(":")
               val name: String = nameNoChomp.trim
               val value: String = valueNoChomp.trim
 
