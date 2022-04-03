@@ -9,7 +9,7 @@ import project.pheromone.BasicPheromoneTable
 import scala.util.Random
 import project.repo.BaseSolutionRepo
 
-class TspSolver(
+class SingleObjectiveSolver(
     antNumb: Int,
     val problem: BaseProblem,
     val iterations: Int,
@@ -46,13 +46,11 @@ class TspSolver(
       val solutions: List[BaseSolution] = colony.run()
 //      println(s"Step ${iteration}")
 
-      println(
-        solutions.map(_.evaluation.sum).min
-      )
+      println(solutions.map(_.evaluation.sum).min) // for single objective it's the same as with .zip(heuristicWeights).map(_ * _)
       solutionRepo.addSolutions(iteration, solutions)
       colony.pheromoneUpdate(
         solutions
-          .sortBy(_.evaluation.sum)
+          .sortBy(_.evaluation.sum) // for single objective it's the same as with .zip(heuristicWeights).map(_ * _)
           .take(takenAntsToPheromoneUpdate)
       )
     }

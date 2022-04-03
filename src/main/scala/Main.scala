@@ -12,7 +12,7 @@ import tsp.TspsToMtsp
 import tsp.TspToProblem
 import tsp.Tsp
 import project.algorithm.BasicAlgorithm
-import project.algorithm.TspSolver
+import project.algorithm.SingleObjectiveSolver
 import project.algorithm.BaseAlgorithm
 import pareto.getParetoFrontMin
 
@@ -30,7 +30,7 @@ object Main {
       case "tsp" =>
         val tsp = TspReader.read(Source.fromResource(conf.problemFiles.get(0)))
         val (reverseNameMap, tspProblem) = TspToProblem(tsp)
-        val algo = TspSolver(antsNumber, tspProblem, algorithmIterations)
+        val algo = SingleObjectiveSolver(antsNumber, tspProblem, algorithmIterations)
         algo.run()
       case "mtsp" =>
         val tsps = for {
