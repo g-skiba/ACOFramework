@@ -24,7 +24,7 @@ class BasicAlgorithm(
     val beta = 3.0
     val extinction = 0.05
 
-    val distanceWeights =
+    val heuristicWeights =
       List.fill(problem.dimensions)(1.0 / problem.dimensions)
     val pheromoneWeights =
       List.fill(problem.dimensions)(1.0 / problem.dimensions)
@@ -42,7 +42,7 @@ class BasicAlgorithm(
       antNumb,
       problem,
       pheromone,
-      distanceWeights,
+      heuristicWeights,
       pheromoneWeights
     )
     for (iteration <- 0 until iterations) {
@@ -52,7 +52,7 @@ class BasicAlgorithm(
       }
       colony.pheromoneUpdate(iterationParetoFront)
       println(
-        s"Step $iteration:${solutions.map(_.evaluation.zip(distanceWeights).map(_ * _).sum).min}"
+        s"Step $iteration:${solutions.map(_.evaluation.zip(heuristicWeights).map(_ * _).sum).min}"
       )
       solutionRepo.addSolutions(
         iteration,

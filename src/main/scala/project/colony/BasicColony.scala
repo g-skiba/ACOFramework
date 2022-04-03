@@ -17,7 +17,7 @@ class BasicColony(
   antNumb: Int,
   problem: BaseProblem,
   pheromoneTable: BasePheromoneTable,
-  distanceWeights: List[Double],
+  heuristicWeights: List[Double],
   pheromoneWeights: List[Double]
 ) extends BaseColony(antNumb, problem, pheromoneTable) {
 
@@ -37,7 +37,7 @@ class BasicColony(
             pheromoneTable,
             random
           ),
-          distanceWeights = distanceWeights,
+          heuristicWeights = heuristicWeights,
           pheromoneWeights = pheromoneWeights
         )
       )

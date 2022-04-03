@@ -22,7 +22,7 @@ class TspSolver(
     val alpha = 2.0
     val beta = 3.0
     val extinction = 0.05
-    val distanceWeights = List(1.0)
+    val heuristicWeights = List(1.0)
     val pheromoneWeights = List(1.0)
     val takenAntsToPheromoneUpdate = 1
     val pheromone = BasicPheromoneTable(
@@ -39,7 +39,7 @@ class TspSolver(
       antNumb,
       problem,
       pheromone,
-      distanceWeights,
+      heuristicWeights,
       pheromoneWeights
     )
     for (iteration <- 0 until iterations) {

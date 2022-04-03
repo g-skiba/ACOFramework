@@ -18,20 +18,20 @@ class BasicDecisionAlgorithm(
       alpha: Double,
       beta: Double,
       pheromoneWeights: List[Double],
-      distanceWeights: List[Double]
+      heuristicWeights: List[Double]
   )(edge: Edge): Double = {
     val pheromone =
       pheromoneTable.getPheromone(edge).iterator.zip(pheromoneWeights).map(_ * _).sum
     val heuristic =
-      problem.getHeuristicValue(edge).iterator.zip(distanceWeights).map(_ * _).sum
+      problem.getHeuristicValue(edge).iterator.zip(heuristicWeights).map(_ * _).sum
     Math.pow(pheromone, alpha) * Math.pow(heuristic, beta)
   }
   override def decide(
       visitedNodes: List[Node],
       pheromoneWeights: List[Double],
-      distanceWeights: List[Double]
+      heuristicWeights: List[Double]
   ): Option[Node] = {
-    val initializedAssessment = assessment(alpha, beta, pheromoneWeights, distanceWeights)
+    val initializedAssessment = assessment(alpha, beta, pheromoneWeights, heuristicWeights)
     val possibleMoves = problem
       .getPossibleMoves(visitedNodes)
       .toList

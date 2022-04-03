@@ -13,7 +13,7 @@ abstract class BaseDecisionAlgorithm(val problem: BaseProblem) {
   def decide(
       visitedNodes: List[Node],
       pheromoneWeights: List[Double],
-      distanceWeights: List[Double]
+      heuristicWeights: List[Double]
   ): Option[Node]
 
 }

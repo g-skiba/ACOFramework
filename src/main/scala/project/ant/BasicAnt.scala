@@ -11,7 +11,7 @@ class BasicAnt(
     problem: BaseProblem,
     decision: BaseDecisionAlgorithm,
     val pheromoneWeights: List[Double],
-    val distanceWeights: List[Double]
+    val heuristicWeights: List[Double]
 ) extends BaseAnt(
       startingNode,
       problem,
@@ -22,14 +22,14 @@ class BasicAnt(
     var dec = decision.decide(
       solution.toList,
       pheromoneWeights,
-      distanceWeights
+      heuristicWeights
     )
     while (dec.isDefined) {
       solution.append(dec.get)
       dec = decision.decide(
         solution.toList,
         pheromoneWeights,
-        distanceWeights
+        heuristicWeights
       )
     }
     BaseSolution(

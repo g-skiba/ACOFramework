@@ -48,7 +48,7 @@ Where:
 - `alpha` - power used in pheromone calculation as ![equation](https://latex.codecogs.com/svg.image?pheromone^{alpha})
 - `beta` - power used in distance heuristic as ![equation](https://latex.codecogs.com/svg.image?%5Cfrac%7B1%7D%7Bdistance%5E%7Bbeta%7D%7D)
 - `extinction` - percentage loss of pheromone value after each algorithm iteration
-- `distanceWeights` - weights used to flatten distances in multi objective calculations, should sum up to 1
+- `heuristicWeights` - weights used to flatten distances in multi objective calculations, should sum up to 1
 - `pheromoneWeights` - weights used to flatten pheromone values, should sum up to 1
 - `antNumb` - number of ants used for optimization (declared in `Main.scala`)
 - `iteration` - number of iterations that algorithm can evaluate (declared in `Main.scala`)
@@ -93,7 +93,7 @@ Selected parameters:
 | alpha | 1 |
 | beta | 1 |
 | extinction | 0.2 |
-| distanceWeights | 1.0 |
+| heuristicWeights | 1.0 |
 | pheromoneWeights | 1.0 |
 | takenAntsToPheromoneUpdate | 30 |
 | ants_number | 30 |
@@ -115,7 +115,7 @@ Selected parameters:
 | alpha | 1 |
 | beta | 1 |
 | extinction | 0.2 |
-| distanceWeights | [0.5,0.5] |
+| heuristicWeights | [0.5,0.5] |
 | pheromoneWeights | [0.5,0.5] |
 | takenAntsToPheromoneUpdate | 100 |
 | ants_number | 100 |
