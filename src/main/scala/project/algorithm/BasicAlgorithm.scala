@@ -1,19 +1,18 @@
 package project.algorithm
 
-import project.colony.BaseColony
-import project.problem.BaseProblem
-import project.colony.BasicColony
-import project.solution.BaseSolution
-import project.repo.BasicSolutionRepo
-import project.pheromone.BasicPheromoneTable
-import scala.util.Random
 import pareto.getParetoFrontMin
-import project.repo.BaseSolutionRepo
+import project.colony.{BaseColony, BasicColony}
+import project.config.AlgorithmConfig
+import project.pheromone.BasicPheromoneTable
+import project.problem.BaseProblem
+import project.repo.{BaseSolutionRepo, BasicSolutionRepo}
+import project.solution.BaseSolution
+
+import scala.util.Random
 
 class BasicAlgorithm(
-    antNumb: Int,
     val problem: BaseProblem,
-    val iterations: Int,
+    algorithmConfig: AlgorithmConfig,
     fixedRandom: Boolean = false
 ) extends BaseAlgorithm {
   val solutionRepo = new BasicSolutionRepo()
@@ -39,13 +38,13 @@ class BasicAlgorithm(
       alpha,
       beta,
       rnd,
-      antNumb,
+      algorithmConfig.antsNum,
       problem,
       pheromone,
       heuristicWeights,
       pheromoneWeights
     )
-    for (iteration <- 0 until iterations) {
+    for (iteration <- 0 until algorithmConfig.iterations) {
       val solutions: List[BaseSolution] = colony.run()
       val iterationParetoFront = solutions.zip(getParetoFrontMin(solutions.map(_.evaluation))).collect {
         case (v, true) => v
