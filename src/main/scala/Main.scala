@@ -5,15 +5,31 @@ import project.algorithm.{BaseAlgorithm, BasicAlgorithm, SingleObjectiveSolver}
 import project.config.ProblemConfig
 import tsp.{Tsp, TspReader, TspToProblem, TspsToMtsp}
 
-import java.io.{File, FileInputStream}
+import java.io.{File, FileInputStream, PrintWriter}
+import java.nio.charset.StandardCharsets
+import java.nio.file.Paths
+import java.time.{Instant, ZoneId}
+import java.time.format.DateTimeFormatter
 import scala.beans.BeanProperty
 import scala.io.Source
 import scala.jdk.CollectionConverters.*
 
 object Main {
   def main(args: Array[String]): Unit = {
+    val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH-mm-ss").withZone(ZoneId.systemDefault())
+    val timestampStr = formatter.format(Instant.now())
+    val outConfFile = new File(Paths.get("logs", timestampStr, "config.yaml").toUri)
+    def writeConfFile(config: String): Unit = {
+      outConfFile.getParentFile.mkdirs()
+      outConfFile.createNewFile()
+      val pw = new PrintWriter(outConfFile)
+      pw.write(config)
+      pw.close()
+    }
+
     val filename = "config.yaml"
-    val input = getClass.getResourceAsStream(filename)
+    val input = new String(getClass.getResourceAsStream(filename).readAllBytes, StandardCharsets.UTF_8)
+    writeConfFile(input)
     val yaml = new Yaml(new Constructor(classOf[ProblemConfig]))
     val conf = yaml.load[ProblemConfig](input)
     conf.problemType match {
