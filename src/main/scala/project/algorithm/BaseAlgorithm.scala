@@ -4,7 +4,9 @@ import project.colony.BaseColony
 import project.problem.BaseProblem
 import project.repo.BaseSolutionRepo
 
+import java.io.PrintWriter
+
 abstract class BaseAlgorithm {
   val problem: BaseProblem
-  def run(): BaseSolutionRepo
+  def run(resultsWriter: PrintWriter): BaseSolutionRepo
 }

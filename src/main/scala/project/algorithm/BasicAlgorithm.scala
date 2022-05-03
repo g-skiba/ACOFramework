@@ -8,6 +8,7 @@ import project.problem.BaseProblem
 import project.repo.{BaseSolutionRepo, BasicSolutionRepo}
 import project.solution.BaseSolution
 
+import java.io.PrintWriter
 import scala.util.Random
 
 class BasicAlgorithm(
@@ -17,7 +18,7 @@ class BasicAlgorithm(
 ) extends BaseAlgorithm {
   val solutionRepo = new BasicSolutionRepo()
 
-  override def run(): BaseSolutionRepo = {
+  override def run(resultsWriter: PrintWriter): BaseSolutionRepo = {
     val heuristicWeights =
       List.fill(problem.dimensions)(1.0 / problem.dimensions)
     val pheromoneWeights =
@@ -44,9 +45,9 @@ class BasicAlgorithm(
         case (v, true) => v
       }
       colony.pheromoneUpdate(iterationParetoFront)
-      println(
-        s"Step $iteration:${solutions.map(_.evaluation.zip(heuristicWeights).map(_ * _).sum).min}"
-      )
+      val minWeightedCost = solutions.map(_.evaluation.zip(heuristicWeights).map(_ * _).sum).min
+      println(s"Step $iteration:$minWeightedCost")
+      resultsWriter.println(s"$iteration,$minWeightedCost")
       solutionRepo.addSolutions(
         iteration,
         iterationParetoFront

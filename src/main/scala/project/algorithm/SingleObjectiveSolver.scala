@@ -11,6 +11,8 @@ import project.pheromone.{BasicPheromoneTable, Pheromone}
 import scala.util.Random
 import project.repo.BaseSolutionRepo
 
+import java.io.PrintWriter
+
 class SingleObjectiveSolver(
     val problem: BaseProblem,
     algorithmConfig: AlgorithmConfig,
@@ -18,7 +20,7 @@ class SingleObjectiveSolver(
 ) extends BaseAlgorithm {
   val solutionRepo = new BasicSolutionRepo()
 
-  override def run(): BaseSolutionRepo = {
+  override def run(resultsWriter: PrintWriter): BaseSolutionRepo = {
     val heuristicWeights = List(1.0)
     val pheromoneWeights = List(1.0)
 
@@ -44,6 +46,7 @@ class SingleObjectiveSolver(
 
       val minCost = solutions.map(_.evaluation.sum).min // for single objective it's the same as with .zip(heuristicWeights).map(_ * _)
       println(s"$iteration,$minCost")
+      resultsWriter.println(s"$iteration,$minCost")
       
       solutionRepo.addSolutions(iteration, solutions)
       colony.pheromoneUpdate(
