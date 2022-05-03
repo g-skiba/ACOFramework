@@ -7,4 +7,5 @@ class AlgorithmConfig {
   @BeanProperty var iterations: Int = _
   @BeanProperty var alpha: Double = _
   @BeanProperty var beta: Double = _
+  @BeanProperty var pheromoneConfig: PheromoneConfig = _
 }

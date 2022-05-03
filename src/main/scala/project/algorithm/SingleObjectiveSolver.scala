@@ -6,7 +6,8 @@ import project.colony.BasicColony
 import project.config.AlgorithmConfig
 import project.solution.BaseSolution
 import project.repo.BasicSolutionRepo
-import project.pheromone.BasicPheromoneTable
+import project.pheromone.{BasicPheromoneTable, Pheromone}
+
 import scala.util.Random
 import project.repo.BaseSolutionRepo
 
@@ -21,13 +22,10 @@ class SingleObjectiveSolver(
     val heuristicWeights = List(1.0)
     val pheromoneWeights = List(1.0)
 
-    val increment = 0.05
-    val extinction = 0.05
     val takenAntsToPheromoneUpdate = 1
-    val pheromone = BasicPheromoneTable(
+    val pheromone = Pheromone.create(
+      algorithmConfig.pheromoneConfig,
       problem.edges,
-      increment,
-      extinction,
       pheromoneWeights.size
     )
     val rnd = if (fixedRandom) Random(1637) else Random()

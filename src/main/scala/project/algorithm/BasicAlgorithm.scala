@@ -3,7 +3,7 @@ package project.algorithm
 import pareto.getParetoFrontMin
 import project.colony.{BaseColony, BasicColony}
 import project.config.AlgorithmConfig
-import project.pheromone.BasicPheromoneTable
+import project.pheromone.{BasicPheromoneTable, Pheromone}
 import project.problem.BaseProblem
 import project.repo.{BaseSolutionRepo, BasicSolutionRepo}
 import project.solution.BaseSolution
@@ -18,17 +18,13 @@ class BasicAlgorithm(
   val solutionRepo = new BasicSolutionRepo()
 
   override def run(): BaseSolutionRepo = {
-    val increment = 0.05
-    val extinction = 0.05
-
     val heuristicWeights =
       List.fill(problem.dimensions)(1.0 / problem.dimensions)
     val pheromoneWeights =
       List.fill(problem.dimensions)(1.0 / problem.dimensions)
-    val pheromone = BasicPheromoneTable(
+    val pheromoneTable = Pheromone.create(
+      algorithmConfig.pheromoneConfig,
       problem.edges,
-      increment,
-      extinction,
       pheromoneWeights.size
     )
     val rnd = if (fixedRandom) Random(1337) else Random()
@@ -38,7 +34,7 @@ class BasicAlgorithm(
       rnd,
       algorithmConfig.antsNum,
       problem,
-      pheromone,
+      pheromoneTable,
       heuristicWeights,
       pheromoneWeights
     )

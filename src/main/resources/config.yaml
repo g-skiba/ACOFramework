@@ -12,3 +12,7 @@ algorithmConfig:
   iterations: 200
   alpha: 2.0
   beta: 3.0
+  pheromoneConfig:
+    tpe: Basic
+    increment: 0.05
+    extinction: 0.05
