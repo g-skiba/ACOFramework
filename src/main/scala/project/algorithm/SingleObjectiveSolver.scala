@@ -18,12 +18,11 @@ class SingleObjectiveSolver(
   val solutionRepo = new BasicSolutionRepo()
 
   override def run(): BaseSolutionRepo = {
-    val increment = 0.05
-    val alpha = 2.0
-    val beta = 3.0
-    val extinction = 0.05
     val heuristicWeights = List(1.0)
     val pheromoneWeights = List(1.0)
+
+    val increment = 0.05
+    val extinction = 0.05
     val takenAntsToPheromoneUpdate = 1
     val pheromone = BasicPheromoneTable(
       problem.edges,
@@ -33,8 +32,8 @@ class SingleObjectiveSolver(
     )
     val rnd = if (fixedRandom) Random(1637) else Random()
     val colony = BasicColony(
-      alpha,
-      beta,
+      algorithmConfig.alpha,
+      algorithmConfig.beta,
       rnd,
       algorithmConfig.antsNum,
       problem,

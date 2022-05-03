@@ -19,8 +19,6 @@ class BasicAlgorithm(
 
   override def run(): BaseSolutionRepo = {
     val increment = 0.05
-    val alpha = 2.0
-    val beta = 3.0
     val extinction = 0.05
 
     val heuristicWeights =
@@ -35,8 +33,8 @@ class BasicAlgorithm(
     )
     val rnd = if (fixedRandom) Random(1337) else Random()
     val colony = BasicColony(
-      alpha,
-      beta,
+      algorithmConfig.alpha,
+      algorithmConfig.beta,
       rnd,
       algorithmConfig.antsNum,
       problem,
