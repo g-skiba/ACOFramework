@@ -31,13 +31,15 @@ object Main {
       }
     }
 
-    def runAlgorithm(baseAlgorithm: BaseAlgorithm): Unit = {
-      val outResultsFile = new File(Paths.get("logs", timestampStr, "results.csv").toUri)
-      val resultsWriter = new PrintWriter(outResultsFile)
-      try {
-        baseAlgorithm.run(resultsWriter)
-      } finally {
-        resultsWriter.close()
+    def runAlgorithm(baseAlgorithm: BaseAlgorithm, repeat: Int): Unit = {
+      for(i <- 1 to repeat) {
+        val outResultsFile = new File(Paths.get("logs", timestampStr, s"results_$i.csv").toUri)
+        val resultsWriter = new PrintWriter(outResultsFile)
+        try {
+          baseAlgorithm.run(resultsWriter)
+        } finally {
+          resultsWriter.close()
+        }
       }
     }
 
@@ -51,7 +53,7 @@ object Main {
         val tsp = TspReader.read(Source.fromResource(conf.problemFiles.get(0)))
         val (reverseNameMap, tspProblem) = TspToProblem(tsp)
         val algo = SingleObjectiveSolver(tspProblem, conf.algorithmConfig)
-        runAlgorithm(algo)
+        runAlgorithm(algo, conf.repeat)
       case "mtsp" =>
         val tsps = for {
           file <- conf.problemFiles.asScala
@@ -60,7 +62,7 @@ object Main {
         }
         val (reverseNameMap, mtspProblem) = TspsToMtsp(tsps)
         val algo = BasicAlgorithm(mtspProblem, conf.algorithmConfig)
-        runAlgorithm(algo)
+        runAlgorithm(algo, conf.repeat)
       case _ =>
         throw NotImplementedError(
           s"Your method from $filename is not implemented!"
