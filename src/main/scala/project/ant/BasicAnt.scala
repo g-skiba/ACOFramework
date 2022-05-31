@@ -18,7 +18,7 @@ class BasicAnt(
       decision
     ) {
   override def run(): BaseSolution = {
-    val solution = ListBuffer[Node](problem.nodes.head)
+    val solution = ListBuffer[Node](startingNode)
     var dec = decision.decide(
       solution.toList,
       pheromoneWeights,

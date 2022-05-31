@@ -23,12 +23,11 @@ class BasicColony(
 
   override def createAnts(): List[BaseAnt] = {
     val ants = ListBuffer[BaseAnt]()
-    val startingNode = problem.nodes.head
 
     for (_ <- 0 until antNumb) {
       ants.append(
         new BasicAnt(
-          startingNode = startingNode,
+          startingNode = problem.startingNode,
           problem = problem,
           decision = new BasicDecisionAlgorithm(
             alpha,

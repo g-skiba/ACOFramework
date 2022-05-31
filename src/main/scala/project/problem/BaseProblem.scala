@@ -6,6 +6,7 @@ import project.graph.{Edge, Node}
 abstract class BaseProblem(
     val nodes: List[Node],
     val edges: List[Edge],
+    val startingNode: Node,
     val dimensions: Int
 ) {
 

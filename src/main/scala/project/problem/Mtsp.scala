@@ -4,6 +4,7 @@ class Mtsp(nodes: List[Node], val matrices: List[Map[Edge, Double]])
     extends BaseProblem(
       nodes,
       edges = matrices.head.keys.toList,
+      startingNode = nodes.head,
       matrices.length
     ) {
   private val allNodes = nodes.toSet

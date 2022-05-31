@@ -1,9 +1,24 @@
 import org.yaml.snakeyaml.Yaml
 import org.yaml.snakeyaml.constructor.Constructor
+
+import scala.jdk.CollectionConverters._
+import tsp.TspReader
+
+import vrp.VrpReader
+import vrp.VrpToProblem
+
+import java.io.File
+import scala.beans.BeanProperty
+import java.io.FileInputStream
+import tsp.TspReader
+import tsp.TspsToMtsp
+import tsp.TspToProblem
+import tsp.Tsp
+import project.algorithm.BasicAlgorithm
+import project.algorithm.SingleObjectiveSolver
+import project.algorithm.BaseAlgorithm
 import pareto.getParetoFrontMin
-import project.algorithm.{BaseAlgorithm, BasicAlgorithm, SingleObjectiveSolver}
 import project.config.ProblemConfig
-import tsp.{Tsp, TspReader, TspToProblem, TspsToMtsp}
 
 import java.io.{File, FileInputStream, PrintWriter}
 import java.nio.charset.StandardCharsets
@@ -62,6 +77,11 @@ object Main {
         }
         val (reverseNameMap, mtspProblem) = TspsToMtsp(tsps)
         val algo = BasicAlgorithm(mtspProblem, conf.algorithmConfig)
+        runAlgorithm(algo, conf.repeat)
+      case "cvrp" =>
+        val vrp = VrpReader.read(Source.fromResource(conf.problemFiles.get(0)))
+        val (reverseNameMap, vrpProblem) = VrpToProblem(vrp)
+        val algo = SingleObjectiveSolver(vrpProblem, conf.algorithmConfig)
         runAlgorithm(algo, conf.repeat)
       case _ =>
         throw NotImplementedError(

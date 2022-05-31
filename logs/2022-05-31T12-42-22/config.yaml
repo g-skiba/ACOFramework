@@ -1,11 +1,11 @@
 problemType: cvrp
 problemFiles:
-  - cvrp//eilA76.vrp
-  # - cvrp//eilA101.vrp
-  # - cvrp//eilB76.vrp
-  # - cvrp//eilB101.vrp
-  # - cvrp//eilC76.vrp
-  # - cvrp//eilD76.vrp
+  - vrp//eilA76.vrp
+  # - vrp//eilA101.vrp
+  # - vrp//eilB76.vrp
+  # - vrp//eilB101.vrp
+  # - vrp//eilC76.vrp
+  # - vrp//eilD76.vrp
   # - mtsp//lust_kroA100.tsp
   # - mtsp//lust_kroB100.tsp
   # - mtsp//lust_euclidA100.tsp
@@ -13,7 +13,7 @@ problemFiles:
   # - mtsp//dimacs_15_a.tsp
   # - mtsp//dimacs_15_b.tsp
   # - mtsp//dimacs_15_c.tsp
-repeat: 1
+repeat: 3
 algorithmConfig:
   antsNum: 100
   iterations: 200

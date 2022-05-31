@@ -5,6 +5,7 @@ class TspProblem(nodes: List[Node], val matrix: Map[Edge, Double])
     extends BaseProblem(
       nodes,
       edges = matrix.keys.toList,
+      startingNode = nodes.head,
       1
     ) {
   private val allNodes = nodes.toSet
