@@ -24,10 +24,16 @@ class VrpProblem(val capacity: Int, val depot: Node, nodes: List[Node], val matr
 
   def sumAllEdges(): Double = {
     var sum = 0.toDouble
+    var sum10 = 10
     for ((edge, distance) <- matrix){
       sum = sum + distance
     }
-    sum
+    while {
+      sum = sum/10
+      sum10 = sum10 * 10
+      sum>10
+    } do ()
+    sum10.toDouble
   }
 
   def getCurrentCapacity(visitedNodes: List[Node]): Int = {
@@ -45,13 +51,14 @@ class VrpProblem(val capacity: Int, val depot: Node, nodes: List[Node], val matr
   }
 
   override def evaluate(solution: List[Node]): List[Double] = {
+    val sum = sumAllEdges()
     var evaluation = (solution :+ solution.head)
                       .sliding(2)
                       .map(pair => Edge(pair.head, pair.last))
                       .map(edge => matrix(edge))
                       .toList
                       .sum
-    evaluation = nOTrucks * 100000 + evaluation
+    evaluation = nOTrucks * sum + evaluation
     nOTrucks = 0
     List[Double](evaluation)
   }

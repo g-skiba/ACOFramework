@@ -59,7 +59,7 @@ object VrpReader {
             } else if (isReadingDEPOT_SECTION) {
               depot = Some(CityName("1")) //Hard coded 1
             } else {
-              val Array(nameNoChomp, valueNoChomp) = trimmed.split(":")
+              val Array(nameNoChomp, valueNoChomp) = trimmed.split(":", 2)
               val name: String = nameNoChomp.trim
               val value: String = valueNoChomp.trim
 
@@ -82,6 +82,9 @@ object VrpReader {
                   }
                 case "CAPACITY" =>
                   capacity = Some(value.toInt)
+
+                case "COMMENT" =>
+                  System.err.println(s"$value")
 
                 case _ =>
                   System.err.println(s"WARNING: Unsupported: $name")
