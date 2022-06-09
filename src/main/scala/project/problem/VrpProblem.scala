@@ -13,15 +13,6 @@ class VrpProblem(val capacity: Int, val depot: Node, nodes: List[Node], val matr
   val sum = sumAllEdges()
   assert(allNodes.size == nodes.size)
 
-  def getSetDemands(capacity: Int): Set[Node] = {
-    var demandSet = Set[Node]()
-    for ((d,g) <- demands) {
-      if (demands(d) > capacity)
-        demandSet += d
-    }
-    demandSet
-  }
-
   def sumAllEdges(): Double = {
     var sum = 0.toDouble
     var sum10 = 10
@@ -66,7 +57,7 @@ class VrpProblem(val capacity: Int, val depot: Node, nodes: List[Node], val matr
   override def getPossibleMoves(visitedNodes: List[Node]): Set[Node] = {
     val availableCapacity = getCurrentCapacity(visitedNodes)
     val availableNodes = allNodes.diff(visitedNodes.toSet)
-    val availableNodesCapacity = availableNodes.diff(getSetDemands(availableCapacity))
+    val availableNodesCapacity = availableNodes.filter(x => demands(x) < availableCapacity)
 
     if (availableNodes.isEmpty){
       nOTrucks = nOTrucks + 1

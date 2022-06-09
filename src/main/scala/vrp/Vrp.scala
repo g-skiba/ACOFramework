@@ -10,14 +10,7 @@ case object VRPVrpType extends VrpType
 sealed trait EdgeWeightType
 case object EUC_2D extends EdgeWeightType
 
-case class CityName(value: String) extends Ordered[CityName]{
-    def compare(that: CityName) = (this.value) compare (that.value)
-}
-// case class CityName(value: String) extends AnyVal
-
-// object CityName{
-//     val alphabetOrder = Ordering.by{(foo: CityName) => foo.value}
-// }
+case class CityName(value: String) extends AnyVal
 
 case class Vrp(
     name: String,

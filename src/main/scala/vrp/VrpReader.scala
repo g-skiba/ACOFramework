@@ -57,7 +57,8 @@ object VrpReader {
               demandSection(cityName) = demand
 
             } else if (isReadingDEPOT_SECTION) {
-              depot = Some(CityName("1")) //Hard coded 1
+              if (trimmed != "-1")
+                depot = Some(CityName(trimmed))
             } else {
               val Array(nameNoChomp, valueNoChomp) = trimmed.split(":", 2)
               val name: String = nameNoChomp.trim
@@ -90,7 +91,7 @@ object VrpReader {
                   System.err.println(s"WARNING: Unsupported: $name")
                 }
             }
-          }
+        }
       }
     }
 
