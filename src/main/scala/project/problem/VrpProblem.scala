@@ -42,7 +42,6 @@ class VrpProblem(val capacity: Int, val depot: Node, nodes: List[Node], val matr
   }
 
   override def evaluate(solution: List[Node]): List[Double] = {
-    val sum = sumAllEdges()
     var evaluation = (solution :+ solution.head)
                       .sliding(2)
                       .map(pair => Edge(pair.head, pair.last))
