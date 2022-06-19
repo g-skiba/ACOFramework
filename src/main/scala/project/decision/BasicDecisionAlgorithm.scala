@@ -30,11 +30,12 @@ class BasicDecisionAlgorithm(
         acc
       }
     }
+
     val pheromone = sumWeighted(0.0, pheromoneTable.getPheromone(edge).iterator, pheromoneWeights.iterator)
     val heuristic = sumWeighted(0.0, problem.getHeuristicValue(edge).iterator, heuristicWeights.iterator)
     Math.pow(pheromone, alpha) * Math.pow(heuristic, beta)
   }
-  
+
   override def decide(
       visitedNodes: Seq[Node],
       pheromoneWeights: Seq[Double],
