@@ -1,6 +1,5 @@
 package project.problem
 
-import project.aggregator.BasePheromoneAggregator
 import project.graph.{Edge, Node}
 
 abstract class BaseProblem(

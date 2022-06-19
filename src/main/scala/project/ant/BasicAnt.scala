@@ -1,7 +1,7 @@
 package project.ant
 
-import project.graph.{Edge, Node}
 import project.decision.BaseDecisionAlgorithm
+import project.graph.{Edge, Node}
 import project.problem.BaseProblem
 import project.solution.BaseSolution
 

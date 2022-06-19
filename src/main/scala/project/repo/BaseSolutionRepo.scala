@@ -1,7 +1,8 @@
 package project.repo
 
 import project.solution.BaseSolution
-import scala.collection.mutable.{Map => MMap}
+
+import scala.collection.mutable.Map as MMap
 
 abstract class BaseSolutionRepo {
   protected val solutions: MMap[Int, Seq[BaseSolution]] = MMap.empty

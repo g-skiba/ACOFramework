@@ -2,7 +2,8 @@ package project.pheromone
 
 import project.graph.{Edge, Node}
 import project.solution.BaseSolution
-import scala.collection.mutable.{Map => MMap}
+
+import scala.collection.mutable.Map as MMap
 
 //wiele macierzy feromonów nie ma sensu przy takiej implementacji updatu feromonów
 class BasicPheromoneTable(

@@ -1,6 +1,5 @@
 package project.colony
 
-import project.aggregator.BasicPheromoneAggregator
 import project.ant.BaseAnt
 import project.pheromone.BasePheromoneTable
 import project.problem.BaseProblem

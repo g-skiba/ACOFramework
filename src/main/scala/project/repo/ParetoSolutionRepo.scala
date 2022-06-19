@@ -2,7 +2,8 @@ package project.repo
 
 import pareto.getParetoFrontMin
 import project.solution.BaseSolution
-import scala.collection.mutable.{Map => MMap}
+
+import scala.collection.mutable.Map as MMap
 
 class ParetoSolutionRepo extends BaseSolutionRepo {
   private var global: IndexedSeq[BaseSolution] = IndexedSeq.empty

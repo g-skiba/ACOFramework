@@ -1,7 +1,6 @@
 package project.decision
 
 import project.graph.{Edge, Node}
-
 import project.problem.BaseProblem
 
 abstract class BaseDecisionAlgorithm(val problem: BaseProblem) {

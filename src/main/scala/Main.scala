@@ -8,8 +8,8 @@ import tsp.{Tsp, TspReader, TspToProblem, TspsToMtsp}
 import java.io.{File, FileInputStream, PrintWriter}
 import java.nio.charset.StandardCharsets
 import java.nio.file.Paths
-import java.time.{Instant, ZoneId}
 import java.time.format.DateTimeFormatter
+import java.time.{Instant, ZoneId}
 import java.util.concurrent.TimeUnit
 import scala.beans.BeanProperty
 import scala.io.Source

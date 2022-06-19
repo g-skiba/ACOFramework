@@ -3,6 +3,7 @@ package project.decision
 import project.graph.{Edge, Node}
 import project.pheromone.BasePheromoneTable
 import project.problem.BaseProblem
+
 import scala.util.Random
 class BasicDecisionAlgorithm(
     alpha: Double,

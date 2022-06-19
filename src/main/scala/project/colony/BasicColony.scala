@@ -1,14 +1,14 @@
 package project.colony
 
-import project.graph.{Edge, Node}
 import project.ant.{BaseAnt, BasicAnt}
 import project.decision.BasicDecisionAlgorithm
+import project.graph.{Edge, Node}
+import project.pheromone.BasePheromoneTable
 import project.problem.BaseProblem
 import project.solution.BaseSolution
 
 import scala.collection.mutable.ListBuffer
 import scala.util.Random
-import project.pheromone.BasePheromoneTable
 
 class BasicColony(
   alpha: Double,

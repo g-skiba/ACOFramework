@@ -1,15 +1,14 @@
 package project.algorithm
 
-import project.colony.BaseColony
-import project.problem.BaseProblem
-import project.colony.BasicColony
+import project.colony.{BaseColony, BasicColony}
 import project.config.AlgorithmConfig
-import project.solution.BaseSolution
-import project.repo.{BaseSolutionRepo, ParetoSolutionRepo, SingleObjectiveSolutionRepo}
 import project.pheromone.{BasicPheromoneTable, Pheromone}
+import project.problem.BaseProblem
+import project.repo.{BaseSolutionRepo, ParetoSolutionRepo, SingleObjectiveSolutionRepo}
+import project.solution.BaseSolution
 
-import scala.util.Random
 import java.io.PrintWriter
+import scala.util.Random
 
 class SingleObjectiveSolver(
     val problem: BaseProblem,
