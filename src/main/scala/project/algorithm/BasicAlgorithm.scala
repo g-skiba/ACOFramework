@@ -5,7 +5,7 @@ import project.colony.{BaseColony, BasicColony}
 import project.config.AlgorithmConfig
 import project.pheromone.{BasicPheromoneTable, Pheromone}
 import project.problem.BaseProblem
-import project.repo.{BaseSolutionRepo, BasicSolutionRepo}
+import project.repo.{BaseSolutionRepo, ParetoSolutionRepo}
 import project.solution.BaseSolution
 
 import java.io.PrintWriter
@@ -16,7 +16,7 @@ class BasicAlgorithm(
     algorithmConfig: AlgorithmConfig,
     fixedRandom: Boolean = false
 ) extends BaseAlgorithm {
-  val solutionRepo = new BasicSolutionRepo()
+  val solutionRepo = new ParetoSolutionRepo()
 
   override def run(resultsWriter: PrintWriter): BaseSolutionRepo = {
     val heuristicWeights =
@@ -41,23 +41,18 @@ class BasicAlgorithm(
     )
     for (iteration <- 0 until algorithmConfig.iterations) {
       val solutions = colony.run()
-      val iterationParetoFront = solutions.zip(getParetoFrontMin(solutions.map(_.evaluation))).collect {
-        case (v, true) => v
-      }
+      val iterationParetoFront = solutionRepo.addSolutions(iteration, solutions)
       colony.pheromoneUpdate(iterationParetoFront)
       val minWeightedCost = solutions.map(_.evaluation.zip(heuristicWeights).map(_ * _).sum).min
       println(s"Step $iteration:$minWeightedCost")
       resultsWriter.println(s"$iteration,$minWeightedCost")
-      solutionRepo.addSolutions(
-        iteration,
-        iterationParetoFront
-      )
       if (iteration % 10 == 9) {
-        println(solutionRepo.solutions(iteration).map(_.evaluation))
+        println(solutionRepo.solutionsForIteration(iteration).map(_.evaluation))
       }
     }
-    val z = solutionRepo.solutions.flatMap(_._2.map(_.evaluation)).toVector
-    println(z.zip(getParetoFrontMin(z)).collect { case (v, true) => v })
+    val z = solutionRepo.solutionsIterator.flatMap(_.map(_.evaluation)).toVector
+    println(z.zip(getParetoFrontMin(z)(identity)).collect { case (v, true) => v })
+    println(solutionRepo)
     solutionRepo
   }
 }
