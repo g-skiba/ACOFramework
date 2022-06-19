@@ -37,21 +37,24 @@ class BasicDecisionAlgorithm(
       .getPossibleMoves(visitedNodes)
       .toList
     if (possibleMoves.isEmpty) {
-      return None
-    }
-    val edgesWithCost = possibleMoves
-      .map(Edge(visitedNodes.last, _))
-      .map(edge => (edge, initializedAssessment(edge)))
+      None
+    } else {
+      val edgesWithCost = possibleMoves
+        .map(Edge(visitedNodes.last, _))
+        .map(edge => (edge, initializedAssessment(edge)))
 
-    val sumOfWeights = edgesWithCost.map(_._2).sum
-    val selectedRandom = random.nextDouble() * sumOfWeights
-    var sum = 0.0
-    for { (move, weight) <- edgesWithCost } {
-      sum += weight
-      if (selectedRandom < sum) {
-        return Some(move.node2)
+      val sumOfWeights = edgesWithCost.map(_._2).sum
+      val selectedRandom = random.nextDouble() * sumOfWeights
+
+      @scala.annotation.tailrec
+      def select(acc: Double, possibilities: Iterator[(Edge, Double)]): Edge = {
+        val elem = possibilities.next()
+        val newAcc = acc + elem._2
+        if (selectedRandom < newAcc || !possibilities.hasNext) elem._1
+        else select(newAcc, possibilities)
       }
+
+      Some(select(0.0, edgesWithCost.iterator).node2)
     }
-    throw RuntimeException("Program should never reach here")
   }
 }
