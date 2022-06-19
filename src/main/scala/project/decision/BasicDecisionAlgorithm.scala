@@ -4,6 +4,7 @@ import project.graph.{Edge, Node}
 import project.pheromone.BasePheromoneTable
 import project.problem.BaseProblem
 
+import scala.annotation.tailrec
 import scala.util.Random
 class BasicDecisionAlgorithm(
     alpha: Double,
@@ -21,12 +22,19 @@ class BasicDecisionAlgorithm(
       pheromoneWeights: Seq[Double],
       heuristicWeights: Seq[Double]
   )(edge: Edge): Double = {
-    val pheromone =
-      pheromoneTable.getPheromone(edge).iterator.zip(pheromoneWeights.iterator).map(_ * _).sum
-    val heuristic =
-      problem.getHeuristicValue(edge).iterator.zip(heuristicWeights.iterator).map(_ * _).sum
+    @tailrec
+    def sumWeighted(acc: Double, a: Iterator[Double], b: Iterator[Double]): Double = {
+      if (a.hasNext && b.hasNext) {
+        sumWeighted(acc + a.next() * b.next(), a, b)
+      } else {
+        acc
+      }
+    }
+    val pheromone = sumWeighted(0.0, pheromoneTable.getPheromone(edge).iterator, pheromoneWeights.iterator)
+    val heuristic = sumWeighted(0.0, problem.getHeuristicValue(edge).iterator, heuristicWeights.iterator)
     Math.pow(pheromone, alpha) * Math.pow(heuristic, beta)
   }
+  
   override def decide(
       visitedNodes: Seq[Node],
       pheromoneWeights: Seq[Double],
