@@ -12,11 +12,11 @@ class TspProblem(nodes: List[Node], val matrix: Map[Edge, Double])
 
   override def evaluate(solution: Seq[Node]): IndexedSeq[Double] = {
     val evaluation = (solution :+ solution.head)
-                      .sliding(2)
-                      .map(pair => Edge(pair.head, pair.last))
-                      .map(edge => matrix(edge))
-                      .toList
-                      .sum
+      .iterator
+      .sliding(2)
+      .map(pair => Edge(pair.head, pair.last))
+      .map(edge => matrix(edge))
+      .sum
     Array[Double](evaluation)
   }
 
