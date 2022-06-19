@@ -45,16 +45,16 @@ class BasicColony(
     ants.toList
   }
 
-  override def run(): List[BaseSolution] = {
-    val solutions = ListBuffer[BaseSolution]()
+  override def run(): IndexedSeq[BaseSolution] = {
+    val solutions = Vector.newBuilder[BaseSolution]
     for (ant <- ants) {
       val solution: BaseSolution = ant.run()
-      solutions.append(solution)
+      solutions += solution
     }
-    solutions.toList
+    solutions.result()
   }
 
-  def pheromoneUpdate(solutions: List[BaseSolution]): Unit = {
+  def pheromoneUpdate(solutions: IndexedSeq[BaseSolution]): Unit = {
     pheromoneTable.pheromoneUpdate(solutions)
     pheromoneTable.afterUpdatesAction()
   }

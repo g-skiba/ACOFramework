@@ -40,7 +40,7 @@ class BasicAlgorithm(
       pheromoneWeights
     )
     for (iteration <- 0 until algorithmConfig.iterations) {
-      val solutions: List[BaseSolution] = colony.run()
+      val solutions = colony.run()
       val iterationParetoFront = solutions.zip(getParetoFrontMin(solutions.map(_.evaluation))).collect {
         case (v, true) => v
       }
@@ -56,7 +56,7 @@ class BasicAlgorithm(
         println(solutionRepo.solutions(iteration).map(_.evaluation))
       }
     }
-    val z = solutionRepo.solutions.flatMap(_._2.map(_.evaluation)).toList
+    val z = solutionRepo.solutions.flatMap(_._2.map(_.evaluation)).toVector
     println(z.zip(getParetoFrontMin(z)).collect { case (v, true) => v })
     solutionRepo
   }

@@ -6,18 +6,19 @@ import scala.collection.mutable.{Map => MMap}
 
 //wiele macierzy feromonów nie ma sensu przy takiej implementacji updatu feromonów
 class BasicPheromoneTable(
-  edges: List[Edge],
+  edges: Seq[Edge],
   val increment: Double,
   val extinction: Double,
   val pheromoneDimension: Int,
   minValue: Double = 0.001,
   maxValue: Double = 0.999
 ) extends BasePheromoneTable {
-  private val pheromone: MMap[Edge, List[Double]] =
-    edges.map((_, List.fill(pheromoneDimension)(maxValue))).to(MMap)
-  override def getPheromone(edge: Edge): List[Double] = pheromone(edge)
+  private val pheromone: MMap[Edge, Seq[Double]] =
+    edges.map((_, Seq.fill(pheromoneDimension)(maxValue))).to(MMap)
 
-  override def pheromoneUpdate(solutions: List[BaseSolution]): Unit = {
+  override def getPheromone(edge: Edge): Seq[Double] = pheromone(edge)
+
+  override def pheromoneUpdate(solutions: Seq[BaseSolution]): Unit = {
     solutions.foreach { solution =>
       solution.solution
         .sliding(2)

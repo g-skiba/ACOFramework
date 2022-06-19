@@ -42,7 +42,7 @@ class SingleObjectiveSolver(
       pheromoneWeights
     )
     for (iteration <- 0 until algorithmConfig.iterations) {
-      val solutions: List[BaseSolution] = colony.run()
+      val solutions = colony.run()
 
       val minCost = solutions.map(_.evaluation.sum).min // for single objective it's the same as with .zip(heuristicWeights).map(_ * _)
       println(s"$iteration,$minCost")

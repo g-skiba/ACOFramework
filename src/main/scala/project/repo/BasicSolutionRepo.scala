@@ -2,9 +2,9 @@ package project.repo
 
 import project.solution.BaseSolution
 import scala.collection.mutable.{Map => MMap}
-class BasicSolutionRepo extends BaseSolutionRepo(MMap[Int, List[BaseSolution]]()) {
+class BasicSolutionRepo extends BaseSolutionRepo(MMap[Int, Seq[BaseSolution]]()) {
 
-  override def addSolutions(iteration: Int, newSolutions: List[BaseSolution]): Unit = {
+  override def addSolutions(iteration: Int, newSolutions: Seq[BaseSolution]): Unit = {
     solutions.update(iteration, newSolutions)
   }
 

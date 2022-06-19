@@ -7,6 +7,6 @@ abstract class BasePheromone {
 
   /** Function to evaluate pheromone value per edge, based on solutions
    */
-  def evaluate(solutions: List[BaseSolution]): Map[Edge, Double]
+  def evaluate(solutions: Seq[BaseSolution]): Map[Edge, Double]
 
 }

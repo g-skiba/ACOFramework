@@ -2,8 +2,8 @@ package pareto
 
 /** Function that finds pareto front for minimization of criteria
   */
-def getParetoFrontMin(data: List[List[Double]]): List[Boolean] = {
-  val isEfficient = data.map(x => true).toArray
+def getParetoFrontMin(data: IndexedSeq[IndexedSeq[Double]]): IndexedSeq[Boolean] = {
+  val isEfficient = Array.fill(data.size)(true)
   for (i <- isEfficient.indices) {
     if (isEfficient(i)) {
       for (j <- isEfficient.indices) {
@@ -14,30 +14,30 @@ def getParetoFrontMin(data: List[List[Double]]): List[Boolean] = {
       }
     }
   }
-  isEfficient.toList
+  isEfficient
 }
 
 object NonDominated {
   def main(args: Array[String]): Unit = {
-    println(getParetoFrontMin(List(List(1.0), List(2.0))) == List(true, false))
-    println(getParetoFrontMin(List(List(2.0), List(1.0))) == List(false, true))
-    println(getParetoFrontMin(List(List(1.0), List(1.0), List(2.0))) == List(true, true, false))
-    println(getParetoFrontMin(List(List(1.0), List(1.0))) == List(true, true))
+    println(getParetoFrontMin(Vector(Vector(1.0), Vector(2.0))) == Vector(true, false))
+    println(getParetoFrontMin(Vector(Vector(2.0), Vector(1.0))) == Vector(false, true))
+    println(getParetoFrontMin(Vector(Vector(1.0), Vector(1.0), Vector(2.0))) == Vector(true, true, false))
+    println(getParetoFrontMin(Vector(Vector(1.0), Vector(1.0))) == Vector(true, true))
     println()
 
-    println(getParetoFrontMin(List(List(1.0, 0.0), List(2.0, 0.0))) == List(true, false))
-    println(getParetoFrontMin(List(List(2.0, 0.0), List(1.0, 0.0))) == List(false, true))
-    println(getParetoFrontMin(List(List(1.0, 0.0), List(1.0, 0.0), List(2.0, 0.0))) == List(true, true, false))
-    println(getParetoFrontMin(List(List(1.0, 0.0), List(1.0, 0.0))) == List(true, true))
+    println(getParetoFrontMin(Vector(Vector(1.0, 0.0), Vector(2.0, 0.0))) == Vector(true, false))
+    println(getParetoFrontMin(Vector(Vector(2.0, 0.0), Vector(1.0, 0.0))) == Vector(false, true))
+    println(getParetoFrontMin(Vector(Vector(1.0, 0.0), Vector(1.0, 0.0), Vector(2.0, 0.0))) == Vector(true, true, false))
+    println(getParetoFrontMin(Vector(Vector(1.0, 0.0), Vector(1.0, 0.0))) == Vector(true, true))
     println()
 
-    println(getParetoFrontMin(List(List(0.0, 1.0), List(0.0, 2.0))) == List(true, false))
-    println(getParetoFrontMin(List(List(0.0, 2.0), List(0.0, 1.0))) == List(false, true))
-    println(getParetoFrontMin(List(List(0.0, 1.0), List(0.0, 1.0), List(0.0, 2.0))) == List(true, true, false))
-    println(getParetoFrontMin(List(List(0.0, 1.0), List(0.0, 1.0))) == List(true, true))
+    println(getParetoFrontMin(Vector(Vector(0.0, 1.0), Vector(0.0, 2.0))) == Vector(true, false))
+    println(getParetoFrontMin(Vector(Vector(0.0, 2.0), Vector(0.0, 1.0))) == Vector(false, true))
+    println(getParetoFrontMin(Vector(Vector(0.0, 1.0), Vector(0.0, 1.0), Vector(0.0, 2.0))) == Vector(true, true, false))
+    println(getParetoFrontMin(Vector(Vector(0.0, 1.0), Vector(0.0, 1.0))) == Vector(true, true))
     println()
 
-    println(getParetoFrontMin(List(List(1.0, 0.0), List(0.0, 2.0))) == List(true, true))
-    println(getParetoFrontMin(List(List(2.0, 0.0), List(0.0, 1.0))) == List(true, true))
+    println(getParetoFrontMin(Vector(Vector(1.0, 0.0), Vector(0.0, 2.0))) == Vector(true, true))
+    println(getParetoFrontMin(Vector(Vector(2.0, 0.0), Vector(0.0, 1.0))) == Vector(true, true))
   }
 }
