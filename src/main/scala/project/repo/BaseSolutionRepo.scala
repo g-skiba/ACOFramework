@@ -2,10 +2,10 @@ package project.repo
 
 import project.solution.BaseSolution
 
-import scala.collection.mutable.Map as MMap
+import scala.collection.mutable.SortedMap as MSortedMap
 
 abstract class BaseSolutionRepo {
-  protected val solutions: MMap[Int, Seq[BaseSolution]] = MMap.empty
+  protected val solutions: MSortedMap[Int, Seq[BaseSolution]] = MSortedMap.empty
 
   def addSolutions(iteration: Int, newSolutions: IndexedSeq[BaseSolution]): IndexedSeq[BaseSolution]
   def globalBest: Seq[BaseSolution]
