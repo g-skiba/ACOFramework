@@ -14,9 +14,10 @@ import project.repo.BaseSolutionRepo
 import java.io.PrintWriter
 
 class SingleObjectiveSolver(
-    val problem: BaseProblem,
-    algorithmConfig: AlgorithmConfig,
-    fixedRandom: Boolean = false
+  val problem: BaseProblem,
+  algorithmConfig: AlgorithmConfig,
+  fixedRandom: Boolean = false,
+  twoDimPheromone: Boolean = false
 ) extends BaseAlgorithm {
   val solutionRepo = new BasicSolutionRepo()
 
@@ -24,12 +25,24 @@ class SingleObjectiveSolver(
     val heuristicWeights = List(1.0)
     val pheromoneWeights = List(1.0)
 
-    val takenAntsToPheromoneUpdate = 1
-    val pheromone = Pheromone.create(
-      algorithmConfig.pheromoneConfig,
-      problem.edges,
-      pheromoneWeights.size
-    )
+    val (takenAntsToPheromoneUpdate, pheromone) =
+      if (!twoDimPheromone) {
+        val pheromone = Pheromone.create(
+          algorithmConfig.pheromoneConfig,
+          problem.edges,
+          pheromoneWeights.size
+        )
+        (1, pheromone)
+      } else {
+        val pheromone = project.pheromone.TwoDimPheromone(
+          problem.edges,
+          algorithmConfig.pheromoneConfig.increment,
+          algorithmConfig.pheromoneConfig.extinction,
+          //pheromoneWeights.size //implementation assumes it's 1
+        )
+        (algorithmConfig.antsNum, pheromone)
+      }
+
     val rnd = if (fixedRandom) Random(1637) else Random()
     val colony = BasicColony(
       algorithmConfig.alpha,
