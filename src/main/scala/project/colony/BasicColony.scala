@@ -10,19 +10,19 @@ import scala.collection.mutable.ListBuffer
 import scala.util.Random
 import project.pheromone.BasePheromoneTable
 
-class BasicColony(
+class BasicColony[T](
   alpha: Double,
   beta: Double,
   random: Random,
   antNumb: Int,
-  problem: BaseProblem,
+  problem: BaseProblem[T],
   pheromoneTable: BasePheromoneTable,
   heuristicWeights: List[Double],
   pheromoneWeights: List[Double]
 ) extends BaseColony(antNumb, problem, pheromoneTable) {
 
-  override def createAnts(): List[BaseAnt] = {
-    val ants = ListBuffer[BaseAnt]()
+  override def createAnts(): List[BaseAnt[T]] = {
+    val ants = ListBuffer[BaseAnt[T]]()
     val startingNode = problem.nodes.head
 
     for (_ <- 0 until antNumb) {

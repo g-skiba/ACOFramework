@@ -3,38 +3,37 @@ package project.ant
 import project.graph.{Edge, Node}
 import project.decision.BaseDecisionAlgorithm
 import project.problem.BaseProblem
-import project.solution.BaseSolution
-import scala.collection.mutable.ListBuffer
+import project.solution.{BaseSolution, SolutionUnderConstruction}
 
-class BasicAnt(
+class BasicAnt[T](
     startingNode: Node,
-    problem: BaseProblem,
-    decision: BaseDecisionAlgorithm,
+    problem: BaseProblem[T],
+    decision: BaseDecisionAlgorithm[T],
     val pheromoneWeights: List[Double],
     val heuristicWeights: List[Double]
-) extends BaseAnt(
+) extends BaseAnt[T](
       startingNode,
       problem,
       decision
     ) {
   override def run(): BaseSolution = {
-    val solution = ListBuffer[Node](problem.nodes.head)
+    var solution = problem.initSolution
     var dec = decision.decide(
-      solution.toList,
+      solution,
       pheromoneWeights,
       heuristicWeights
     )
     while (dec.isDefined) {
-      solution.append(dec.get)
+      solution = problem.updateSolution(solution, dec.get)
       dec = decision.decide(
-        solution.toList,
+        solution,
         pheromoneWeights,
         heuristicWeights
       )
     }
     BaseSolution(
-      solution.toList,
-      problem.evaluate(solution.toList)
+      solution.nodes.toList,
+      problem.evaluate(solution)
     )
   }
 

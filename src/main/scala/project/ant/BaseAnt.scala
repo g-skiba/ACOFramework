@@ -6,10 +6,10 @@ import project.decision.BaseDecisionAlgorithm
 import project.problem.BaseProblem
 import project.solution.BaseSolution
 
-abstract class BaseAnt(
+abstract class BaseAnt[T](
     startingNode: Node,
-    val problem: BaseProblem,
-    val decision: BaseDecisionAlgorithm
+    val problem: BaseProblem[T],
+    val decision: BaseDecisionAlgorithm[T]
 ) {
   var currentNode: Node = startingNode
 

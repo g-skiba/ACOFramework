@@ -14,7 +14,7 @@ import project.repo.BaseSolutionRepo
 import java.io.PrintWriter
 
 class SingleObjectiveSolver(
-    val problem: BaseProblem,
+    val problem: BaseProblem[_],
     algorithmConfig: AlgorithmConfig,
     fixedRandom: Boolean = false
 ) extends BaseAlgorithm {
