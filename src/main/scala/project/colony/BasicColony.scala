@@ -1,14 +1,14 @@
 package project.colony
 
-import project.graph.{Edge, Node}
 import project.ant.{BaseAnt, BasicAnt}
 import project.decision.BasicDecisionAlgorithm
+import project.graph.{Edge, Node}
+import project.pheromone.BasePheromoneTable
 import project.problem.BaseProblem
 import project.solution.BaseSolution
 
 import scala.collection.mutable.ListBuffer
 import scala.util.Random
-import project.pheromone.BasePheromoneTable
 
 class BasicColony(
   alpha: Double,
@@ -45,16 +45,16 @@ class BasicColony(
     ants.toList
   }
 
-  override def run(): List[BaseSolution] = {
-    val solutions = ListBuffer[BaseSolution]()
+  override def run(): IndexedSeq[BaseSolution] = {
+    val solutions = Vector.newBuilder[BaseSolution]
     for (ant <- ants) {
       val solution: BaseSolution = ant.run()
-      solutions.append(solution)
+      solutions += solution
     }
-    solutions.toList
+    solutions.result()
   }
 
-  def pheromoneUpdate(solutions: List[BaseSolution]): Unit = {
+  def pheromoneUpdate(solutions: IndexedSeq[BaseSolution]): Unit = {
     pheromoneTable.pheromoneUpdate(solutions)
     pheromoneTable.afterUpdatesAction()
   }

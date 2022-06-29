@@ -5,9 +5,9 @@ import project.solution.BaseSolution
 
 abstract class BasePheromoneTable {
 
-  def getPheromone(edge: Edge): List[Double]
+  def getPheromone(edge: Edge): Seq[Double]
 
-  def pheromoneUpdate(solutions: List[BaseSolution]): Unit
+  def pheromoneUpdate(solutions: Seq[BaseSolution]): Unit
 
   def afterUpdatesAction(): Unit
 
