@@ -12,8 +12,8 @@ abstract class BaseDecisionAlgorithm[T](val problem: BaseProblem[T]) {
     */
   def decide(
     solution: SolutionUnderConstruction[T],
-    pheromoneWeights: List[Double],
-    heuristicWeights: List[Double]
+    pheromoneWeights: Seq[Double],
+    heuristicWeights: Seq[Double]
   ): Option[Node]
 
 }

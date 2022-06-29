@@ -16,7 +16,7 @@ class Mtsp(nodes: Seq[Node], matrices: Seq[Map[Edge, Double]])
   private val allNodes = nodes.toSet
   assert(allNodes.size == nodes.size)
   override def evaluate(solution: SolutionUnderConstruction[TspState]): IndexedSeq[Double] = {
-    (solutio.nodesn :+ solution.nodes.head).iterator
+    (solution.nodes :+ solution.nodes.head).iterator
       .sliding(2)
       .map(pair => Edge(pair.head, pair.last))
       .map(edge =>
