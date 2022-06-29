@@ -1,7 +1,6 @@
 package tsp
 
 import java.io.File
-
 import scala.collection.mutable
 import scala.io.Source
 import scala.util.control.Breaks

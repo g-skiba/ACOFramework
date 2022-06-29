@@ -4,24 +4,25 @@ import project.solution.{SolutionUnderConstruction, TspState}
 
 import scala.collection.mutable
 
-class TspProblem(nodes: List[Node], val matrix: Map[Edge, Double])
+class TspProblem(nodes: List[Node], matrix: Map[Edge, Double])
     extends BaseProblem[TspState](
       nodes,
       edges = matrix.keys.toList,
       startingNode = nodes.head, //TODO instead this should probably be the first city in the input file  but for TSP it's irrelevant
-      1
+      1,
+      Seq(matrix)
     ) {
   private val allNodes = nodes.toSet
   assert(allNodes.size == nodes.size)
 
-  override def evaluate(solution: SolutionUnderConstruction[TspState]): List[Double] = {
+  override def evaluate(solution: SolutionUnderConstruction[TspState]): IndexedSeq[Double] = {
     val evaluation = (solution.nodes :+ solution.nodes.head)
+                      .iterator
                       .sliding(2)
                       .map(pair => Edge(pair.head, pair.last))
-                      .map(edge => matrix(edge))
-                      .toList
+                      .map(edge => arrayMatrices.head(edge.node1.number)(edge.node2.number))
                       .sum
-    List[Double](evaluation)
+    Array[Double](evaluation)
   }
 
   override def getPossibleMoves(solution: SolutionUnderConstruction[TspState]): collection.Set[Node] = {
@@ -35,8 +36,8 @@ class TspProblem(nodes: List[Node], val matrix: Map[Edge, Double])
     state
   }
   
-  override def getHeuristicValue(edge: Edge): List[Double] = {
-    List(1.0 / matrix(edge))
+  override def getHeuristicValue(edge: Edge): Seq[Double] = {
+    List(1.0 / arrayMatrices.head(edge.node1.number)(edge.node2.number))
   }
 
 }
