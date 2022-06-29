@@ -12,7 +12,7 @@ import scala.util.Random
  *  range of solution cost (currently from iteration solutions)
  */
 class TwoDimPheromone(
-  edges: List[Edge],
+  edges: Seq[Edge],
   val increment: Double,
   val extinction: Double,
   val pheromoneDimension: Int = 10,
@@ -79,7 +79,7 @@ class TwoDimPheromone(
 //    value :: Nil
   }
 
-  override def pheromoneUpdate(solutions: List[BaseSolution]): Unit = {
+  override def pheromoneUpdate(solutions: Seq[BaseSolution]): Unit = {
     val minCost = solutions.iterator.map(_.evaluation.head).min
     val maxCost = solutions.iterator.map(_.evaluation.head).max
     val partDiff = (maxCost - minCost) / pheromoneDimension
