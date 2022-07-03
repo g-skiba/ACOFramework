@@ -1,8 +1,7 @@
 package tsp
-import tsp.Tsp
 import project.graph.Node
 import project.problem.TspProblem
-import tsp.nodeCoordSectionToMatrix
+import tsp.{Tsp, nodeCoordSectionToMatrix}
 
 def TspToProblem(tsp: Tsp): (Map[Node, CityName], TspProblem) = {
   val citiesEnumerated = tsp.nodeCoordSection

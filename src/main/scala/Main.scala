@@ -23,8 +23,9 @@ import project.config.ProblemConfig
 import java.io.{File, FileInputStream, PrintWriter}
 import java.nio.charset.StandardCharsets
 import java.nio.file.Paths
-import java.time.{Instant, ZoneId}
 import java.time.format.DateTimeFormatter
+import java.time.{Instant, ZoneId}
+import java.util.concurrent.TimeUnit
 import scala.beans.BeanProperty
 import scala.io.Source
 import scala.jdk.CollectionConverters.*
@@ -36,6 +37,7 @@ object Main {
     val outDirectory = new File(Paths.get("logs", timestampStr).toUri)
     outDirectory.mkdirs()
     val outConfFile = new File(outDirectory, "config.yaml")
+
     def writeConfFile(config: String): Unit = {
       outConfFile.createNewFile()
       val pw = new PrintWriter(outConfFile)
@@ -51,7 +53,10 @@ object Main {
         val outResultsFile = new File(Paths.get("logs", timestampStr, s"results_$i.csv").toUri)
         val resultsWriter = new PrintWriter(outResultsFile)
         try {
+          val start = System.nanoTime()
           baseAlgorithm.run(resultsWriter)
+          val end = System.nanoTime()
+          println(s"Run took: ${TimeUnit.NANOSECONDS.toMillis(end - start)}ms")
         } finally {
           resultsWriter.close()
         }

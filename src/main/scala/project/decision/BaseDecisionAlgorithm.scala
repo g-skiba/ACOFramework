@@ -1,19 +1,19 @@
 package project.decision
 
 import project.graph.{Edge, Node}
-
 import project.problem.BaseProblem
+import project.solution.SolutionUnderConstruction
 
-abstract class BaseDecisionAlgorithm(val problem: BaseProblem) {
+abstract class BaseDecisionAlgorithm[T](val problem: BaseProblem[T]) {
 
   /** Function that make decision for the next ant step Parameters: currentNode
     *   - node that ant is currently in visitedNodes - all visited by ant nodes
     *     in previous steps
     */
   def decide(
-      visitedNodes: List[Node],
-      pheromoneWeights: List[Double],
-      heuristicWeights: List[Double]
+    solution: SolutionUnderConstruction[T],
+    pheromoneWeights: Seq[Double],
+    heuristicWeights: Seq[Double]
   ): Option[Node]
 
 }

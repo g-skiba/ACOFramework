@@ -1,9 +1,9 @@
 package tsp
+import project.graph.{Edge, Node}
 import project.problem.Mtsp
-import project.graph.Node
-import scala.math.sqrt
-import project.graph.Edge
 import tsp.Tsp
+
+import scala.math.sqrt
 
 def TspsToMtsp(tsps: Iterable[Tsp]): (Map[Node, CityName], Mtsp) = {
   val citiesEnumerated = tsps.head.nodeCoordSection
