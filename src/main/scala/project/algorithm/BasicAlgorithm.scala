@@ -12,7 +12,7 @@ import java.io.PrintWriter
 import scala.util.Random
 
 class BasicAlgorithm(
-    val problem: BaseProblem,
+    val problem: BaseProblem[_],
     algorithmConfig: AlgorithmConfig,
     fixedRandom: Boolean = false
 ) extends BaseAlgorithm {

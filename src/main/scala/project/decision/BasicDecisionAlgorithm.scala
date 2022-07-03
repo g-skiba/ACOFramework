@@ -3,16 +3,18 @@ package project.decision
 import project.graph.{Edge, Node}
 import project.pheromone.BasePheromoneTable
 import project.problem.BaseProblem
+import project.solution.SolutionUnderConstruction
 
 import scala.annotation.tailrec
 import scala.util.Random
-class BasicDecisionAlgorithm(
+
+class BasicDecisionAlgorithm[T](
     alpha: Double,
     beta: Double,
-    problem: BaseProblem,
+    problem: BaseProblem[T],
     pheromoneTable: BasePheromoneTable,
     val random: Random
-) extends BaseDecisionAlgorithm(problem) {
+) extends BaseDecisionAlgorithm[T](problem) {
 
   /** calculate heuristic and pheromone value in standard way
     */
@@ -37,19 +39,19 @@ class BasicDecisionAlgorithm(
   }
 
   override def decide(
-      visitedNodes: Seq[Node],
-      pheromoneWeights: Seq[Double],
-      heuristicWeights: Seq[Double]
+    solution: SolutionUnderConstruction[T],
+    pheromoneWeights: Seq[Double],
+    heuristicWeights: Seq[Double]
   ): Option[Node] = {
     val initializedAssessment = assessment(alpha, beta, pheromoneWeights, heuristicWeights)
     val possibleMoves = problem
-      .getPossibleMoves(visitedNodes)
+      .getPossibleMoves(solution)
       .toList
     if (possibleMoves.isEmpty) {
       None
     } else {
       val edgesWithCost = possibleMoves
-        .map(Edge(visitedNodes.last, _))
+        .map(Edge(solution.nodes.last, _))
         .map(edge => (edge, initializedAssessment(edge)))
 
       val sumOfWeights = edgesWithCost.map(_._2).sum

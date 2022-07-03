@@ -7,6 +7,6 @@ import project.repo.BaseSolutionRepo
 import java.io.PrintWriter
 
 abstract class BaseAlgorithm {
-  val problem: BaseProblem
+  val problem: BaseProblem[_]
   def run(resultsWriter: PrintWriter): BaseSolutionRepo
 }

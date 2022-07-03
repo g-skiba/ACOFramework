@@ -11,7 +11,7 @@ import java.io.PrintWriter
 import scala.util.Random
 
 class SingleObjectiveSolver(
-  val problem: BaseProblem,
+  val problem: BaseProblem[_],
   algorithmConfig: AlgorithmConfig,
   fixedRandom: Boolean = false,
   twoDimPheromone: Boolean = false

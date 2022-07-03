@@ -6,33 +6,30 @@ import project.problem.BaseProblem
 import project.solution.BaseSolution
 
 import scala.annotation.tailrec
-import scala.collection.mutable.{ArrayBuffer, ListBuffer}
 
-class BasicAnt(
+class BasicAnt[T](
     startingNode: Node,
-    problem: BaseProblem,
-    decision: BaseDecisionAlgorithm,
+    problem: BaseProblem[T],
+    decision: BaseDecisionAlgorithm[T],
     val pheromoneWeights: Seq[Double],
     val heuristicWeights: Seq[Double]
-) extends BaseAnt(
+) extends BaseAnt[T](
       startingNode,
       problem,
       decision
     ) {
   override def run(): BaseSolution = {
-    val solution = ArrayBuffer.empty[Node]
-    solution += problem.nodes.head
+    var solution = problem.initSolution
 
     @tailrec
     def iter(): BaseSolution = {
-      val result = solution.toVector
-      val selected = decision.decide(result, pheromoneWeights, heuristicWeights)
+      val selected = decision.decide(solution, pheromoneWeights, heuristicWeights)
       selected match
         case Some(value) =>
-          solution += value
+          solution = problem.updateSolution(solution, value)
           iter()
         case None =>
-          BaseSolution(result, problem.evaluate(result))
+          BaseSolution(solution.nodes.toSeq, problem.evaluate(solution))
     }
 
     iter()
