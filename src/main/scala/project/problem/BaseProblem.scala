@@ -10,7 +10,6 @@ abstract class BaseProblem[T](
     val nodes: Seq[Node],
     val edges: Seq[Edge],
     val startingNode: Node,
-    val startingNode: Node,
     val dimensions: Int,
     matrices: Seq[Map[Edge, Double]]
 ) {
