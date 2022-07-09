@@ -28,7 +28,7 @@ object Pheromone {
           config.resolvePheromoneDimension.getOrElse(optimizationTargetsCount),
           config.minValue,
           config.maxValue,
-          config.twoDimConfig.size,
+          config.twoDimConfig.twoDimSize,
           config.twoDimConfig.resolveGetType,
           config.twoDimConfig.resolveUpdateType
         )

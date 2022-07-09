@@ -3,22 +3,30 @@ package project.config
 import scala.beans.BeanProperty
 
 case class TwoDimPheromoneConfig(
-    @BeanProperty var size: Int,
-    @BeanProperty var getType: String,
-    @BeanProperty var updateType: String
+  @BeanProperty var twoDimSize: Int,
+  @BeanProperty var twoDimGetType: String,
+  @BeanProperty var twoDimUpdateType: String
 ) {
   def this() = {
-    this(5, "ExponentialRandom", "PartFromEvaluation")
+    this(10, "ExponentialRandom", "PartFromEvaluation")
   }
 
   def resolveGetType: TwoDimPheromoneConfig.GetType =
-    TwoDimPheromoneConfig.GetType.valueOf(getType)
+    TwoDimPheromoneConfig.GetType.valueOf(twoDimGetType)
 
   def resolveUpdateType: TwoDimPheromoneConfig.UpdateType =
-    TwoDimPheromoneConfig.UpdateType.valueOf(updateType)
+    TwoDimPheromoneConfig.UpdateType.valueOf(twoDimUpdateType)
 
   override def toString: String = {
-    s"size: $size; getType: $getType; updateType: $updateType"
+    s"twoDimSize: $twoDimSize; twoDimGetType: $twoDimGetType; twoDimUpdateType: $twoDimUpdateType"
+  }
+
+  def toMap: Map[String, String] = {
+    Map(
+      "twoDimSize" -> twoDimSize.toString,
+      "twoDimGetType" -> twoDimGetType,
+      "twoDimUpdateType" -> twoDimUpdateType
+    )
   }
 }
 
