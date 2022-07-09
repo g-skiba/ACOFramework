@@ -98,7 +98,7 @@ class TwoDimPheromone(
 
     def calcPartFromEvaluation(cost: Double): Int =
       ((cost - minCost) / partDiff).toInt.min(twoDimPheromoneSize - 1)
-    def calcPartFromIndex(ind: Int): Int = ind / twoDimPheromoneSize
+    def calcPartFromIndex(ind: Int): Int = ind * twoDimPheromoneSize / solutions.size
     if (debug)
       println(
         solutions
