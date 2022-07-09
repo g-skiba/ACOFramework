@@ -23,11 +23,13 @@ class BasicAlgorithm(
       List.fill(problem.dimensions)(1.0 / problem.dimensions)
     val pheromoneWeights =
       List.fill(problem.dimensions)(1.0 / problem.dimensions)
+
     val pheromoneTable = Pheromone.create(
       algorithmConfig.pheromoneConfig,
       problem.edges,
-      pheromoneWeights.size
+      problem.dimensions
     )
+
     val rnd = if (fixedRandom) Random(1337) else Random()
     val colony = BasicColony(
       algorithmConfig.alpha,
@@ -39,11 +41,13 @@ class BasicAlgorithm(
       heuristicWeights,
       pheromoneWeights
     )
+
     for (iteration <- 0 until algorithmConfig.iterations) {
       val solutions = colony.run()
       val iterationParetoFront = solutionRepo.addSolutions(iteration, solutions)
       colony.pheromoneUpdate(iterationParetoFront)
-      val minWeightedCost = solutions.map(_.evaluation.zip(heuristicWeights).map(_ * _).sum).min
+      val minWeightedCost =
+        solutions.map(_.evaluation.zip(heuristicWeights).map(_ * _).sum).min
       println(s"Step $iteration:$minWeightedCost")
       resultsWriter.println(s"$iteration,$minWeightedCost")
       if (iteration % 10 == 9) {
@@ -51,7 +55,9 @@ class BasicAlgorithm(
       }
     }
     val z = solutionRepo.solutionsIterator.flatMap(_.map(_.evaluation)).toVector
-    println(z.zip(getParetoFrontMin(z)(identity)).collect { case (v, true) => v })
+    println(
+      z.zip(getParetoFrontMin(z)(identity)).collect { case (v, true) => v }
+    )
     println(solutionRepo)
     solutionRepo
   }

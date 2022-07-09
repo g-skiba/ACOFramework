@@ -7,12 +7,12 @@ import scala.collection.mutable.Map as MMap
 
 //wiele macierzy feromonów nie ma sensu przy takiej implementacji updatu feromonów
 class BasicPheromoneTable(
-  edges: Seq[Edge],
-  val increment: Double,
-  val extinction: Double,
-  val pheromoneDimension: Int,
-  minValue: Double = 0.001,
-  maxValue: Double = 0.999
+    edges: Seq[Edge],
+    val increment: Double,
+    val extinction: Double,
+    val pheromoneDimension: Int,
+    minValue: Double,
+    maxValue: Double
 ) extends BasePheromoneTable {
   private val pheromone: MMap[Edge, Seq[Double]] =
     edges.map((_, Seq.fill(pheromoneDimension)(maxValue))).to(MMap)
@@ -25,7 +25,9 @@ class BasicPheromoneTable(
         .sliding(2)
         .map(x => Edge(x.head, x.last))
         .foreach(edge =>
-          pheromone.updateWith(edge)(pheromones => pheromones.map(_.map(_ + increment)))
+          pheromone.updateWith(edge)(pheromones =>
+            pheromones.map(_.map(_ + increment))
+          )
         )
     }
   }
@@ -35,7 +37,9 @@ class BasicPheromoneTable(
       val e = double * (1 - extinction)
       e.min(maxValue).max(minValue)
     }
-    pheromone.mapValuesInPlace((_, values) => values.map(extinctAndEnsureMinMax))
+    pheromone.mapValuesInPlace((_, values) =>
+      values.map(extinctAndEnsureMinMax)
+    )
   }
 
 }
