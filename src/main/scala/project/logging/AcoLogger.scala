@@ -20,7 +20,7 @@ object AcoLogger {
     protected def doPrint(msg: String): Unit
 
     protected def printLog(msg: String): Unit = {
-      val withRunId = s"[runId=$runId] $msg"
+      val withRunId = s"[id=$runId] $msg"
       doPrint(withRunId)
     }
 
@@ -44,7 +44,7 @@ object AcoLogger {
         iteration: Int,
         result: Seq[BaseSolution]
     ): Unit = {
-      printLog(s"Iteration: $iteration; Result: ${resultsString(result)}")
+      printLog(s"I: $iteration; R: ${resultsString(result)}")
     }
 
     override def globalBestResult(result: Seq[BaseSolution]): Unit = {
