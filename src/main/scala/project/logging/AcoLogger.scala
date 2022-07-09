@@ -52,11 +52,11 @@ object AcoLogger {
     }
   }
 
-  class StdOutAndFile(runId: String, resultsWriter: PrintWriter)
+  class StdOutAndFile(runId: String, writeToStdOut: Boolean, resultsWriter: PrintWriter)
       extends Basic(runId) {
 
     protected def doPrint(msg: String): Unit = {
-      println(msg)
+      if (writeToStdOut) println(msg)
       resultsWriter.println(msg)
     }
 
@@ -65,7 +65,7 @@ object AcoLogger {
     }
   }
 
-  class StdOutAndFileBuffering(runId: String, resultsWriter: PrintWriter)
+  class StdOutAndFileBuffering(runId: String, writeToStdOut: Boolean, resultsWriter: PrintWriter)
       extends Basic(runId) {
     private val sb = new StringBuilder()
 
@@ -76,7 +76,7 @@ object AcoLogger {
 
     override def close(): Unit = {
       val msg = sb.result()
-      println(msg)
+      if (writeToStdOut) println(msg)
       resultsWriter.println(msg)
       resultsWriter.close()
     }

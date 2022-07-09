@@ -45,6 +45,7 @@ object Main {
   val outConfFile = new File(outDirectory, "config.yaml")
 
   val enableLogsBuffering = true
+  val writeToStdOut = false
   val sumoCollectorUrl: Option[String] =
     None
 
@@ -77,9 +78,9 @@ object Main {
     val resultsWriter = new PrintWriter(outResultsFile)
     val fileLogger = {
       if (!enableLogsBuffering)
-        new AcoLogger.StdOutAndFile(runId, resultsWriter)
+        new AcoLogger.StdOutAndFile(runId, writeToStdOut, resultsWriter)
       else
-        new AcoLogger.StdOutAndFileBuffering(runId, resultsWriter)
+        new AcoLogger.StdOutAndFileBuffering(runId, writeToStdOut, resultsWriter)
     }
     sumoCollectorUrl match {
       case None => fileLogger
