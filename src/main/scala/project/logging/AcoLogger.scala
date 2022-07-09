@@ -82,8 +82,9 @@ object AcoLogger {
     }
   }
 
-  class SumoLogic(runId: String, collectorUrl: String) extends Basic(runId) {
+  class SumoLogic(runId: String, collectorUrl: String, metadata: Map[String, String]) extends Basic(runId) {
     private val sb = new StringBuilder()
+    private val headers = List(("X-Sumo-Fields", metadata.map { case (k, v) => s"$k=$v"}.mkString(",")))
 
     protected def doPrint(msg: String): Unit = {
       sb.append(msg)
@@ -91,7 +92,7 @@ object AcoLogger {
     }
 
     override def close(): Unit = {
-      requests.post(collectorUrl, data = sb.result())
+      requests.post(collectorUrl, data = sb.result(), headers = headers)
     }
   }
 
