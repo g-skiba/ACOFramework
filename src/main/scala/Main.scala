@@ -140,6 +140,133 @@ object Main {
           s"Your method $other is not implemented!"
         )
     }
+  }
+}
 
+object RunLoop {
+  def main(args: Array[String]): Unit = {
+    val problemType = "tsp"
+    val repeat = 10
+
+    //ProblemConfig
+    val problemInstances = List(
+      "mtsp/berlin52.tsp",
+      "mtsp/lust_kroA100.tsp",
+      "mtsp/tsp225.tsp",
+      "mtsp/a280mod.tsp",
+      "mtsp/pcb442.tsp",
+//      "mtsp/rat575.tsp"
+    )
+
+    //AlgorithmConfig
+    val antsNums = List(
+      20,
+      50,
+      100
+    )
+    val iterationsNums = List(
+      150
+    )
+    val alphas = List(
+      2.0,
+      3.0
+    )
+    val betas = List(
+      2.0,
+      3.0
+    )
+
+    //PheromoneConfig
+    val tpes = List(
+      PheromoneConfig.PheromoneType.Basic,
+      PheromoneConfig.PheromoneType.TwoDim
+    )
+    val dimensions = List(1)
+    val incrementsAndExtinctions = List(
+      (0.01, 0.01),
+      (0.05, 0.05),
+      (0.1, 0.1),
+    )
+    val minValues = List(0.001)
+    val maxValues = List(0.999)
+    val takenAntsToPheromoneUpdates = (for {
+      tpe <- tpes
+      antsNum <- antsNums
+    } yield {
+      val values = tpe match {
+        case PheromoneType.Basic =>
+          List(1, antsNum / 2, -1)
+//          List(1)
+        case PheromoneType.TwoDim =>
+          List(antsNum / 2, -1)
+//          List(-1)
+      }
+      (tpe, antsNum) -> values
+    }).toMap
+
+    //TwoDimPheromoneConfig
+    val twoDimSizes = List(
+      4,
+      10,
+      20
+    )
+    val getTypes = List(
+      TwoDimPheromoneConfig.GetType.ExponentialRandom,
+      TwoDimPheromoneConfig.GetType.PairingCombination,
+      TwoDimPheromoneConfig.GetType.WeightedCombination,
+    )
+    val updateTypes = List(
+      TwoDimPheromoneConfig.UpdateType.PartFromIndex,
+      TwoDimPheromoneConfig.UpdateType.PartFromEvaluation,
+    )
+
+    val ec: ExecutionContext = ExecutionContextHelper.fixed("worker", size = 12)
+    val futures = for {
+      problemInstance <- problemInstances
+      antsNum <- antsNums
+      iterations <- iterationsNums
+      alpha <- alphas
+      beta <- betas
+      phTpe <- tpes
+      phDimension <- dimensions
+      (phIncrement, phExtinction) <- incrementsAndExtinctions
+      phMinValue <- minValues
+      phMaxValue <- maxValues
+      takenAntsToPheromoneUpdate <- takenAntsToPheromoneUpdates(phTpe, antsNum)
+      twoDimConfig <- {
+        phTpe match {
+          case PheromoneConfig.PheromoneType.Basic => List(new TwoDimPheromoneConfig()) //irrelevant
+          case PheromoneConfig.PheromoneType.TwoDim =>
+            for {
+              size <- twoDimSizes
+              getType <- getTypes
+              updateType <- updateTypes
+            } yield {
+              new TwoDimPheromoneConfig(size, getType.toString, updateType.toString)
+            }
+        }
+      }
+    } yield {
+      val pheromoneConfig = PheromoneConfig(
+        phTpe.toString, phDimension, phIncrement, phExtinction, phMinValue, phMaxValue, takenAntsToPheromoneUpdate,
+        twoDimConfig
+      )
+      val algorithmConfig = AlgorithmConfig(antsNum, iterations, alpha, beta, pheromoneConfig)
+      val problemConfig = ProblemConfig(problemType, List(problemInstance).asJava, repeat, algorithmConfig)
+
+//      problemConfig
+      Future {
+        Try(Main.runConfiguration(problemConfig)).failed.foreach { e =>
+          println(problemConfig)
+          e.printStackTrace()
+        }
+      }(ec)
+    }
+
+//    println(futures.size)
+    {
+      import ExecutionContext.Implicits.global
+      Await.result(Future.sequence(futures), Duration.Inf)
+    }
   }
 }
