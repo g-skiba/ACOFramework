@@ -3,6 +3,7 @@ package project.algorithm
 import project.colony.{BaseColony, BasicColony}
 import project.config.AlgorithmConfig
 import project.config.PheromoneConfig.PheromoneType
+import project.logging.AcoLogger
 import project.pheromone.{BasicPheromoneTable, Pheromone}
 import project.problem.BaseProblem
 import project.repo.{
@@ -22,7 +23,7 @@ class SingleObjectiveSolver(
 ) extends BaseAlgorithm {
   val solutionRepo = new SingleObjectiveSolutionRepo()
 
-  override def run(resultsWriter: PrintWriter): BaseSolutionRepo = {
+  override def run(resultsWriter: AcoLogger): BaseSolutionRepo = {
     val heuristicWeights = List(1.0)
     val pheromoneWeights = List(1.0)
 
@@ -53,8 +54,10 @@ class SingleObjectiveSolver(
 
       val minCost =
         selectedSolution.evaluation.sum // for single objective it's the same as with .zip(heuristicWeights).map(_ * _)
-      println(s"$iteration:   $minCost")
-      resultsWriter.println(s"$iteration,$minCost")
+      resultsWriter.iterationResult(
+        iteration,
+        solutionRepo.solutionsForIteration(iteration)
+      )
 
       colony.pheromoneUpdate(
         solutions
@@ -64,7 +67,6 @@ class SingleObjectiveSolver(
           .take(takenAntsToPheromoneUpdate)
       )
     }
-    println(solutionRepo)
     solutionRepo
   }
 }

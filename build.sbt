@@ -24,6 +24,7 @@ version := "0.1"
 
 // https://mvnrepository.com/artifact/org.yaml/snakeyaml
 libraryDependencies += "org.yaml" % "snakeyaml" % "1.30"
+libraryDependencies += "com.lihaoyi" %% "requests" % "0.7.0"
 
 // Here, `libraryDependencies` is a set of dependencies, and by using `+=`,
 // we're adding the scala-parser-combinators dependency to the set of dependencies
