@@ -29,6 +29,7 @@ import java.util.concurrent.TimeUnit
 import scala.beans.BeanProperty
 import scala.io.Source
 import scala.jdk.CollectionConverters.*
+import collection.convert.ImplicitConversions.`iterable AsScalaIterable`
 
 object Main {
   def main(args: Array[String]): Unit = {
@@ -48,19 +49,21 @@ object Main {
       }
     }
 
-    def runAlgorithm(baseAlgorithm: BaseAlgorithm, repeat: Int): Unit = {
+    def runAlgorithm(baseAlgorithm: BaseAlgorithm, repeat: Int, fileName: String = "mtsp"): Unit = {
+      val outResultsFile = new File(Paths.get("logs", timestampStr, s"results_$fileName.csv").toUri)
+      val resultsWriter = new PrintWriter(outResultsFile)
       for(i <- 1 to repeat) {
-        val outResultsFile = new File(Paths.get("logs", timestampStr, s"results_$i.csv").toUri)
-        val resultsWriter = new PrintWriter(outResultsFile)
         try {
           val start = System.nanoTime()
           baseAlgorithm.run(resultsWriter)
           val end = System.nanoTime()
           println(s"Run took: ${TimeUnit.NANOSECONDS.toMillis(end - start)}ms")
+          resultsWriter.println(s"Run took: ${TimeUnit.NANOSECONDS.toMillis(end - start)}ms")
         } finally {
-          resultsWriter.close()
+          // resultsWriter.close()
         }
       }
+      resultsWriter.close()
     }
 
     val filename = "config.yaml"
@@ -70,10 +73,14 @@ object Main {
     val conf = yaml.load[ProblemConfig](input)
     conf.problemType match {
       case "tsp" =>
-        val tsp = TspReader.read(Source.fromResource(conf.problemFiles.get(0)))
-        val (reverseNameMap, tspProblem) = TspToProblem(tsp)
-        val algo = SingleObjectiveSolver(tspProblem, conf.algorithmConfig)
-        runAlgorithm(algo, conf.repeat)
+        for ((problemFile) <- conf.problemFiles)
+        {
+          var tsp = TspReader.read(Source.fromResource(problemFile))
+          var fileName = problemFile.split("//").apply(2)
+          var (reverseNameMap, tspProblem) = TspToProblem(tsp)
+          var algo = SingleObjectiveSolver(tspProblem, conf.algorithmConfig)
+          runAlgorithm(algo, conf.repeat, fileName)
+        }
       case "mtsp" =>
         val tsps = for {
           file <- conf.problemFiles.asScala
@@ -84,15 +91,18 @@ object Main {
         val algo = BasicAlgorithm(mtspProblem, conf.algorithmConfig)
         runAlgorithm(algo, conf.repeat)
       case "cvrp" =>
-        val vrp = VrpReader.read(Source.fromResource(conf.problemFiles.get(0)))
-        val (reverseNameMap, vrpProblem) = VrpToProblem(vrp)
-        val algo = SingleObjectiveSolver(vrpProblem, conf.algorithmConfig)
-        runAlgorithm(algo, conf.repeat)
+        for ((problemFile) <- conf.problemFiles)
+        {
+          var vrp = VrpReader.read(Source.fromResource(problemFile))
+          var fileName = problemFile.split("//").apply(2)
+          var (reverseNameMap, vrpProblem) = VrpToProblem(vrp)
+          var algo = SingleObjectiveSolver(vrpProblem, conf.algorithmConfig)
+          runAlgorithm(algo, conf.repeat, fileName)
+        }
       case _ =>
         throw NotImplementedError(
           s"Your method from $filename is not implemented!"
         )
     }
-
   }
 }

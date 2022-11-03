@@ -1,6 +1,86 @@
 problemType: cvrp
 problemFiles:
-  - cvrp//A//A-n32-k5.vrp
+    # - cvrp//A//A-n32-k5.vrp
+    # - cvrp//A//A-n33-k5.vrp
+    # - cvrp//A//A-n33-k6.vrp
+    # - cvrp//A//A-n34-k5.vrp
+    # - cvrp//A//A-n36-k5.vrp
+    # - cvrp//A//A-n37-k5.vrp
+    # - cvrp//A//A-n37-k6.vrp
+    # - cvrp//A//A-n38-k5.vrp
+    # - cvrp//A//A-n39-k5.vrp
+    # - cvrp//A//A-n39-k6.vrp
+    # - cvrp//A//A-n44-k6.vrp
+    # - cvrp//A//A-n45-k6.vrp
+    # - cvrp//A//A-n45-k7.vrp
+    # - cvrp//A//A-n46-k7.vrp
+    # - cvrp//A//A-n48-k7.vrp
+    # - cvrp//A//A-n53-k7.vrp
+    # - cvrp//A//A-n54-k7.vrp
+    # - cvrp//A//A-n55-k9.vrp
+    # - cvrp//A//A-n60-k9.vrp
+    # - cvrp//A//A-n61-k9.vrp
+    # - cvrp//A//A-n62-k8.vrp
+    # - cvrp//A//A-n63-k10.vrp
+    # - cvrp//A//A-n63-k9.vrp
+    # - cvrp//A//A-n64-k9.vrp
+    # - cvrp//A//A-n65-k9.vrp
+    # - cvrp//A//A-n69-k9.vrp
+    # - cvrp//A//A-n80-k10.vrp
+    # - cvrp//B//B-n31-k5.vrp
+    # - cvrp//B//B-n34-k5.vrp
+    # - cvrp//B//B-n35-k5.vrp
+    # - cvrp//B//B-n38-k6.vrp
+    # - cvrp//B//B-n39-k5.vrp
+    # - cvrp//B//B-n41-k6.vrp
+    # - cvrp//B//B-n43-k6.vrp
+    # - cvrp//B//B-n44-k7.vrp
+    # - cvrp//B//B-n45-k5.vrp
+    # - cvrp//B//B-n45-k6.vrp
+    # - cvrp//B//B-n50-k7.vrp
+    # - cvrp//B//B-n50-k8.vrp
+    # - cvrp//B//B-n51-k7.vrp
+    # - cvrp//B//B-n52-k7.vrp
+    # - cvrp//B//B-n56-k7.vrp
+    # - cvrp//B//B-n57-k7.vrp
+    # - cvrp//B//B-n57-k9.vrp
+    # - cvrp//B//B-n63-k10.vrp
+    # - cvrp//B//B-n64-k9.vrp
+    # - cvrp//B//B-n66-k9.vrp
+    # - cvrp//B//B-n67-k10.vrp
+    # - cvrp//B//B-n68-k9.vrp
+    # - cvrp//B//B-n78-k10.vrp
+    - cvrp//P//P-n16-k8.vrp
+    - cvrp//P//P-n19-k2.vrp
+    - cvrp//P//P-n20-k2.vrp
+    - cvrp//P//P-n21-k2.vrp
+    - cvrp//P//P-n22-k2.vrp
+    - cvrp//P//P-n22-k8.vrp
+    - cvrp//P//P-n23-k8.vrp
+    - cvrp//P//P-n40-k5.vrp
+    - cvrp//P//P-n45-k5.vrp
+    - cvrp//P//P-n50-k10.vrp
+    - cvrp//P//P-n50-k7.vrp
+    - cvrp//P//P-n50-k8.vrp
+    - cvrp//P//P-n51-k10.vrp
+    - cvrp//P//P-n55-k10.vrp
+    - cvrp//P//P-n55-k15.vrp
+    - cvrp//P//P-n55-k7.vrp
+    - cvrp//P//P-n55-k8.vrp
+    - cvrp//P//P-n60-k10.vrp
+    - cvrp//P//P-n60-k15.vrp
+    - cvrp//P//P-n65-k10.vrp
+    - cvrp//P//P-n70-k10.vrp
+    - cvrp//P//P-n76-k4.vrp
+    - cvrp//P//P-n76-k5.vrp
+    # - cvrp//E//E-n101-k14.vrp
+    # - cvrp//E//E-n22-k4.vrp
+    # - cvrp//E//E-n23-k3.vrp
+    # - cvrp//E//E-n30-k4.vrp
+    # - cvrp//E//E-n33-k4.vrp
+    # - cvrp//E//E-n76-k14.vrp
+    # - cvrp//E//E-n76-k7.vrp
+    # - cvrp//E//E-n76-k8.vrp
   # - mtsp//lust_kroA100.tsp
   # - mtsp//lust_kroB100.tsp
   # - mtsp//lust_euclidA100.tsp
@@ -8,12 +88,12 @@ problemFiles:
   # - mtsp//dimacs_15_a.tsp
   # - mtsp//dimacs_15_b.tsp
   # - mtsp//dimacs_15_c.tsp
-repeat: 1
+repeat: 10
 algorithmConfig:
-  antsNum: 1000
-  iterations: 10
-  alpha: 2.0
-  beta: 5.0
+  antsNum: 100
+  iterations: 5000
+  alpha: 1.0
+  beta: 1.0
   pheromoneConfig:
     tpe: Basic
     increment: 0.05

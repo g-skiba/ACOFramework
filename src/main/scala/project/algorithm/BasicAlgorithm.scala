@@ -53,6 +53,7 @@ class BasicAlgorithm(
     val z = solutionRepo.solutionsIterator.flatMap(_.map(_.evaluation)).toVector
     println(z.zip(getParetoFrontMin(z)(identity)).collect { case (v, true) => v })
     println(solutionRepo)
+    resultsWriter.println(solutionRepo)
     solutionRepo
   }
 }

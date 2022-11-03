@@ -56,8 +56,9 @@ class SingleObjectiveSolver(
       val selectedSolution = solutionRepo.addSolutions(iteration, solutions).head
 
       val minCost = selectedSolution.evaluation.sum // for single objective it's the same as with .zip(heuristicWeights).map(_ * _)
-      println(s"$iteration:   $minCost")
-      resultsWriter.println(s"$iteration,$minCost")
+
+      println(s"$iteration:   $minCost")      // printing/writing every single line
+      resultsWriter.println(s"$iteration,$minCost") 
 
       colony.pheromoneUpdate(
         solutions
@@ -65,7 +66,8 @@ class SingleObjectiveSolver(
           .take(takenAntsToPheromoneUpdate)
       )
     }
-    println(solutionRepo)
+    println(solutionRepo)   // printing/writing result
+    resultsWriter.println(solutionRepo)
     solutionRepo
   }
 }
