@@ -3,6 +3,7 @@ package project.algorithm
 import pareto.getParetoFrontMin
 import project.colony.{BaseColony, BasicColony}
 import project.config.AlgorithmConfig
+import project.logging.AcoLogger
 import project.pheromone.{BasicPheromoneTable, Pheromone}
 import project.problem.BaseProblem
 import project.repo.{BaseSolutionRepo, ParetoSolutionRepo}
@@ -18,16 +19,18 @@ class BasicAlgorithm(
 ) extends BaseAlgorithm {
   val solutionRepo = new ParetoSolutionRepo()
 
-  override def run(resultsWriter: PrintWriter): BaseSolutionRepo = {
+  override def run(resultsWriter: AcoLogger): BaseSolutionRepo = {
     val heuristicWeights =
       List.fill(problem.dimensions)(1.0 / problem.dimensions)
     val pheromoneWeights =
       List.fill(problem.dimensions)(1.0 / problem.dimensions)
+
     val pheromoneTable = Pheromone.create(
       algorithmConfig.pheromoneConfig,
       problem.edges,
-      pheromoneWeights.size
+      problem.dimensions
     )
+
     val rnd = if (fixedRandom) Random(1337) else Random()
     val colony = BasicColony(
       algorithmConfig.alpha,
@@ -39,21 +42,19 @@ class BasicAlgorithm(
       heuristicWeights,
       pheromoneWeights
     )
+
     for (iteration <- 0 until algorithmConfig.iterations) {
       val solutions = colony.run()
       val iterationParetoFront = solutionRepo.addSolutions(iteration, solutions)
       colony.pheromoneUpdate(iterationParetoFront)
-      val minWeightedCost = solutions.map(_.evaluation.zip(heuristicWeights).map(_ * _).sum).min
-      println(s"Step $iteration:$minWeightedCost")
-      resultsWriter.println(s"$iteration,$minWeightedCost")
-      if (iteration % 10 == 9) {
-        println(solutionRepo.solutionsForIteration(iteration).map(_.evaluation))
-      }
+
+      val minWeightedCost =
+        solutions.map(_.evaluation.zip(heuristicWeights).map(_ * _).sum).min
+      resultsWriter.iterationResult(
+        iteration,
+        solutionRepo.solutionsForIteration(iteration)
+      )
     }
-    val z = solutionRepo.solutionsIterator.flatMap(_.map(_.evaluation)).toVector
-    println(z.zip(getParetoFrontMin(z)(identity)).collect { case (v, true) => v })
-    println(solutionRepo)
-    resultsWriter.println(solutionRepo)
     solutionRepo
   }
 }

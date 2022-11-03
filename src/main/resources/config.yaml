@@ -1,3 +1,20 @@
+# tsp
+#problemType: tsp
+#problemFiles:
+#  - mtsp//lust_kroA100.tsp
+
+# mtsp
+#problemType: mtsp
+#problemFiles:
+#  - mtsp//lust_kroA100.tsp
+#  - mtsp//lust_kroB100.tsp
+  # - mtsp//lust_euclidA100.tsp
+  # - mtsp//lust_euclidB100.tsp
+  # - mtsp//dimacs_15_a.tsp
+  # - mtsp//dimacs_15_b.tsp
+  # - mtsp//dimacs_15_c.tsp
+
+# cvrp
 problemType: cvrp
 problemFiles:
     - cvrp//A//A-n32-k5.vrp
@@ -81,13 +98,8 @@ problemFiles:
     # - cvrp//E//E-n76-k14.vrp
     # - cvrp//E//E-n76-k7.vrp
     # - cvrp//E//E-n76-k8.vrp
-  # - mtsp//lust_kroA100.tsp
-  # - mtsp//lust_kroB100.tsp
-  # - mtsp//lust_euclidA100.tsp
-  # - mtsp//lust_euclidB100.tsp
-  # - mtsp//dimacs_15_a.tsp
-  # - mtsp//dimacs_15_b.tsp
-  # - mtsp//dimacs_15_c.tsp
+
+# algorithm
 repeat: 1
 algorithmConfig:
   antsNum: 100
@@ -98,3 +110,11 @@ algorithmConfig:
     tpe: Basic
     increment: 0.05
     extinction: 0.05
+    minValue: 0.001
+    maxValue: 0.999
+    pheromoneDimension: -1 # 0 or below means optimization targets count
+    takenAntsToPheromoneUpdate: -1 # 0 or below means all ants
+    twoDimConfig: # applicable only for TwoDim type
+      size: 10
+      getType: ExponentialRandom # options: ExponentialRandom, WeightedCombination, PairingCombination
+      updateType: PartFromEvaluation # options: PartFromEvaluation, PartFromIndex
