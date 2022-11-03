@@ -33,6 +33,7 @@ import scala.concurrent.duration.{Duration, DurationInt}
 import scala.concurrent.{Await, ExecutionContext, Future}
 import scala.io.Source
 import scala.jdk.CollectionConverters.*
+import collection.convert.ImplicitConversions.`iterable AsScalaIterable`
 import scala.util.{Random, Try}
 
 object Main {
@@ -92,9 +93,10 @@ object Main {
 
   def runAlgorithm(
     baseAlgorithm: BaseAlgorithm,
-    config: ProblemConfig
+    config: ProblemConfig,
+    fileName: String = "mtsp"
   ): Unit = {
-    val prefix = s"${config.problemType}_${new Date().getTime.toHexString}_${Random.alphanumeric.take(5).mkString}"
+    val prefix = s"${config.problemType}_${new Date().getTime.toHexString}_${Random.alphanumeric.take(5).mkString}_$fileName"
     for (i <- 1 to config.repeat) {
       val runId = s"${prefix}_$i"
       val logger = createLogger(runId, config.toMap)
@@ -117,10 +119,14 @@ object Main {
   def runConfiguration(conf: ProblemConfig): Unit = {
     conf.problemType match {
       case "tsp" =>
-        val tsp = TspReader.read(Source.fromResource(conf.problemFiles.get(0)))
-        val (reverseNameMap, tspProblem) = TspToProblem(tsp)
-        val algo = SingleObjectiveSolver(tspProblem, conf.algorithmConfig)
-        runAlgorithm(algo, conf)
+        for ((problemFile) <- conf.problemFiles)
+        {
+          var tsp = TspReader.read(Source.fromResource(problemFile))
+          var fileName = problemFile.split("//").apply(2)
+          var (reverseNameMap, tspProblem) = TspToProblem(tsp)
+          var algo = SingleObjectiveSolver(tspProblem, conf.algorithmConfig)
+          runAlgorithm(algo, conf, fileName)
+        }
       case "mtsp" =>
         val tsps = for {
           file <- conf.problemFiles.asScala
@@ -131,10 +137,14 @@ object Main {
         val algo = BasicAlgorithm(mtspProblem, conf.algorithmConfig)
         runAlgorithm(algo, conf)
       case "cvrp" =>
-        val vrp = VrpReader.read(Source.fromResource(conf.problemFiles.get(0)))
-        val (reverseNameMap, vrpProblem) = VrpToProblem(vrp)
-        val algo = SingleObjectiveSolver(vrpProblem, conf.algorithmConfig)
-        runAlgorithm(algo, conf)
+        for ((problemFile) <- conf.problemFiles)
+        {
+          var vrp = VrpReader.read(Source.fromResource(problemFile))
+          var fileName = problemFile.split("//").apply(2)
+          var (reverseNameMap, vrpProblem) = VrpToProblem(vrp)
+          var algo = SingleObjectiveSolver(vrpProblem, conf.algorithmConfig)
+          runAlgorithm(algo, conf, fileName)
+        }
       case other =>
         throw NotImplementedError(
           s"Your method $other is not implemented!"
