@@ -39,6 +39,7 @@ class TwoDimPheromone(
       case GetType.ExponentialRandom   => exponentialRandom(edge)
       case GetType.WeightedCombination => weightedCombination(edge)
       case GetType.PairingCombination  => pairingCombination(edge)
+      case GetType.ExpectedCombination => expectedCombination(edge)
     }
   }
 
@@ -89,6 +90,22 @@ class TwoDimPheromone(
     //additional adjustments?
     ensureMinMax(value).max(currentMin) :: Nil
 //    value :: Nil
+  }
+
+  private def expectedCombination(edge: Edge): List[Double] = {
+    val values = pheromone(edge)
+    val sum = values.sum
+    // calculate "expected score" of the edge (between 0 and 1)
+    val expectedValue = values.reverseIterator.zipWithIndex.map { case (v, ind) =>
+      val partScore = (ind + 0.5) / twoDimPheromoneSize 
+      v / sum * partScore // normalize v by sum and multiply by score 
+    }.sum
+    // adjust expected score between mean and max
+    val min = values.min
+    val max = values.max
+    val v = min + (max - min) * expectedValue
+    if (debug) println((expectedValue, v, values))
+    v :: Nil
   }
 
   override def pheromoneUpdate(solutions: Seq[BaseSolution]): Unit = {

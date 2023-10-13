@@ -32,7 +32,7 @@ case class TwoDimPheromoneConfig(
 
 object TwoDimPheromoneConfig {
   enum GetType {
-    case ExponentialRandom, WeightedCombination, PairingCombination
+    case ExponentialRandom, WeightedCombination, PairingCombination, ExpectedCombination
   }
   enum UpdateType {
     case PartFromEvaluation, PartFromIndex
