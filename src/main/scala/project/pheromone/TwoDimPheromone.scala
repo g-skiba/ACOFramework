@@ -22,6 +22,7 @@ class TwoDimPheromone(
     twoDimPheromoneSize: Int,
     getType: TwoDimPheromoneConfig.GetType,
     updateType: TwoDimPheromoneConfig.UpdateType,
+    rnd: Random,
     debug: Boolean = false
 ) extends BasePheromoneTable {
   require(
@@ -42,7 +43,7 @@ class TwoDimPheromone(
   }
 
   private def exponentialRandom(edge: Edge): List[Double] = {
-    val random = Random.nextInt((1 << twoDimPheromoneSize) - 1) + 1
+    val random = rnd.nextInt((1 << twoDimPheromoneSize) - 1) + 1
     val log = math.log(random) / math.log(2)
     val index = twoDimPheromoneSize - 1 - log.toInt
     val values = pheromone(edge)

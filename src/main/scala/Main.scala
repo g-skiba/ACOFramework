@@ -114,12 +114,12 @@ object Main {
     }
   }
 
-  def runConfiguration(conf: ProblemConfig): Unit = {
+  def runConfiguration(conf: ProblemConfig, seed: Option[Long] = None): Unit = {
     conf.problemType match {
       case "tsp" =>
         val tsp = TspReader.read(Source.fromResource(conf.problemFiles.get(0)))
         val (reverseNameMap, tspProblem) = TspToProblem(tsp)
-        val algo = SingleObjectiveSolver(tspProblem, conf.algorithmConfig)
+        val algo = SingleObjectiveSolver(tspProblem, conf.algorithmConfig, seed)
         runAlgorithm(algo, conf)
       case "mtsp" =>
         val tsps = for {
@@ -128,12 +128,12 @@ object Main {
           TspReader.read(Source.fromResource(file))
         }
         val (reverseNameMap, mtspProblem) = TspsToMtsp(tsps)
-        val algo = BasicAlgorithm(mtspProblem, conf.algorithmConfig)
+        val algo = BasicAlgorithm(mtspProblem, conf.algorithmConfig, seed)
         runAlgorithm(algo, conf)
       case "cvrp" =>
         val vrp = VrpReader.read(Source.fromResource(conf.problemFiles.get(0)))
         val (reverseNameMap, vrpProblem) = VrpToProblem(vrp)
-        val algo = SingleObjectiveSolver(vrpProblem, conf.algorithmConfig)
+        val algo = SingleObjectiveSolver(vrpProblem, conf.algorithmConfig, seed)
         runAlgorithm(algo, conf)
       case other =>
         throw NotImplementedError(

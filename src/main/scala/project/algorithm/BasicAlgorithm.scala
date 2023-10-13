@@ -15,7 +15,7 @@ import scala.util.Random
 class BasicAlgorithm(
     val problem: BaseProblem[_],
     algorithmConfig: AlgorithmConfig,
-    fixedRandom: Boolean = false
+    seed: Option[Long] = None
 ) extends BaseAlgorithm {
   val solutionRepo = new ParetoSolutionRepo()
 
@@ -24,14 +24,15 @@ class BasicAlgorithm(
       List.fill(problem.dimensions)(1.0 / problem.dimensions)
     val pheromoneWeights =
       List.fill(problem.dimensions)(1.0 / problem.dimensions)
+    val rnd = seed.map(Random(_)).getOrElse(Random())
 
     val pheromoneTable = Pheromone.create(
       algorithmConfig.pheromoneConfig,
       problem.edges,
-      problem.dimensions
+      problem.dimensions,
+      rnd
     )
 
-    val rnd = if (fixedRandom) Random(1337) else Random()
     val colony = BasicColony(
       algorithmConfig.alpha,
       algorithmConfig.beta,
