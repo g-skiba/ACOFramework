@@ -57,7 +57,8 @@ object AcoLogger {
    * NOTE: So order of calls is crucial, the last ones called causing output should be globalBestResult() and runTimeInfo()
    */
   class IraceSingleObjectiveStdOut(withTime: Boolean) extends AcoLogger {
-    def config(problemConfig: ProblemConfig): Unit = ()
+    def config(problemConfig: ProblemConfig): Unit =
+      println(problemConfig)
     def runTimeInfo(timeNano: Long): Unit = {
       if (withTime) {
         val seconds = TimeUnit.NANOSECONDS.toSeconds(timeNano)

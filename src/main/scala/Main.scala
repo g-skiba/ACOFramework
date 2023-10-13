@@ -40,9 +40,6 @@ object Main {
     .ofPattern("yyyy-MM-dd'T'HH-mm-ss")
     .withZone(ZoneId.systemDefault())
   val timestampStr: String = formatter.format(Instant.now())
-  val outDirectory = new File(Paths.get("logs", timestampStr).toUri)
-  outDirectory.mkdirs()
-  val outConfFile = new File(outDirectory, "config.yaml")
 
   val enableLogsBuffering = true
   val writeToStdOut = false
@@ -62,6 +59,9 @@ object Main {
   }
 
   def writeConfFile(config: String): Unit = {
+    val outDirectory = new File(Paths.get("logs", timestampStr).toUri)
+    outDirectory.mkdirs()
+    val outConfFile = new File(outDirectory, "config.yaml")
     outConfFile.createNewFile()
     val pw = new PrintWriter(outConfFile)
     try {
@@ -92,12 +92,13 @@ object Main {
 
   def runAlgorithm(
     baseAlgorithm: BaseAlgorithm,
-    config: ProblemConfig
+    config: ProblemConfig,
+    loggerOverride: Option[AcoLogger]
   ): Unit = {
     val prefix = s"${config.problemType}_${new Date().getTime.toHexString}_${Random.alphanumeric.take(5).mkString}"
     for (i <- 1 to config.repeat) {
       val runId = s"${prefix}_$i"
-      val logger = createLogger(runId, config.toMap)
+      val logger = loggerOverride.getOrElse(createLogger(runId, config.toMap))
       try {
         logger.config(config)
 
@@ -114,13 +115,13 @@ object Main {
     }
   }
 
-  def runConfiguration(conf: ProblemConfig, seed: Option[Long] = None): Unit = {
+  def runConfiguration(conf: ProblemConfig, seed: Option[Long] = None, loggerOverride: Option[AcoLogger] = None): Unit = {
     conf.problemType match {
       case "tsp" =>
         val tsp = TspReader.read(Source.fromResource(conf.problemFiles.get(0)))
         val (reverseNameMap, tspProblem) = TspToProblem(tsp)
         val algo = SingleObjectiveSolver(tspProblem, conf.algorithmConfig, seed)
-        runAlgorithm(algo, conf)
+        runAlgorithm(algo, conf, loggerOverride)
       case "mtsp" =>
         val tsps = for {
           file <- conf.problemFiles.asScala
@@ -129,12 +130,12 @@ object Main {
         }
         val (reverseNameMap, mtspProblem) = TspsToMtsp(tsps)
         val algo = BasicAlgorithm(mtspProblem, conf.algorithmConfig, seed)
-        runAlgorithm(algo, conf)
+        runAlgorithm(algo, conf, loggerOverride)
       case "cvrp" =>
         val vrp = VrpReader.read(Source.fromResource(conf.problemFiles.get(0)))
         val (reverseNameMap, vrpProblem) = VrpToProblem(vrp)
         val algo = SingleObjectiveSolver(vrpProblem, conf.algorithmConfig, seed)
-        runAlgorithm(algo, conf)
+        runAlgorithm(algo, conf, loggerOverride)
       case other =>
         throw NotImplementedError(
           s"Your method $other is not implemented!"
