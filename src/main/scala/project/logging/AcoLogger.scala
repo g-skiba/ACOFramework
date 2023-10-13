@@ -52,6 +52,27 @@ object AcoLogger {
     }
   }
 
+  /**
+   * By default irace script expects the result to be the last output line, or 'cost time' if time budget is used.
+   * NOTE: So order of calls is crucial, the last ones called causing output should be globalBestResult() and runTimeInfo()
+   */
+  class IraceSingleObjectiveStdOut(withTime: Boolean) extends AcoLogger {
+    def config(problemConfig: ProblemConfig): Unit = ()
+    def runTimeInfo(timeNano: Long): Unit = {
+      if (withTime) {
+        val seconds = TimeUnit.NANOSECONDS.toSeconds(timeNano)
+        println(s" $seconds") 
+      }
+    }
+    def iterationResult(iteration: Int, result: Seq[BaseSolution]): Unit =
+      println((iteration, result.head.evaluation.head))
+    def globalBestResult(result: Seq[BaseSolution]): Unit = {
+      if (withTime) print(result.head.evaluation.head)
+      else println(result.head.evaluation.head)
+    }
+    def close(): Unit = ()
+  }
+
   class StdOutAndFile(runId: String, writeToStdOut: Boolean, resultsWriter: PrintWriter)
       extends Basic(runId) {
 
