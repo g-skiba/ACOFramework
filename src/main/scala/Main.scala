@@ -271,3 +271,72 @@ object RunLoop {
     }
   }
 }
+
+object CmdMain {
+  import org.rogach.scallop._
+  class Config(arguments: Seq[String]) extends ScallopConf(arguments) {
+    val instance = opt[String]()
+    val seed = opt[Long]()
+    val withTimeBudget = opt[Boolean](default = Some(false))
+    val alpha = opt[Double]()
+    val beta = opt[Double]()
+    val antsNum = opt[Int](default = Some(100))
+    val iterations = opt[Int](default = Some(200))
+    val pheromoneType = choice(PheromoneType.values.map(_.toString))
+    val twoDimPhSize = opt[Int]()
+    val updateType = choice(TwoDimPheromoneConfig.UpdateType.values.map(_.toString))
+    val getType = choice(TwoDimPheromoneConfig.GetType.values.map(_.toString))
+    val pheromoneDelta = opt[Double]()
+    val updateAnts = opt[Int]()
+
+    verify()
+  }
+
+  def main(args: Array[String]): Unit = {
+    val conf = new Config(args)
+
+    val phDimension = 1 // stale
+    val phDelta = conf.pheromoneDelta()
+    val phIncrement = phDelta
+    val phExtinction = phDelta
+    val phMinValue = 0.001
+    val phMaxValue = 0.999
+    val takenAntsToPheromoneUpdate = conf.updateAnts()
+
+    val pheromoneConfig = PheromoneType.valueOf(conf.pheromoneType()) match
+      case PheromoneType.Basic =>
+        assert(conf.twoDimPhSize.isEmpty)
+        assert(conf.getType.isEmpty)
+        assert(conf.updateType.isEmpty)
+        PheromoneConfig(
+          conf.pheromoneType(), phDimension, phIncrement, phExtinction, phMinValue, phMaxValue,
+          takenAntsToPheromoneUpdate, new TwoDimPheromoneConfig()
+        )
+      case PheromoneType.TwoDim =>
+        val twoDimSize = conf.twoDimPhSize()
+        val getType = conf.getType()
+        val updateType = conf.updateType()
+        val twoDimConfig = TwoDimPheromoneConfig(twoDimSize, getType, updateType)
+        PheromoneConfig(
+          conf.pheromoneType(), phDimension, phIncrement, phExtinction, phMinValue, phMaxValue,
+          takenAntsToPheromoneUpdate, twoDimConfig
+        )
+
+    val problemType = "tsp"
+    val instance = conf.instance()
+    val problemInstance = s"mtsp/$instance.tsp"
+    val problemFiles = List(problemInstance).asJava
+    val repeat = 1
+
+    val antsNum = conf.antsNum()
+    val iterations = conf.iterations()
+    val alpha = conf.alpha()
+    val beta = conf.beta()
+    val algorithmConfig = AlgorithmConfig(antsNum, iterations, alpha, beta, pheromoneConfig)
+    val problemConfig = ProblemConfig(problemType, problemFiles, repeat, algorithmConfig)
+
+    val seed = conf.seed.toOption
+    val logger = new AcoLogger.IraceSingleObjectiveStdOut(conf.withTimeBudget())
+    Main.runConfiguration(problemConfig, seed, Some(logger))
+  }
+}
