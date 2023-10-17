@@ -29,13 +29,13 @@ class TwoDimPheromone(
     twoDimPheromoneSize % 2 == 0,
     "Temporary assumption for `getPheromone` based on pairing values starting from edges"
   )
-  private val cache: MMap[Edge, Seq[Double]] = MMap.empty
+  private val cache: MMap[Edge, Array[Double]] = MMap.empty
 
   val pheromone: MMap[Edge, IndexedSeq[Double]] =
     edges.map((_, IndexedSeq.fill(twoDimPheromoneSize)(maxValue))).to(MMap)
   private var currentMin = maxValue
 
-  override def getPheromone(edge: Edge): Seq[Double] = {
+  override def getPheromone(edge: Edge): Array[Double] = {
     getType match {
       case GetType.ExponentialRandom   => exponentialRandom(edge) //can't cache since it's randomized
       case GetType.WeightedCombination => cache.getOrElseUpdate(edge, weightedCombination(edge))
@@ -44,16 +44,16 @@ class TwoDimPheromone(
     }
   }
 
-  private def exponentialRandom(edge: Edge): List[Double] = {
+  private def exponentialRandom(edge: Edge): Array[Double] = {
     val random = rnd.nextInt((1 << twoDimPheromoneSize) - 1) + 1
     val log = math.log(random) / math.log(2)
     val index = twoDimPheromoneSize - 1 - log.toInt
     val values = pheromone(edge)
     if (debug) values(index)
-    values(index) :: Nil
+    Array(values(index))
   }
 
-  private def weightedCombination(edge: Edge): List[Double] = {
+  private def weightedCombination(edge: Edge): Array[Double] = {
     val weightedSum = false
     val values = pheromone(edge)
     //these values could be precalculated / cached (per iteration)
@@ -65,10 +65,10 @@ class TwoDimPheromone(
     }
     val value = if (weightedSum) weightedValues.sum else weightedValues.product
     if (debug) println((value, values))
-    value :: Nil
+    Array(value)
   }
 
-  private def pairingCombination(edge: Edge): List[Double] = {
+  private def pairingCombination(edge: Edge): Array[Double] = {
     val values = pheromone(edge)
     //these values could be precalculated / cached (per iteration)
     //pairing from outside to the center; within pairs calculate "final value" based on avg and diff
@@ -89,11 +89,11 @@ class TwoDimPheromone(
     if (debug) println((value, values))
 
     //additional adjustments?
-    ensureMinMax(value).max(currentMin) :: Nil
-//    value :: Nil
+    Array(ensureMinMax(value).max(currentMin))
+//    Array(value)
   }
 
-  private def expectedCombination(edge: Edge): List[Double] = {
+  private def expectedCombination(edge: Edge): Array[Double] = {
     val values = pheromone(edge)
     val sum = values.sum
     // calculate "expected score" of the edge (between 0 and 1)
@@ -106,7 +106,7 @@ class TwoDimPheromone(
     val max = values.max
     val v = min + (max - min) * expectedValue
     if (debug) println((expectedValue, v, values))
-    v :: Nil
+    Array(v)
   }
 
   override def pheromoneUpdate(solutions: Seq[BaseSolution]): Unit = {

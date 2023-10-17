@@ -14,10 +14,10 @@ class BasicPheromoneTable(
     minValue: Double,
     maxValue: Double
 ) extends BasePheromoneTable {
-  private val pheromone: MMap[Edge, Seq[Double]] =
-    edges.map((_, Seq.fill(pheromoneDimension)(maxValue))).to(MMap)
+  private val pheromone: MMap[Edge, Array[Double]] =
+    edges.map((_, Array.fill(pheromoneDimension)(maxValue))).to(MMap)
 
-  override def getPheromone(edge: Edge): Seq[Double] = pheromone(edge)
+  override def getPheromone(edge: Edge): Array[Double] = pheromone(edge)
 
   override def pheromoneUpdate(solutions: Seq[BaseSolution]): Unit = {
     solutions.foreach { solution =>

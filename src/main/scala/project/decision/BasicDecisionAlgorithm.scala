@@ -21,27 +21,31 @@ class BasicDecisionAlgorithm[T](
   def assessment(
       alpha: Double,
       beta: Double,
-      pheromoneWeights: Seq[Double],
-      heuristicWeights: Seq[Double]
+      pheromoneWeights: Array[Double],
+      heuristicWeights: Array[Double]
   )(edge: Edge): Double = {
-    @tailrec
-    def sumWeighted(acc: Double, a: Iterator[Double], b: Iterator[Double]): Double = {
-      if (a.hasNext && b.hasNext) {
-        sumWeighted(acc + a.next() * b.next(), a, b)
-      } else {
-        acc
+    def sumWeighted(a: Array[Double], b: Array[Double]): Double = {
+      @tailrec
+      def sumWeightedInd(acc: Double, ind1: Int, ind2: Int): Double = {
+        if (ind1 < a.length && ind2 < b.length) {
+          sumWeightedInd(acc + a(ind1) * b(ind2), ind1 + 1, ind2 + 1)
+        } else {
+          acc
+        }
       }
+
+      sumWeightedInd(0.0, 0, 0)
     }
 
-    val pheromone = sumWeighted(0.0, pheromoneTable.getPheromone(edge).iterator, pheromoneWeights.iterator)
-    val heuristic = sumWeighted(0.0, problem.getHeuristicValue(edge).iterator, heuristicWeights.iterator)
+    val pheromone = sumWeighted(pheromoneTable.getPheromone(edge), pheromoneWeights)
+    val heuristic = sumWeighted(problem.getHeuristicValue(edge), heuristicWeights)
     Math.pow(pheromone, alpha) * Math.pow(heuristic, beta)
   }
 
   override def decide(
     solution: SolutionUnderConstruction[T],
-    pheromoneWeights: Seq[Double],
-    heuristicWeights: Seq[Double]
+    pheromoneWeights: Array[Double],
+    heuristicWeights: Array[Double]
   ): Option[Node] = {
     val initializedAssessment = assessment(alpha, beta, pheromoneWeights, heuristicWeights)
     val possibleMoves = problem
@@ -51,10 +55,12 @@ class BasicDecisionAlgorithm[T](
       None
     } else {
       val edgesWithCost = possibleMoves
-        .map(Edge(solution.nodes.last, _))
-        .map(edge => (edge, initializedAssessment(edge)))
+        .map { node =>
+          val edge = Edge(solution.nodes.last, node)
+          (edge, initializedAssessment(edge))
+        }
 
-      val sumOfWeights = edgesWithCost.map(_._2).sum
+      val sumOfWeights = edgesWithCost.iterator.map(_._2).sum
       val selectedRandom = random.nextDouble() * sumOfWeights
 
       @scala.annotation.tailrec

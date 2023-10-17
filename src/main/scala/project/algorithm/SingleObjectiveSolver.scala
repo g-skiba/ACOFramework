@@ -24,8 +24,8 @@ class SingleObjectiveSolver(
   val solutionRepo = new SingleObjectiveSolutionRepo()
 
   override def run(resultsWriter: AcoLogger): BaseSolutionRepo = {
-    val heuristicWeights = List(1.0)
-    val pheromoneWeights = List(1.0)
+    val heuristicWeights = Array(1.0)
+    val pheromoneWeights = Array(1.0)
     val rnd = seed.map(Random(_)).getOrElse(Random())
 
     val pheromone = Pheromone.create(

@@ -11,13 +11,14 @@ class BasicAnt[T](
     startingNode: Node,
     problem: BaseProblem[T],
     decision: BaseDecisionAlgorithm[T],
-    val pheromoneWeights: Seq[Double],
-    val heuristicWeights: Seq[Double]
+    val pheromoneWeights: Array[Double],
+    val heuristicWeights: Array[Double]
 ) extends BaseAnt[T](
       startingNode,
       problem,
       decision
     ) {
+
   override def run(): BaseSolution = {
     var solution = problem.initSolution
 
