@@ -13,6 +13,7 @@ abstract class BaseProblem[T](
     val dimensions: Int,
     matrices: Seq[Map[Edge, Double]]
 ) {
+  protected val maxNodePlusOne = nodes.map(_.number).max + 1
 
   /** Function to evaluate solution into list of double
     */

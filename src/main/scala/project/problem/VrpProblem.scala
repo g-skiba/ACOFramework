@@ -20,7 +20,13 @@ class VrpProblem(
   private val allNodes = nodes.toSet
   private val sum = sumAllEdges()
   assert(allNodes.size == nodes.size)
-  private val heuristic = edges.iterator.map(e => (e, Array(1.0 / matrix(e)))).toMap
+  private val heuristic = {
+    val arr = Array.fill(maxNodePlusOne, maxNodePlusOne)(Array.empty[Double])
+    edges.foreach { e =>
+      arr(e.node1.number)(e.node2.number) = Array(1.0 / matrix(e))
+    }
+    arr
+  }
 
   def sumAllEdges(): Double = {
     var sum = 0.toDouble
@@ -89,6 +95,6 @@ class VrpProblem(
   }
 
   override def getHeuristicValue(edge: Edge): Array[Double] = {
-    heuristic(edge)
+    heuristic(edge.node1.number)(edge.node2.number)
   }
 }
