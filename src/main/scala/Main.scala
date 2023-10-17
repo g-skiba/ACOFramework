@@ -275,19 +275,18 @@ object RunLoop {
 object CmdMain {
   import org.rogach.scallop._
   class Config(arguments: Seq[String]) extends ScallopConf(arguments) {
-    val instance = opt[String]()
-    val seed = opt[Long]()
-    val withTimeBudget = opt[Boolean](default = Some(false))
-    val alpha = opt[Double]()
-    val beta = opt[Double]()
-    val antsNum = opt[Int](default = Some(100))
-    val iterations = opt[Int](default = Some(200))
-    val pheromoneType = choice(PheromoneType.values.map(_.toString))
-    val twoDimPhSize = opt[Int]()
-    val updateType = choice(TwoDimPheromoneConfig.UpdateType.values.map(_.toString))
-    val getType = choice(TwoDimPheromoneConfig.GetType.values.map(_.toString))
-    val pheromoneDelta = opt[Double]()
-    val updateAnts = opt[Int]()
+    val instance: ScallopOption[String] = opt[String]()
+    val seed: ScallopOption[Long] = opt[Long]()
+    val alpha: ScallopOption[Double] = opt[Double]()
+    val beta: ScallopOption[Double] = opt[Double]()
+    val antsNum: ScallopOption[Int] = opt[Int](default = Some(100))
+    val iterations: ScallopOption[Int] = opt[Int](default = Some(200))
+    val pheromoneType: ScallopOption[String] = choice(PheromoneType.values.map(_.toString))
+    val twoDimPhSize: ScallopOption[Int] = opt[Int]()
+    val updateType: ScallopOption[String] = choice(TwoDimPheromoneConfig.UpdateType.values.map(_.toString))
+    val getType: ScallopOption[String] = choice(TwoDimPheromoneConfig.GetType.values.map(_.toString))
+    val pheromoneDelta: ScallopOption[Double] = opt[Double]()
+    val updateAnts: ScallopOption[Int] = opt[Int]()
 
     verify()
   }
@@ -336,7 +335,7 @@ object CmdMain {
     val problemConfig = ProblemConfig(problemType, problemFiles, repeat, algorithmConfig)
 
     val seed = conf.seed.toOption
-    val logger = new AcoLogger.IraceSingleObjectiveStdOut(conf.withTimeBudget())
+    val logger = new AcoLogger.IraceSingleObjectiveStdOut
     Main.runConfiguration(problemConfig, seed, Some(logger))
   }
 }
