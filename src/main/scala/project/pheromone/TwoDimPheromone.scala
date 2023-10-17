@@ -29,17 +29,18 @@ class TwoDimPheromone(
     twoDimPheromoneSize % 2 == 0,
     "Temporary assumption for `getPheromone` based on pairing values starting from edges"
   )
+  private val cache: MMap[Edge, Seq[Double]] = MMap.empty
 
   val pheromone: MMap[Edge, IndexedSeq[Double]] =
     edges.map((_, IndexedSeq.fill(twoDimPheromoneSize)(maxValue))).to(MMap)
   private var currentMin = maxValue
 
-  override def getPheromone(edge: Edge): List[Double] = {
+  override def getPheromone(edge: Edge): Seq[Double] = {
     getType match {
-      case GetType.ExponentialRandom   => exponentialRandom(edge)
-      case GetType.WeightedCombination => weightedCombination(edge)
-      case GetType.PairingCombination  => pairingCombination(edge)
-      case GetType.ExpectedCombination => expectedCombination(edge)
+      case GetType.ExponentialRandom   => exponentialRandom(edge) //can't cache since it's randomized
+      case GetType.WeightedCombination => cache.getOrElseUpdate(edge, weightedCombination(edge))
+      case GetType.PairingCombination  => cache.getOrElseUpdate(edge, pairingCombination(edge))
+      case GetType.ExpectedCombination => cache.getOrElseUpdate(edge, expectedCombination(edge))
     }
   }
 
@@ -109,6 +110,7 @@ class TwoDimPheromone(
   }
 
   override def pheromoneUpdate(solutions: Seq[BaseSolution]): Unit = {
+    cache.clear()
     val minCost = solutions.iterator.map(_.evaluation.head).min
     val maxCost = solutions.iterator.map(_.evaluation.head).max
     val partDiff = (maxCost - minCost) / twoDimPheromoneSize
