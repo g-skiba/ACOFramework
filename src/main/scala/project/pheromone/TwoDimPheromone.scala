@@ -5,6 +5,7 @@ import project.config.TwoDimPheromoneConfig.{GetType, UpdateType}
 import project.graph.Edge
 import project.solution.BaseSolution
 
+import scala.annotation.tailrec
 import scala.collection.mutable.Map as MMap
 import scala.util.Random
 
@@ -37,20 +38,34 @@ class TwoDimPheromone(
 
   override def getPheromone(edge: Edge): Array[Double] = {
     getType match {
-      case GetType.ExponentialRandom   => exponentialRandom(edge) //can't cache since it's randomized
+      case GetType.ExponentialRandom => exponentialRandom(edge, maxUpTo = false) //can't cache since it's randomized
+      case GetType.ExponentialRandomMax => exponentialRandom(edge, maxUpTo = true) //can't cache since it's randomized
       case GetType.WeightedCombination => cache.getOrElseUpdate(edge, weightedCombination(edge))
-      case GetType.PairingCombination  => cache.getOrElseUpdate(edge, pairingCombination(edge))
+      case GetType.PairingCombination => cache.getOrElseUpdate(edge, pairingCombination(edge))
       case GetType.ExpectedCombination => cache.getOrElseUpdate(edge, expectedCombination(edge))
     }
   }
 
-  private def exponentialRandom(edge: Edge): Array[Double] = {
+  private def exponentialRandom(edge: Edge, maxUpTo: Boolean): Array[Double] = {
     val random = rnd.nextInt((1 << twoDimPheromoneSize) - 1) + 1
     val log = math.log(random) / math.log(2)
     val index = twoDimPheromoneSize - 1 - log.toInt
     val values = pheromone(edge)
-    if (debug) values(index)
-    Array(values(index))
+
+    val res = if (maxUpTo) {
+      @tailrec
+      def maxUpToInd(curMax: Double, curInd: Int): Double = {
+        if (curInd > index) curMax
+        else maxUpToInd(values(curInd).max(curMax), curInd + 1)
+      }
+
+      val max = maxUpToInd(0.0, 0)
+      max
+    } else {
+      values(index)
+    }
+    if (debug) println(res)
+    Array(res)
   }
 
   private def weightedCombination(edge: Edge): Array[Double] = {
