@@ -21,9 +21,9 @@ class BasicAlgorithm(
 
   override def run(resultsWriter: AcoLogger): BaseSolutionRepo = {
     val heuristicWeights =
-      List.fill(problem.dimensions)(1.0 / problem.dimensions)
+      Array.fill(problem.dimensions)(1.0 / problem.dimensions)
     val pheromoneWeights =
-      List.fill(problem.dimensions)(1.0 / problem.dimensions)
+      Array.fill(problem.dimensions)(1.0 / problem.dimensions)
     val rnd = seed.map(Random(_)).getOrElse(Random())
 
     val pheromoneTable = Pheromone.create(
