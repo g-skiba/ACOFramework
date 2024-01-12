@@ -96,15 +96,15 @@ class TwoDimPheromone(
       if (debug) println(v)
 
       //alternatives
-//      ensureMinMax(v)
-//      if (pos >= neg) 1.0 else 0.0
+//      ensureMinMax(v) //seems worse?
+//      if (pos >= neg) 1.0 else 0.0 //too simple? ;)
       v
     }.sum / (twoDimPheromoneSize / 2)
 
     if (debug) println((value, values))
 
     //additional adjustments?
-    Array(ensureMinMax(value).max(currentMin))
+    Array(ensureMinMax(value, minV = currentMin))
 //    Array(value)
   }
 
@@ -116,7 +116,7 @@ class TwoDimPheromone(
       val partScore = (ind + 0.5) / twoDimPheromoneSize 
       v / sum * partScore // normalize v by sum and multiply by score 
     }.sum
-    // adjust expected score between mean and max
+    // adjust expected score between min and max
     val min = values.min
     val max = values.max
     val v = min + (max - min) * expectedValue
@@ -126,6 +126,7 @@ class TwoDimPheromone(
 
   override def pheromoneUpdate(solutions: Seq[BaseSolution]): Unit = {
     cache.clear()
+    //min would be the first and max would be the last?!
     val minCost = solutions.iterator.map(_.evaluation.head).min
     val maxCost = solutions.iterator.map(_.evaluation.head).max
     val partDiff = (maxCost - minCost) / twoDimPheromoneSize
@@ -182,8 +183,8 @@ class TwoDimPheromone(
       }
   }
 
-  private def ensureMinMax(double: Double): Double = {
-    double.min(maxValue).max(minValue)
+  private def ensureMinMax(double: Double, maxV: Double = maxValue, minV: Double = minValue): Double = {
+    double.min(maxV).max(minV)
   }
 
   override def afterUpdatesAction(): Unit = {
