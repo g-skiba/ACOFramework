@@ -23,7 +23,7 @@ import project.logging.AcoLogger
 
 import java.io.{File, FileInputStream, PrintWriter}
 import java.nio.charset.StandardCharsets
-import java.nio.file.Paths
+import java.nio.file.{Files, Paths}
 import java.time.format.DateTimeFormatter
 import java.time.{Instant, ZoneId}
 import java.util.Date
@@ -41,18 +41,16 @@ object Main {
     .withZone(ZoneId.systemDefault())
   val timestampStr: String = formatter.format(Instant.now())
 
-  val enableLogsBuffering = true
-  val writeToStdOut = false
+  val enableLogsBuffering = false
+  val writeToStdOut = true
+  val writeConfigurationFile = false
   val sumoCollectorUrl: Option[String] =
     None
 
   def main(args: Array[String]): Unit = {
     val filename = "config.yaml"
-    val input = new String(
-      getClass.getResourceAsStream(filename).readAllBytes,
-      StandardCharsets.UTF_8
-    )
-    writeConfFile(input)
+    val input = new String(Files.readAllBytes(Paths.get(getClass.getResource(filename).toURI)))
+    if (writeConfigurationFile) writeConfFile(input)
     val yaml = new Yaml(new Constructor(classOf[ProblemConfig]))
     val conf = yaml.load[ProblemConfig](input)
     runConfiguration(conf)
@@ -72,16 +70,15 @@ object Main {
   }
 
   def createLogger(runId: String, metadata: Map[String, String]): AcoLogger = {
-    val outResultsFile = new File(
-      Paths.get("logs", timestampStr, s"results_$runId.csv").toUri
-    )
-    val resultsWriter = new PrintWriter(outResultsFile)
-    val fileLogger = {
-      if (!enableLogsBuffering)
-        new AcoLogger.StdOutAndFile(runId, writeToStdOut, resultsWriter)
-      else
-        new AcoLogger.StdOutAndFileBuffering(runId, writeToStdOut, resultsWriter)
+    // can be used for loggers writing to files
+    def createFileAndWriter(): PrintWriter = {
+      val outResultsFile = new File(
+        Paths.get("logs", timestampStr, s"results_$runId.csv").toUri
+      )
+      new PrintWriter(outResultsFile)
     }
+
+    val fileLogger = new AcoLogger.StdOut(runId)
     sumoCollectorUrl match {
       case None => fileLogger
       case Some(sumoCollectorUrl) =>
@@ -153,9 +150,9 @@ object RunLoop {
     val problemInstances = List(
       "mtsp/berlin52.tsp",
       "mtsp/lust_kroA100.tsp",
-      "mtsp/tsp225.tsp",
-      "mtsp/a280mod.tsp",
-      "mtsp/pcb442.tsp",
+//      "mtsp/tsp225.tsp",
+//      "mtsp/a280mod.tsp",
+//      "mtsp/pcb442.tsp",
 //      "mtsp/rat575.tsp"
     )
 
@@ -166,7 +163,7 @@ object RunLoop {
       100
     )
     val iterationsNums = List(
-      150
+      200
     )
     val alphas = List(
       2.0,
@@ -321,9 +318,20 @@ object CmdMain {
           takenAntsToPheromoneUpdate, twoDimConfig
         )
 
-    val problemType = "tsp"
+    val problemType = "cvrp" // or "tsp" for now
     val instance = conf.instance()
-    val problemInstance = s"mtsp/$instance.tsp"
+    val folder = problemType match {
+      case "tsp" => "mtsp"
+      case "cvrp" if instance.startsWith("A")=> "cvrp/A"
+      case "cvrp" if instance.startsWith("B")=> "cvrp/B"
+      case "cvrp" => "cvrp/dim100plus"
+      case _ => throw new IllegalArgumentException("Invalid problem type and/or instance")
+    }
+    val extension = problemType match {
+      case "tsp" => "tsp"
+      case "cvrp" => "vrp"
+    }
+    val problemInstance = s"$folder/$instance.$extension"
     val problemFiles = List(problemInstance).asJava
     val repeat = 1
 
