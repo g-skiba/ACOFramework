@@ -14,3 +14,4 @@
 ## real < 4 & mode %in% c("x2", "x3")
 
 # twoDimPhSize %% 2 == 1
+# updateAnts < twDimPhSize ?

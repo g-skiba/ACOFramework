@@ -14,8 +14,119 @@
 ## param1 param2 mode   real mutation
 ## 5        NA    "x2"   2.0   "low"
 
-alpha   beta    pheromoneDelta  updateAnts  pheromoneType
-2.0     3.0     0.05            1           Basic
+##### TSP
+
+#alpha   beta    pheromoneDelta  updateAnts  pheromoneType
+# 2.0     3.0     0.05            1           Basic
+
+#multiInstanceBasic
+#1.3444 4.4230         0.0988          5         Basic
+#1.2564 4.1283         0.0952          5         Basic
+#1.2060 4.1070         0.0951          4         Basic
+#1.3113 4.1663         0.0945          5         Basic
+
+#multiInstanceBasicSingle
+#0.8036 4.1805         0.0523          1         Basic
+#0.7532 4.5870         0.0594          1         Basic
+#0.9133 4.1969         0.0533          1         Basic
 
 # alpha   beta    pheromoneDelta  updateAnts  pheromoneType   twoDimPhSize  updateType          getType
 # 2.0     3.0     0.05            50           TwoDim          20            PartFromEvaluation  ExponentialRandom
+
+# Expected
+# 0.8264 4.8468         0.0705          6        TwoDim           14 PartFromEvaluation ExpectedCombination
+# 0.9495 4.6785         0.0689          7        TwoDim           14 PartFromEvaluation ExpectedCombination
+# 1.0260 4.6789         0.0720          8        TwoDim           14 PartFromEvaluation ExpectedCombination
+# 1.0026 4.6214         0.0702         10        TwoDim           14 PartFromEvaluation ExpectedCombination
+
+# ExpRnd
+# 0.9391 4.4132         0.0643          2        TwoDim            2 PartFromEvaluation ExponentialRandom
+# 0.9166 4.2869         0.0632          3        TwoDim            2 PartFromEvaluation ExponentialRandom
+# 0.8954 4.6622         0.0595          3        TwoDim            2 PartFromEvaluation ExponentialRandom
+# 0.8154 4.3772         0.0641          3        TwoDim            2 PartFromEvaluation ExponentialRandom
+
+# ExpRndMax
+# 0.7453 4.3232         0.0991         29        TwoDim           20 PartFromEvaluation ExponentialRandomMax
+# 0.8889 4.9166         0.0916         37        TwoDim           18 PartFromEvaluation ExponentialRandomMax
+# 0.7715 4.2824         0.0923         34        TwoDim           20      PartFromIndex ExponentialRandomMax
+# 0.8273 4.7321         0.0943         31        TwoDim           18      PartFromIndex ExponentialRandomMax
+
+# Pairing
+# 0.7726 4.9294         0.0929          8        TwoDim           10 PartFromIndex PairingCombination
+# 0.6784 4.8238         0.0892          9        TwoDim           10 PartFromIndex PairingCombination
+# 0.7189 4.9057         0.0912         10        TwoDim           10 PartFromIndex PairingCombination
+# 0.7389 4.9555         0.0926          5        TwoDim           10 PartFromIndex PairingCombination
+
+# Weighted
+# 0.7078 4.6913         0.0580          2        TwoDim            8 PartFromEvaluation WeightedCombination
+# 0.7240 4.8980         0.0600          1        TwoDim            8 PartFromEvaluation WeightedCombination
+# 0.8811 4.8958         0.0561          2        TwoDim            8 PartFromEvaluation WeightedCombination
+# 0.8285 4.7067         0.0573          2        TwoDim            8 PartFromEvaluation WeightedCombination
+
+# TwoDimAll
+# 0.9285 4.9715         0.0996         15        TwoDim           14 PartFromEvaluation ExponentialRandom
+# 0.9342 4.7504         0.0997         18        TwoDim           14 PartFromEvaluation ExponentialRandom
+# 0.7324 4.9508         0.0988          8        TwoDim            6 PartFromEvaluation ExponentialRandom
+# 0.9034 4.6036         0.0970         32        TwoDim           14 PartFromEvaluation ExponentialRandom
+
+##### CVRP
+
+#alpha   beta    pheromoneDelta  updateAnts  pheromoneType
+# 2.0     3.0     0.05            1           Basic
+
+#multiInstanceCvrpBasic
+#1.2545 2.9378         0.0767          2         Basic
+
+#multiInstanceCvrpBasicSingle_withRes
+#0.936 2.5971         0.0885          1         Basic
+
+#alpha   beta    pheromoneDelta  updateAnts  pheromoneType   twoDimPhSize  updateType          getType
+# 2.0     3.0     0.05            50           TwoDim          20            PartFromEvaluation  ExponentialRandom
+
+#multiInstanceCvrpPairing
+#1.9487  3.8495         0.0427         71        TwoDim           20 PartFromEvaluation  PairingCombination
+
+#multiInstanceCvrpExpRnd
+#3.6585 4.6101         0.0536          6        TwoDim           12 PartFromEvaluation ExponentialRandom
+
+#multiInstanceCvrpExpRndMax
+#1.2173 2.0508         0.0720         11        TwoDim           10 PartFromEvaluation ExponentialRandomMax
+
+#multiInstanceCvrpWeighted
+#0.6464 1.5854         0.0899         19        TwoDim            4 PartFromEvaluation WeightedCombination
+
+#multiInstanceCvrpExpected_withRes
+#1.6199 1.4116         0.0878         19        TwoDim           16 PartFromEvaluation ExpectedCombination
+
+#multiInstanceCvrpTwoDimAll_withRes
+#4.6954 4.8023         0.0683         11        TwoDim           20 PartFromEvaluation ExponentialRandom
+
+#### CVRP
+
+#alpha   beta    pheromoneDelta  updateAnts  pheromoneType
+
+#basic -> basicSingle
+#1.1457 2.564         0.0834          1         Basic
+
+#basicSingle
+#0.9957 3.5957         0.0859          1         Basic
+
+#alpha   beta    pheromoneDelta  updateAnts  pheromoneType   twoDimPhSize  updateType          getType
+
+#expected
+#1.1924 3.1466         0.0804          2        TwoDim           20 PartFromEvaluation ExpectedCombination
+
+#expRnd
+#2.2521 2.7513         0.0633         36        TwoDim           18 PartFromEvaluation ExponentialRandom
+
+#expRndMax
+#1.0863 4.1444         0.0978         38        TwoDim           10 PartFromEvaluation ExponentialRandomMax
+
+#pairing
+#1.0858 3.6955         0.0613         57        TwoDim           12 PartFromEvaluation PairingCombination
+
+#weighted
+#0.4803 4.7727         0.0738         30        TwoDim           12 PartFromEvaluation WeightedCombination
+
+#twoDimAll
+#1.3649 4.7456         0.0566         24        TwoDim            8 PartFromEvaluation PairingCombination

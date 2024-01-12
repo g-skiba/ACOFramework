@@ -1,0 +1,419 @@
+## This is an example of specifying a list of instances.
+
+# Each line is an instance relative to trainInstancesDir/testInstancesdir
+# unless set to "" (see scenario.txt.tmpl) and an optional sequence of
+# instance-specific parameters that will be passed to target-runner when
+# invoked on that instance.
+
+# Empty lines and comments are ignored.
+
+# 100/100-1_100-2.tsp --time 1
+# 100/100-1_100-3.tsp --time 2
+# 100/100-1_100-4.tsp --time 3
+
+# berlin52
+# lust_kroA100
+# kroA150
+# kroA150
+# kroA150
+# kroA150
+# kroA150
+# kroA150
+# kroA150
+# kroA150
+# kroA150
+# kroA150
+# kroA150
+# kroA150
+# kroA150
+# kroA150
+# kroA150
+# kroA150
+# kroA150
+# kroA150
+# kroA150
+# kroA150
+# kroB100
+# kroB100
+# kroB100
+# kroB100
+# kroB100
+# kroB100
+# kroB100
+# kroB100
+# kroB100
+# kroB100
+# kroB100
+# kroB100
+# kroB100
+# kroB100
+# kroB100
+# kroB100
+# kroB100
+# kroB100
+# kroB100
+# kroB100
+# kroD100
+# kroD100
+# kroD100
+# kroD100
+# kroD100
+# kroD100
+# kroD100
+# kroD100
+# kroD100
+# kroD100
+# kroD100
+# kroD100
+# kroD100
+# kroD100
+# kroD100
+# kroD100
+# kroD100
+# kroD100
+# kroD100
+# kroD100
+# kroE100
+# kroE100
+# kroE100
+# kroE100
+# kroE100
+# kroE100
+# kroE100
+# kroE100
+# kroE100
+# kroE100
+# kroE100
+# kroE100
+# kroE100
+# kroE100
+# kroE100
+# kroE100
+# kroE100
+# kroE100
+# kroE100
+# kroE100
+# pr107
+# pr107
+# pr107
+# pr107
+# pr107
+# pr107
+# pr107
+# pr107
+# pr107
+# pr107
+# pr107
+# pr107
+# pr107
+# pr107
+# pr107
+# pr107
+# pr107
+# pr107
+# pr107
+# pr107
+# pr136
+# pr136
+# pr136
+# pr136
+# pr136
+# pr136
+# pr136
+# pr136
+# pr136
+# pr136
+# pr136
+# pr136
+# pr136
+# pr136
+# pr136
+# pr136
+# pr136
+# pr136
+# pr136
+# pr136
+# pr152
+# pr152
+# pr152
+# pr152
+# pr152
+# pr152
+# pr152
+# pr152
+# pr152
+# pr152
+# pr152
+# pr152
+# pr152
+# pr152
+# pr152
+# pr152
+# pr152
+# pr152
+# pr152
+# pr152
+
+
+
+# A-n69-k9
+# A-n69-k9
+# A-n69-k9
+# A-n69-k9
+# A-n69-k9
+# A-n69-k9
+# A-n69-k9
+# A-n69-k9
+# A-n69-k9
+# A-n69-k9
+# A-n69-k9
+# A-n69-k9
+# A-n69-k9
+# A-n69-k9
+# A-n69-k9
+# A-n69-k9
+# A-n69-k9
+# A-n69-k9
+# A-n69-k9
+# A-n69-k9
+# A-n63-k10
+# A-n63-k10
+# A-n63-k10
+# A-n63-k10
+# A-n63-k10
+# A-n63-k10
+# A-n63-k10
+# A-n63-k10
+# A-n63-k10
+# A-n63-k10
+# A-n63-k10
+# A-n63-k10
+# A-n63-k10
+# A-n63-k10
+# A-n63-k10
+# A-n63-k10
+# A-n63-k10
+# A-n63-k10
+# A-n63-k10
+# A-n63-k10
+# A-n63-k9
+# A-n63-k9
+# A-n63-k9
+# A-n63-k9
+# A-n63-k9
+# A-n63-k9
+# A-n63-k9
+# A-n63-k9
+# A-n63-k9
+# A-n63-k9
+# A-n63-k9
+# A-n63-k9
+# A-n63-k9
+# A-n63-k9
+# A-n63-k9
+# A-n63-k9
+# A-n63-k9
+# A-n63-k9
+# A-n63-k9
+# A-n63-k9
+# A-n54-k7
+# A-n54-k7
+# A-n54-k7
+# A-n54-k7
+# A-n54-k7
+# A-n54-k7
+# A-n54-k7
+# A-n54-k7
+# A-n54-k7
+# A-n54-k7
+# A-n54-k7
+# A-n54-k7
+# A-n54-k7
+# A-n54-k7
+# A-n54-k7
+# A-n54-k7
+# A-n54-k7
+# A-n54-k7
+# A-n54-k7
+# A-n54-k7
+# B-n78-k10
+# B-n78-k10
+# B-n78-k10
+# B-n78-k10
+# B-n78-k10
+# B-n78-k10
+# B-n78-k10
+# B-n78-k10
+# B-n78-k10
+# B-n78-k10
+# B-n78-k10
+# B-n78-k10
+# B-n78-k10
+# B-n78-k10
+# B-n78-k10
+# B-n78-k10
+# B-n78-k10
+# B-n78-k10
+# B-n78-k10
+# B-n78-k10
+# B-n66-k9
+# B-n66-k9
+# B-n66-k9
+# B-n66-k9
+# B-n66-k9
+# B-n66-k9
+# B-n66-k9
+# B-n66-k9
+# B-n66-k9
+# B-n66-k9
+# B-n66-k9
+# B-n66-k9
+# B-n66-k9
+# B-n66-k9
+# B-n66-k9
+# B-n66-k9
+# B-n66-k9
+# B-n66-k9
+# B-n66-k9
+# B-n66-k9
+# B-n56-k7
+# B-n56-k7
+# B-n56-k7
+# B-n56-k7
+# B-n56-k7
+# B-n56-k7
+# B-n56-k7
+# B-n56-k7
+# B-n56-k7
+# B-n56-k7
+# B-n56-k7
+# B-n56-k7
+# B-n56-k7
+# B-n56-k7
+# B-n56-k7
+# B-n56-k7
+# B-n56-k7
+# B-n56-k7
+# B-n56-k7
+# B-n56-k7
+
+tai150c
+tai150c
+tai150c
+tai150c
+tai150c
+tai150c
+tai150c
+tai150c
+tai150c
+tai150c
+tai150c
+tai150c
+tai150c
+tai150c
+tai150c
+tai150c
+tai150c
+tai150c
+tai150c
+tai150c
+tai150a
+tai150a
+tai150a
+tai150a
+tai150a
+tai150a
+tai150a
+tai150a
+tai150a
+tai150a
+tai150a
+tai150a
+tai150a
+tai150a
+tai150a
+tai150a
+tai150a
+tai150a
+tai150a
+tai150a
+CMT9
+CMT9
+CMT9
+CMT9
+CMT9
+CMT9
+CMT9
+CMT9
+CMT9
+CMT9
+CMT9
+CMT9
+CMT9
+CMT9
+CMT9
+CMT9
+CMT9
+CMT9
+CMT9
+CMT9
+M-n151-k12
+M-n151-k12
+M-n151-k12
+M-n151-k12
+M-n151-k12
+M-n151-k12
+M-n151-k12
+M-n151-k12
+M-n151-k12
+M-n151-k12
+M-n151-k12
+M-n151-k12
+M-n151-k12
+M-n151-k12
+M-n151-k12
+M-n151-k12
+M-n151-k12
+M-n151-k12
+M-n151-k12
+M-n151-k12
+CMT11
+CMT11
+CMT11
+CMT11
+CMT11
+CMT11
+CMT11
+CMT11
+CMT11
+CMT11
+CMT11
+CMT11
+CMT11
+CMT11
+CMT11
+CMT11
+CMT11
+CMT11
+CMT11
+CMT11
+P-n101-k4
+P-n101-k4
+P-n101-k4
+P-n101-k4
+P-n101-k4
+P-n101-k4
+P-n101-k4
+P-n101-k4
+P-n101-k4
+P-n101-k4
+P-n101-k4
+P-n101-k4
+P-n101-k4
+P-n101-k4
+P-n101-k4
+P-n101-k4
+P-n101-k4
+P-n101-k4
+P-n101-k4
+P-n101-k4
