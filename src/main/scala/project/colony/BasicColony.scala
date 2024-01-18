@@ -17,8 +17,8 @@ class BasicColony[T](
   antNumb: Int,
   problem: BaseProblem[T],
   pheromoneTable: BasePheromoneTable,
-  heuristicWeights: List[Double],
-  pheromoneWeights: List[Double]
+  heuristicWeights: Array[Double],
+  pheromoneWeights: Array[Double]
 ) extends BaseColony(antNumb, problem, pheromoneTable) {
 
   override def createAnts(): List[BaseAnt[T]] = {

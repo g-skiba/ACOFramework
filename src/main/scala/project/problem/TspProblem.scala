@@ -14,6 +14,13 @@ class TspProblem(nodes: List[Node], matrix: Map[Edge, Double])
     ) {
   private val allNodes = nodes.toSet
   assert(allNodes.size == nodes.size)
+  private val heuristic = {
+    val arr = Array.fill(maxNodePlusOne, maxNodePlusOne)(Array.empty[Double])
+    edges.foreach { e =>
+      arr(e.node1.number)(e.node2.number) = Array(1.0 / arrayMatrices.head(e.node1.number)(e.node2.number))
+    }
+    arr
+  }
 
   override def evaluate(solution: SolutionUnderConstruction[TspState]): IndexedSeq[Double] = {
     val evaluation = (solution.nodes :+ solution.nodes.head)
@@ -36,8 +43,8 @@ class TspProblem(nodes: List[Node], matrix: Map[Edge, Double])
     state
   }
 
-  override def getHeuristicValue(edge: Edge): Seq[Double] = {
-    List(1.0 / arrayMatrices.head(edge.node1.number)(edge.node2.number))
+  override def getHeuristicValue(edge: Edge): Array[Double] = {
+    heuristic(edge.node1.number)(edge.node2.number)
   }
 
 }

@@ -13,6 +13,7 @@ abstract class BaseProblem[T](
     val dimensions: Int,
     matrices: Seq[Map[Edge, Double]]
 ) {
+  protected val maxNodePlusOne: Int = nodes.map(_.number).max + 1
 
   /** Function to evaluate solution into list of double
     */
@@ -39,7 +40,7 @@ abstract class BaseProblem[T](
   /** Function to evaluate distance between nodes into doubles depending from
     * problem dimension
     */
-  def getHeuristicValue(edge: Edge): Seq[Double]
+  def getHeuristicValue(edge: Edge): Array[Double]
 
   protected val arrayMatrices: Seq[Array[Array[Double]]] = matrices.map { map =>
     val maxEdgeId =

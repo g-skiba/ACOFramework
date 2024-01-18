@@ -18,21 +18,27 @@ class VrpProblem(
       Seq(matrix)
     ) {
   private val allNodes = nodes.toSet
-  private val sum = sumAllEdges()
-  assert(allNodes.size == nodes.size)
-
-  def sumAllEdges(): Double = {
-    var sum = 0.toDouble
-    var sum10 = 10
-    for ((edge, distance) <- matrix) {
-      sum = sum + distance
-    }
+  private val vehiclesEvalMultiplier = {
+    val fromDepot = nodes.iterator.filter(_ != depot).map(n => matrix(Edge(depot, n))).sum * 2 //assume each node in separate vehicle
+    val otherMaxes = nodes.iterator.filter(_ != depot) //for other nodes
+      .map(n1 => nodes.iterator.filter(_ != depot).filter(_ != n1).map(n2 => matrix(Edge(n1, n2))).max) //find max edge not to depot
+      .sum
+    var sum = fromDepot + otherMaxes
+    var tenExp = 10
     while {
       sum = sum / 10
-      sum10 = sum10 * 10
+      tenExp = tenExp * 10
       sum > 10
     } do ()
-    sum10.toDouble
+    tenExp.toDouble
+  }
+  assert(allNodes.size == nodes.size)
+  private val heuristic = {
+    val arr = Array.fill(maxNodePlusOne, maxNodePlusOne)(Array.empty[Double])
+    edges.foreach { e =>
+      arr(e.node1.number)(e.node2.number) = Array(1.0 / matrix(e))
+    }
+    arr
   }
 
   override protected def initState: VrpState = {
@@ -83,11 +89,11 @@ class VrpProblem(
       .map(pair => Edge(pair.head, pair.last))
       .map(edge => matrix(edge))
       .sum
-    Vector(solution.state.vehicles * sum + evaluation)
-    // TODO Vector(solution.state.vehicles + evaluation / sum)
+    Vector(solution.state.vehicles * vehiclesEvalMultiplier + evaluation)
+    // TODO Vector(solution.state.vehicles + evaluation / vehiclesEvalMultiplier)
   }
 
-  override def getHeuristicValue(edge: Edge): Seq[Double] = {
-    List(1.0 / matrix(edge))
+  override def getHeuristicValue(edge: Edge): Array[Double] = {
+    heuristic(edge.node1.number)(edge.node2.number)
   }
 }

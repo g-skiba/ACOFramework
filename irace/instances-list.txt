@@ -1,0 +1,36 @@
+## This is an example of specifying a list of instances.
+
+# Each line is an instance relative to trainInstancesDir/testInstancesdir
+# unless set to "" (see scenario.txt.tmpl) and an optional sequence of
+# instance-specific parameters that will be passed to target-runner when
+# invoked on that instance.
+
+# Empty lines and comments are ignored.
+
+# 100/100-1_100-2.tsp --time 1
+# 100/100-1_100-3.tsp --time 2
+# 100/100-1_100-4.tsp --time 3
+
+# berlin52
+# lust_kroA100
+# kroA100
+# kroB150
+# kroC100
+# pr76
+# pr124
+# pr144
+
+# A-n80-k10
+# A-n65-k9
+# A-n64-k9
+# A-n62-k8
+# B-n67-k10
+# B-n68-k9
+# B-n57-k7
+
+tai150d
+tai150b
+CMT4
+M-n121-k7
+CMT13
+E-n101-k8

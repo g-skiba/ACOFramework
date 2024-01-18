@@ -15,6 +15,14 @@ class Mtsp(nodes: Seq[Node], matrices: Seq[Map[Edge, Double]])
 
   private val allNodes = nodes.toSet
   assert(allNodes.size == nodes.size)
+  private val heuristic = {
+    val arr = Array.fill(maxNodePlusOne, maxNodePlusOne)(Array.empty[Double])
+    edges.foreach { e =>
+      arr(e.node1.number)(e.node2.number) = arrayMatrices.map(matrix => 1.0 / matrix(e.node1.number)(e.node2.number)).toArray
+    }
+    arr
+  }
+
   override def evaluate(solution: SolutionUnderConstruction[TspState]): IndexedSeq[Double] = {
     (solution.nodes :+ solution.nodes.head).iterator
       .sliding(2)
@@ -44,8 +52,7 @@ class Mtsp(nodes: Seq[Node], matrices: Seq[Map[Edge, Double]])
     state
   }
 
-  override def getHeuristicValue(edge: Edge): Seq[Double] =
-    arrayMatrices.map(matrix =>
-      1.0 / matrix(edge.node1.number)(edge.node2.number)
-    )
+  override def getHeuristicValue(edge: Edge): Array[Double] = {
+    heuristic(edge.node1.number)(edge.node2.number)
+  }
 }

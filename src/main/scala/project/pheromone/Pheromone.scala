@@ -4,11 +4,14 @@ import project.config.PheromoneConfig
 import project.config.PheromoneConfig.PheromoneType
 import project.graph.Edge
 
+import scala.util.Random
+
 object Pheromone {
   def create(
-      config: PheromoneConfig,
-      edges: Seq[Edge],
-      optimizationTargetsCount: Int
+    config: PheromoneConfig,
+    edges: Seq[Edge],
+    optimizationTargetsCount: Int,
+    rnd: Random  
   ): BasePheromoneTable = {
     config.resolvePheromoneType match {
       case PheromoneType.Basic =>
@@ -30,7 +33,8 @@ object Pheromone {
           config.maxValue,
           config.twoDimConfig.twoDimSize,
           config.twoDimConfig.resolveGetType,
-          config.twoDimConfig.resolveUpdateType
+          config.twoDimConfig.resolveUpdateType,
+          rnd
         )
     }
   }

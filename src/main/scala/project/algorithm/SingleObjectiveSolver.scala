@@ -14,29 +14,29 @@ import project.repo.{
 import project.solution.BaseSolution
 
 import java.io.PrintWriter
-import scala.util.Random
 
 class SingleObjectiveSolver(
     val problem: BaseProblem[_],
     algorithmConfig: AlgorithmConfig,
-    fixedRandom: Boolean = false
+    seed: Option[Long] = None
 ) extends BaseAlgorithm {
   val solutionRepo = new SingleObjectiveSolutionRepo()
 
   override def run(resultsWriter: AcoLogger): BaseSolutionRepo = {
-    val heuristicWeights = List(1.0)
-    val pheromoneWeights = List(1.0)
+    val heuristicWeights = Array(1.0)
+    val pheromoneWeights = Array(1.0)
+    val rnd = random(seed)
 
     val pheromone = Pheromone.create(
       algorithmConfig.pheromoneConfig,
       problem.edges,
-      optimizationTargetsCount = 1
+      optimizationTargetsCount = 1,
+      rnd
     )
     val takenAntsToPheromoneUpdate =
       algorithmConfig.pheromoneConfig.resolveTakenAntsToPheromoneUpdate
         .getOrElse(algorithmConfig.antsNum)
 
-    val rnd = if (fixedRandom) Random(1637) else Random()
     val colony = BasicColony(
       algorithmConfig.alpha,
       algorithmConfig.beta,

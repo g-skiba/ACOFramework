@@ -23,7 +23,7 @@ import project.logging.AcoLogger
 
 import java.io.{File, FileInputStream, PrintWriter}
 import java.nio.charset.StandardCharsets
-import java.nio.file.Paths
+import java.nio.file.{Files, Paths}
 import java.time.format.DateTimeFormatter
 import java.time.{Instant, ZoneId}
 import java.util.Date
@@ -40,28 +40,26 @@ object Main {
     .ofPattern("yyyy-MM-dd'T'HH-mm-ss")
     .withZone(ZoneId.systemDefault())
   val timestampStr: String = formatter.format(Instant.now())
-  val outDirectory = new File(Paths.get("logs", timestampStr).toUri)
-  outDirectory.mkdirs()
-  val outConfFile = new File(outDirectory, "config.yaml")
 
-  val enableLogsBuffering = true
-  val writeToStdOut = false
+  val enableLogsBuffering = false
+  val writeToStdOut = true
+  val writeConfigurationFile = false
   val sumoCollectorUrl: Option[String] =
     None
 
   def main(args: Array[String]): Unit = {
     val filename = "config.yaml"
-    val input = new String(
-      getClass.getResourceAsStream(filename).readAllBytes,
-      StandardCharsets.UTF_8
-    )
-    writeConfFile(input)
+    val input = new String(Files.readAllBytes(Paths.get(getClass.getResource(filename).toURI)))
+    if (writeConfigurationFile) writeConfFile(input)
     val yaml = new Yaml(new Constructor(classOf[ProblemConfig]))
     val conf = yaml.load[ProblemConfig](input)
     runConfiguration(conf)
   }
 
   def writeConfFile(config: String): Unit = {
+    val outDirectory = new File(Paths.get("logs", timestampStr).toUri)
+    outDirectory.mkdirs()
+    val outConfFile = new File(outDirectory, "config.yaml")
     outConfFile.createNewFile()
     val pw = new PrintWriter(outConfFile)
     try {
@@ -72,16 +70,15 @@ object Main {
   }
 
   def createLogger(runId: String, metadata: Map[String, String]): AcoLogger = {
-    val outResultsFile = new File(
-      Paths.get("logs", timestampStr, s"results_$runId.csv").toUri
-    )
-    val resultsWriter = new PrintWriter(outResultsFile)
-    val fileLogger = {
-      if (!enableLogsBuffering)
-        new AcoLogger.StdOutAndFile(runId, writeToStdOut, resultsWriter)
-      else
-        new AcoLogger.StdOutAndFileBuffering(runId, writeToStdOut, resultsWriter)
+    // can be used for loggers writing to files
+    def createFileAndWriter(): PrintWriter = {
+      val outResultsFile = new File(
+        Paths.get("logs", timestampStr, s"results_$runId.csv").toUri
+      )
+      new PrintWriter(outResultsFile)
     }
+
+    val fileLogger = new AcoLogger.StdOut(runId)
     sumoCollectorUrl match {
       case None => fileLogger
       case Some(sumoCollectorUrl) =>
@@ -92,12 +89,13 @@ object Main {
 
   def runAlgorithm(
     baseAlgorithm: BaseAlgorithm,
-    config: ProblemConfig
+    config: ProblemConfig,
+    loggerOverride: Option[AcoLogger]
   ): Unit = {
     val prefix = s"${config.problemType}_${new Date().getTime.toHexString}_${Random.alphanumeric.take(5).mkString}"
     for (i <- 1 to config.repeat) {
       val runId = s"${prefix}_$i"
-      val logger = createLogger(runId, config.toMap)
+      val logger = loggerOverride.getOrElse(createLogger(runId, config.toMap))
       try {
         logger.config(config)
 
@@ -114,13 +112,13 @@ object Main {
     }
   }
 
-  def runConfiguration(conf: ProblemConfig): Unit = {
+  def runConfiguration(conf: ProblemConfig, seed: Option[Long] = None, loggerOverride: Option[AcoLogger] = None): Unit = {
     conf.problemType match {
       case "tsp" =>
         val tsp = TspReader.read(Source.fromResource(conf.problemFiles.get(0)))
         val (reverseNameMap, tspProblem) = TspToProblem(tsp)
-        val algo = SingleObjectiveSolver(tspProblem, conf.algorithmConfig)
-        runAlgorithm(algo, conf)
+        val algo = SingleObjectiveSolver(tspProblem, conf.algorithmConfig, seed)
+        runAlgorithm(algo, conf, loggerOverride)
       case "mtsp" =>
         val tsps = for {
           file <- conf.problemFiles.asScala
@@ -128,13 +126,13 @@ object Main {
           TspReader.read(Source.fromResource(file))
         }
         val (reverseNameMap, mtspProblem) = TspsToMtsp(tsps)
-        val algo = BasicAlgorithm(mtspProblem, conf.algorithmConfig)
-        runAlgorithm(algo, conf)
+        val algo = BasicAlgorithm(mtspProblem, conf.algorithmConfig, seed)
+        runAlgorithm(algo, conf, loggerOverride)
       case "cvrp" =>
         val vrp = VrpReader.read(Source.fromResource(conf.problemFiles.get(0)))
         val (reverseNameMap, vrpProblem) = VrpToProblem(vrp)
-        val algo = SingleObjectiveSolver(vrpProblem, conf.algorithmConfig)
-        runAlgorithm(algo, conf)
+        val algo = SingleObjectiveSolver(vrpProblem, conf.algorithmConfig, seed)
+        runAlgorithm(algo, conf, loggerOverride)
       case other =>
         throw NotImplementedError(
           s"Your method $other is not implemented!"
@@ -152,9 +150,9 @@ object RunLoop {
     val problemInstances = List(
       "mtsp/berlin52.tsp",
       "mtsp/lust_kroA100.tsp",
-      "mtsp/tsp225.tsp",
-      "mtsp/a280mod.tsp",
-      "mtsp/pcb442.tsp",
+//      "mtsp/tsp225.tsp",
+//      "mtsp/a280mod.tsp",
+//      "mtsp/pcb442.tsp",
 //      "mtsp/rat575.tsp"
     )
 
@@ -165,7 +163,7 @@ object RunLoop {
       100
     )
     val iterationsNums = List(
-      150
+      200
     )
     val alphas = List(
       2.0,
@@ -268,5 +266,84 @@ object RunLoop {
       import ExecutionContext.Implicits.global
       Await.result(Future.sequence(futures), Duration.Inf)
     }
+  }
+}
+
+object CmdMain {
+  import org.rogach.scallop._
+  class Config(arguments: Seq[String]) extends ScallopConf(arguments) {
+    val instance: ScallopOption[String] = opt[String]()
+    val seed: ScallopOption[Long] = opt[Long]()
+    val alpha: ScallopOption[Double] = opt[Double]()
+    val beta: ScallopOption[Double] = opt[Double]()
+    val antsNum: ScallopOption[Int] = opt[Int](default = Some(100))
+    val iterations: ScallopOption[Int] = opt[Int](default = Some(200))
+    val pheromoneType: ScallopOption[String] = choice(PheromoneType.values.map(_.toString))
+    val twoDimPhSize: ScallopOption[Int] = opt[Int]()
+    val updateType: ScallopOption[String] = choice(TwoDimPheromoneConfig.UpdateType.values.map(_.toString))
+    val getType: ScallopOption[String] = choice(TwoDimPheromoneConfig.GetType.values.map(_.toString))
+    val pheromoneDelta: ScallopOption[Double] = opt[Double]()
+    val updateAnts: ScallopOption[Int] = opt[Int]()
+
+    verify()
+  }
+
+  def main(args: Array[String]): Unit = {
+    val conf = new Config(args)
+
+    val phDimension = 1 // stale
+    val phDelta = conf.pheromoneDelta()
+    val phIncrement = phDelta
+    val phExtinction = phDelta
+    val phMinValue = 0.001
+    val phMaxValue = 0.999
+    val takenAntsToPheromoneUpdate = conf.updateAnts()
+
+    val pheromoneConfig = PheromoneType.valueOf(conf.pheromoneType()) match
+      case PheromoneType.Basic =>
+        assert(conf.twoDimPhSize.isEmpty)
+        assert(conf.getType.isEmpty)
+        assert(conf.updateType.isEmpty)
+        PheromoneConfig(
+          conf.pheromoneType(), phDimension, phIncrement, phExtinction, phMinValue, phMaxValue,
+          takenAntsToPheromoneUpdate, new TwoDimPheromoneConfig()
+        )
+      case PheromoneType.TwoDim =>
+        val twoDimSize = conf.twoDimPhSize()
+        val getType = conf.getType()
+        val updateType = conf.updateType()
+        val twoDimConfig = TwoDimPheromoneConfig(twoDimSize, getType, updateType)
+        PheromoneConfig(
+          conf.pheromoneType(), phDimension, phIncrement, phExtinction, phMinValue, phMaxValue,
+          takenAntsToPheromoneUpdate, twoDimConfig
+        )
+
+    val problemType = "cvrp" // or "tsp" for now
+    val instance = conf.instance()
+    val folder = problemType match {
+      case "tsp" => "mtsp"
+      case "cvrp" if instance.startsWith("A")=> "cvrp/A"
+      case "cvrp" if instance.startsWith("B")=> "cvrp/B"
+      case "cvrp" => "cvrp/dim100plus"
+      case _ => throw new IllegalArgumentException("Invalid problem type and/or instance")
+    }
+    val extension = problemType match {
+      case "tsp" => "tsp"
+      case "cvrp" => "vrp"
+    }
+    val problemInstance = s"$folder/$instance.$extension"
+    val problemFiles = List(problemInstance).asJava
+    val repeat = 1
+
+    val antsNum = conf.antsNum()
+    val iterations = conf.iterations()
+    val alpha = conf.alpha()
+    val beta = conf.beta()
+    val algorithmConfig = AlgorithmConfig(antsNum, iterations, alpha, beta, pheromoneConfig)
+    val problemConfig = ProblemConfig(problemType, problemFiles, repeat, algorithmConfig)
+
+    val seed = conf.seed.toOption
+    val logger = new AcoLogger.IraceSingleObjectiveStdOut
+    Main.runConfiguration(problemConfig, seed, Some(logger))
   }
 }
