@@ -25,16 +25,18 @@ class BasicDecisionAlgorithm[T](
       heuristicWeights: Array[Double]
   )(edge: Edge): Double = {
     def sumWeighted(a: Array[Double], b: Array[Double]): Double = {
+      require(a.length == b.length, s"Arrays should be of the same sizes but are ${a.length} and ${b.length}")
+
       @tailrec
-      def sumWeightedInd(acc: Double, ind1: Int, ind2: Int): Double = {
-        if (ind1 < a.length && ind2 < b.length) {
-          sumWeightedInd(acc + a(ind1) * b(ind2), ind1 + 1, ind2 + 1)
+      def sumWeightedInd(acc: Double, ind: Int): Double = {
+        if (ind < a.length) { // b.length is the same as a.length
+          sumWeightedInd(acc + a(ind) * b(ind), ind + 1)
         } else {
           acc
         }
       }
 
-      sumWeightedInd(0.0, 0, 0)
+      sumWeightedInd(0.0, 0)
     }
 
     val pheromone = sumWeighted(pheromoneTable.getPheromone(edge), pheromoneWeights)

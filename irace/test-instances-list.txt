@@ -11,6 +11,8 @@
 # 100/100-1_100-3.tsp --time 2
 # 100/100-1_100-4.tsp --time 3
 
+# Repeated executions for a single instance are obtained by multiple lines listing the same instance.
+
 # berlin52
 # lust_kroA100
 # kroA150

@@ -14,7 +14,6 @@ import project.repo.{
 import project.solution.BaseSolution
 
 import java.io.PrintWriter
-import scala.util.Random
 
 class SingleObjectiveSolver(
     val problem: BaseProblem[_],
@@ -26,7 +25,7 @@ class SingleObjectiveSolver(
   override def run(resultsWriter: AcoLogger): BaseSolutionRepo = {
     val heuristicWeights = Array(1.0)
     val pheromoneWeights = Array(1.0)
-    val rnd = seed.map(Random(_)).getOrElse(Random())
+    val rnd = random(seed)
 
     val pheromone = Pheromone.create(
       algorithmConfig.pheromoneConfig,

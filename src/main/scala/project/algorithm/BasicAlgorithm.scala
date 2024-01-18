@@ -10,7 +10,6 @@ import project.repo.{BaseSolutionRepo, ParetoSolutionRepo}
 import project.solution.BaseSolution
 
 import java.io.PrintWriter
-import scala.util.Random
 
 class BasicAlgorithm(
     val problem: BaseProblem[_],
@@ -24,7 +23,7 @@ class BasicAlgorithm(
       Array.fill(problem.dimensions)(1.0 / problem.dimensions)
     val pheromoneWeights =
       Array.fill(problem.dimensions)(1.0 / problem.dimensions)
-    val rnd = seed.map(Random(_)).getOrElse(Random())
+    val rnd = random(seed)
 
     val pheromoneTable = Pheromone.create(
       algorithmConfig.pheromoneConfig,
