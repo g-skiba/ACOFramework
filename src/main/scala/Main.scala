@@ -19,7 +19,7 @@ import project.algorithm.BaseAlgorithm
 import pareto.getParetoFrontMin
 import project.config.PheromoneConfig.PheromoneType
 import project.config.{AlgorithmConfig, PheromoneConfig, ProblemConfig, TwoDimPheromoneConfig}
-import project.logging.AcoLogger
+import project.logging.{AcoLogger, IraceSingleObjectiveStdOutLogger, MultiLogger, StdOutLogger, SumoLogicLogger}
 
 import java.io.{File, FileInputStream, PrintWriter}
 import java.nio.charset.StandardCharsets
@@ -78,12 +78,12 @@ object Main {
       new PrintWriter(outResultsFile)
     }
 
-    val fileLogger = new AcoLogger.StdOut(runId)
+    val fileLogger = new StdOutLogger(runId)
     sumoCollectorUrl match {
       case None => fileLogger
       case Some(sumoCollectorUrl) =>
-        val sumo = new AcoLogger.SumoLogic(runId, sumoCollectorUrl, metadata)
-        new AcoLogger.MultiLogger(Seq(fileLogger, sumo))
+        val sumo = new SumoLogicLogger(runId, sumoCollectorUrl, metadata)
+        new MultiLogger(Seq(fileLogger, sumo))
     }
   }
 
@@ -343,7 +343,7 @@ object CmdMain {
     val problemConfig = ProblemConfig(problemType, problemFiles, repeat, algorithmConfig)
 
     val seed = conf.seed.toOption
-    val logger = new AcoLogger.IraceSingleObjectiveStdOut
+    val logger = new IraceSingleObjectiveStdOutLogger
     Main.runConfiguration(problemConfig, seed, Some(logger))
   }
 }
