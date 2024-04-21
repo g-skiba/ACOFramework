@@ -1,4 +1,5 @@
 package project.problem
+import pareto.Hypervolume2DCalculator
 import project.graph.{Edge, Node}
 import project.solution.{SolutionUnderConstruction, TspState}
 
@@ -22,6 +23,7 @@ class Mtsp(nodes: Seq[Node], matrices: Seq[Map[Edge, Double]])
     }
     arr
   }
+  private val hypervolume2DCalculator = new Hypervolume2DCalculator((1000000, 1000000)) //TODO calculate sensible reference point based on problem input
 
   override def evaluate(solution: SolutionUnderConstruction[TspState]): IndexedSeq[Double] = {
     (solution.nodes :+ solution.nodes.head).iterator
@@ -54,5 +56,9 @@ class Mtsp(nodes: Seq[Node], matrices: Seq[Map[Edge, Double]])
 
   override def getHeuristicValue(edge: Edge): Array[Double] = {
     heuristic(edge.node1.number)(edge.node2.number)
+  }
+
+  override def getHypervolumeCalculator: Option[Hypervolume2DCalculator] = {
+    Some(hypervolume2DCalculator)
   }
 }

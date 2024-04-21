@@ -30,6 +30,11 @@ case class PheromoneConfig(
       s"minValue: $minValue; maxValue: $maxValue; takenAntsToPheromoneUpdate: $takenAntsToPheromoneUpdate; $twoDimConfig"
   }
 
+  def toCsv: String = {
+    Seq(pheromoneTpe, pheromoneDimension, increment, extinction, minValue, maxValue, takenAntsToPheromoneUpdate).mkString("", ";", ";") +
+      twoDimConfig.toCsv
+  }
+
   def toMap: Map[String, String] = {
     Map(
       "pheromoneTpe" -> pheromoneTpe,

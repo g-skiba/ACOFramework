@@ -21,6 +21,10 @@ case class TwoDimPheromoneConfig(
     s"twoDimSize: $twoDimSize; twoDimGetType: $twoDimGetType; twoDimUpdateType: $twoDimUpdateType"
   }
 
+  def toCsv: String = {
+    Seq(twoDimSize, twoDimGetType, twoDimUpdateType).mkString(";")
+  }
+
   def toMap: Map[String, String] = {
     Map(
       "twoDimSize" -> twoDimSize.toString,

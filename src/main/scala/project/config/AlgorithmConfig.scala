@@ -16,6 +16,10 @@ case class AlgorithmConfig(
   override def toString: String = {
     s"antsNum: $antsNum; iterations: $iterations; alpha: $alpha; beta: $beta; $pheromoneConfig"
   }
+  
+  def toCsv: String = {
+    Seq(antsNum, iterations, alpha, beta).mkString("", ";", ";") + pheromoneConfig.toCsv
+  }
 
   def toMap: Map[String, String] = {
     Map(

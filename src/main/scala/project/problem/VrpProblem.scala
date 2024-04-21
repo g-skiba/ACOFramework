@@ -1,4 +1,5 @@
 package project.problem
+import pareto.Hypervolume2DCalculator
 import project.graph.{Edge, Node}
 import project.solution.{SolutionUnderConstruction, VrpState}
 
@@ -96,4 +97,6 @@ class VrpProblem(
   override def getHeuristicValue(edge: Edge): Array[Double] = {
     heuristic(edge.node1.number)(edge.node2.number)
   }
+
+  override def getHypervolumeCalculator: Option[Hypervolume2DCalculator] = None
 }

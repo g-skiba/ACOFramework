@@ -1,6 +1,7 @@
 package project.config
 
 import scala.beans.BeanProperty
+import scala.jdk.CollectionConverters._
 
 case class ProblemConfig(
   @BeanProperty var problemType: String,
@@ -15,6 +16,10 @@ case class ProblemConfig(
   override def toString: String = {
     s"problemType: $problemType; problemFiles: ${String.join(",", problemFiles)}; " +
       s"repeat: $repeat; $algorithmConfig"
+  }
+
+  def toCsv: String = {
+    Seq(problemType, problemFiles.asScala.mkString(","), repeat).mkString("", ";", ";") + algorithmConfig.toCsv
   }
 
   def toMap: Map[String, String] = {

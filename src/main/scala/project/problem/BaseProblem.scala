@@ -1,5 +1,6 @@
 package project.problem
 
+import pareto.Hypervolume2DCalculator
 import project.graph.{Edge, Node}
 import project.solution.SolutionUnderConstruction
 
@@ -41,6 +42,8 @@ abstract class BaseProblem[T](
     * problem dimension
     */
   def getHeuristicValue(edge: Edge): Array[Double]
+  
+  def getHypervolumeCalculator: Option[Hypervolume2DCalculator]
 
   protected val arrayMatrices: Seq[Array[Array[Double]]] = matrices.map { map =>
     val maxEdgeId =

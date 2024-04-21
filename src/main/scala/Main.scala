@@ -16,10 +16,10 @@ import tsp.Tsp
 import project.algorithm.BasicAlgorithm
 import project.algorithm.SingleObjectiveSolver
 import project.algorithm.BaseAlgorithm
-import pareto.getParetoFrontMin
+import pareto.{Hypervolume2DCalculator, getParetoFrontMin}
 import project.config.PheromoneConfig.PheromoneType
 import project.config.{AlgorithmConfig, PheromoneConfig, ProblemConfig, TwoDimPheromoneConfig}
-import project.logging.{AcoLogger, IraceSingleObjectiveStdOutLogger, MultiLogger, StdOutLogger, SumoLogicLogger}
+import project.logging.{AcoLogger, IraceSingleObjectiveStdOutLogger, MultiLogger, StdOutAndCsvFileBuffering2DLogger, StdOutLogger, SumoLogicLogger}
 
 import java.io.{File, FileInputStream, PrintWriter}
 import java.nio.charset.StandardCharsets
@@ -43,6 +43,7 @@ object Main {
 
   val enableLogsBuffering = false
   val writeToStdOut = true
+  val writeToFile = false
   val writeConfigurationFile = false
   val sumoCollectorUrl: Option[String] =
     None
@@ -69,16 +70,21 @@ object Main {
     }
   }
 
-  def createLogger(runId: String, metadata: Map[String, String]): AcoLogger = {
+  def createLogger(runId: String, metadata: Map[String, String], hvCalc: Option[Hypervolume2DCalculator]): AcoLogger = {
     // can be used for loggers writing to files
-    def createFileAndWriter(): PrintWriter = {
-      val outResultsFile = new File(
-        Paths.get("logs", timestampStr, s"results_$runId.csv").toUri
-      )
-      new PrintWriter(outResultsFile)
+    def createFileAndWriter(): Option[PrintWriter] = {
+      if (writeToFile) {
+        val outResultsFile = new File(
+          Paths.get("logs", timestampStr, s"results_$runId.csv").toUri
+        )
+        outResultsFile.getParentFile.mkdirs()
+        Some(new PrintWriter(outResultsFile))
+      } else {
+        None
+      }
     }
 
-    val fileLogger = new StdOutLogger(runId)
+    val fileLogger = new StdOutAndCsvFileBuffering2DLogger(runId, writeToStdOut, createFileAndWriter(), hvCalc.get)
     sumoCollectorUrl match {
       case None => fileLogger
       case Some(sumoCollectorUrl) =>
@@ -95,7 +101,9 @@ object Main {
     val prefix = s"${config.problemType}_${new Date().getTime.toHexString}_${Random.alphanumeric.take(5).mkString}"
     for (i <- 1 to config.repeat) {
       val runId = s"${prefix}_$i"
-      val logger = loggerOverride.getOrElse(createLogger(runId, config.toMap))
+      val logger = loggerOverride.getOrElse(
+        createLogger(runId, config.toMap, baseAlgorithm.problem.getHypervolumeCalculator)
+      )
       try {
         logger.config(config)
 
@@ -318,7 +326,7 @@ object CmdMain {
           takenAntsToPheromoneUpdate, twoDimConfig
         )
 
-    val problemType = "cvrp" // or "tsp" for now
+    val problemType = "tsp" // or "tsp" for now
     val instance = conf.instance()
     val folder = problemType match {
       case "tsp" => "mtsp"
