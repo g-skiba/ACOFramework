@@ -15,5 +15,5 @@ abstract class BaseAnt[T](
   /** Function that make decision about next move of ant change currentNode to
     * chosen one and add it to visitedNodes list
     */
-  def run(): BaseSolution
+  def run(iteration: Int): BaseSolution
 }

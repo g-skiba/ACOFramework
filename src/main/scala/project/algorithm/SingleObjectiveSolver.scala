@@ -6,12 +6,9 @@ import project.config.PheromoneConfig.PheromoneType
 import project.logging.AcoLogger
 import project.pheromone.{BasicPheromoneTable, Pheromone}
 import project.problem.BaseProblem
-import project.repo.{
-  BaseSolutionRepo,
-  ParetoSolutionRepo,
-  SingleObjectiveSolutionRepo
-}
+import project.repo.{BaseSolutionRepo, ParetoSolutionRepo, SingleObjectiveSolutionRepo}
 import project.solution.BaseSolution
+import project.weights.ColonyWeightsSelector
 
 import java.io.PrintWriter
 
@@ -23,8 +20,6 @@ class SingleObjectiveSolver(
   val solutionRepo = new SingleObjectiveSolutionRepo()
 
   override def run(resultsWriter: AcoLogger): BaseSolutionRepo = {
-    val heuristicWeights = Array(1.0)
-    val pheromoneWeights = Array(1.0)
     val rnd = random(seed)
 
     val pheromone = Pheromone.create(
@@ -44,11 +39,10 @@ class SingleObjectiveSolver(
       algorithmConfig.antsNum,
       problem,
       pheromone,
-      heuristicWeights,
-      pheromoneWeights
+      ColonyWeightsSelector.D1,
     )
     for (iteration <- 0 until algorithmConfig.iterations) {
-      val solutions = colony.run()
+      val solutions = colony.run(iteration)
       val selectedSolution =
         solutionRepo.addSolutions(iteration, solutions).head
 

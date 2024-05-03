@@ -6,6 +6,7 @@ import project.graph.{Edge, Node}
 import project.pheromone.BasePheromoneTable
 import project.problem.BaseProblem
 import project.solution.BaseSolution
+import project.weights.ColonyWeightsSelector
 
 import scala.collection.mutable.ListBuffer
 import scala.util.Random
@@ -17,14 +18,13 @@ class BasicColony[T](
   antNumb: Int,
   problem: BaseProblem[T],
   pheromoneTable: BasePheromoneTable,
-  heuristicWeights: Array[Double],
-  pheromoneWeights: Array[Double]
+  weightsSelector: ColonyWeightsSelector,
 ) extends BaseColony(antNumb, problem, pheromoneTable) {
 
   override def createAnts(): List[BaseAnt[T]] = {
     val ants = ListBuffer[BaseAnt[T]]()
 
-    for (_ <- 0 until antNumb) {
+    for (i <- 0 until antNumb) {
       ants.append(
         new BasicAnt(
           startingNode = problem.startingNode,
@@ -36,18 +36,17 @@ class BasicColony[T](
             pheromoneTable,
             random
           ),
-          heuristicWeights = heuristicWeights,
-          pheromoneWeights = pheromoneWeights
+          weightsSelector.weightsSelectorForAnt(i)
         )
       )
     }
     ants.toList
   }
 
-  override def run(): IndexedSeq[BaseSolution] = {
+  override def run(iteration: Int): IndexedSeq[BaseSolution] = {
     val solutions = Vector.newBuilder[BaseSolution]
     for (ant <- ants) {
-      val solution: BaseSolution = ant.run()
+      val solution: BaseSolution = ant.run(iteration)
       solutions += solution
     }
     solutions.result()

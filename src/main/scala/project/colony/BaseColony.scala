@@ -14,7 +14,7 @@ abstract class BaseColony[T](
   // val pheromoneAggregator = new BasicPheromoneAggregator()
   /** Function that runs all ants to create solutions
     */
-  def run(): IndexedSeq[BaseSolution]
+  def run(iteration: Int): IndexedSeq[BaseSolution]
 
   /** Function to place ants
     */
