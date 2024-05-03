@@ -24,23 +24,23 @@ class BasicDecisionAlgorithm[T](
       pheromoneWeights: Array[Double],
       heuristicWeights: Array[Double]
   )(edge: Edge): Double = {
-    def sumWeighted(a: Array[Double], b: Array[Double]): Double = {
-      require(a.length == b.length, s"Arrays should be of the same sizes but are ${a.length} and ${b.length}")
+    def weightedProduct(values: Array[Double], weights: Array[Double]): Double = {
+      require(values.length == weights.length, s"Arrays should be of the same sizes but are ${values.length} and ${weights.length}")
 
       @tailrec
-      def sumWeightedInd(acc: Double, ind: Int): Double = {
-        if (ind < a.length) { // b.length is the same as a.length
-          sumWeightedInd(acc + a(ind) * b(ind), ind + 1)
+      def weightedProductInd(acc: Double, ind: Int): Double = {
+        if (ind < values.length) { // b.length is the same as a.length
+          weightedProductInd(acc * Math.pow(values(ind), weights(ind)), ind + 1)
         } else {
           acc
         }
       }
 
-      sumWeightedInd(0.0, 0)
+      weightedProductInd(1.0, 0)
     }
 
-    val pheromone = sumWeighted(pheromoneTable.getPheromone(edge), pheromoneWeights)
-    val heuristic = sumWeighted(problem.getHeuristicValue(edge), heuristicWeights)
+    val pheromone = weightedProduct(pheromoneTable.getPheromone(edge), pheromoneWeights)
+    val heuristic = weightedProduct(problem.getHeuristicValue(edge), heuristicWeights)
     Math.pow(pheromone, alpha) * Math.pow(heuristic, beta)
   }
 
