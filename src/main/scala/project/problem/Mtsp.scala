@@ -23,7 +23,14 @@ class Mtsp(nodes: Seq[Node], matrices: Seq[Map[Edge, Double]])
     }
     arr
   }
-  private val hypervolume2DCalculator = new Hypervolume2DCalculator((1000000, 1000000)) //TODO calculate sensible reference point based on problem input
+  private val hypervolume2DCalculator = {
+    def overestimation(dimension: Int): Double = {
+      val maxesPerNode = nodes.iterator
+        .map(n1 => nodes.iterator.filter(_ != n1).map(n2 => matrices(dimension)(Edge(n1, n2))).max) //find max outgoing edge per node
+      maxesPerNode.sum
+    }
+    new Hypervolume2DCalculator((overestimation(0), overestimation(1)), surfacePartToAxes = true)
+  }
 
   override def evaluate(solution: SolutionUnderConstruction[TspState]): IndexedSeq[Double] = {
     (solution.nodes :+ solution.nodes.head).iterator
