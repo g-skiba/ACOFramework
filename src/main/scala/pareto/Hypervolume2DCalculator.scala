@@ -19,7 +19,7 @@ class Hypervolume2DCalculator(referencePoint: (Double, Double), surfacePartToAxe
     require(paretoFrontSorted.forall(_.size == 2))
     require(paretoFrontSorted.forall(s => s(0) < refX && s(1) < refY))
     require(paretoFrontSorted.sliding(2).forall {
-      case Seq(IndexedSeq(x1, y1), IndexedSeq(x2, y2)) => x1 < x2 && y1 > y2
+      case Seq(IndexedSeq(x1, y1), IndexedSeq(x2, y2)) => x1 <= x2 && y1 >= y2
       case _ => true
     })
 
