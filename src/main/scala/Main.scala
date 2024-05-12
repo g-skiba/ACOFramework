@@ -14,7 +14,6 @@ import tsp.TspsToMtsp
 import tsp.TspToProblem
 import tsp.Tsp
 import project.algorithm.BasicAlgorithm
-import project.algorithm.SingleObjectiveSolver
 import project.algorithm.BaseAlgorithm
 import pareto.{Hypervolume2DCalculator, getParetoFrontMin}
 import project.config.PheromoneConfig.PheromoneType
@@ -125,7 +124,7 @@ object Main {
       case "tsp" =>
         val tsp = TspReader.read(Source.fromResource(conf.problemFiles.get(0)))
         val (reverseNameMap, tspProblem) = TspToProblem(tsp)
-        val algo = SingleObjectiveSolver(tspProblem, conf.algorithmConfig, seed)
+        val algo = BasicAlgorithm(tspProblem, conf.algorithmConfig, seed)
         runAlgorithm(algo, conf, loggerOverride)
       case "mtsp" =>
         val tsps = for {
@@ -139,7 +138,7 @@ object Main {
       case "cvrp" =>
         val vrp = VrpReader.read(Source.fromResource(conf.problemFiles.get(0)))
         val (reverseNameMap, vrpProblem) = VrpToProblem(vrp)
-        val algo = SingleObjectiveSolver(vrpProblem, conf.algorithmConfig, seed)
+        val algo = BasicAlgorithm(vrpProblem, conf.algorithmConfig, seed)
         runAlgorithm(algo, conf, loggerOverride)
       case other =>
         throw NotImplementedError(

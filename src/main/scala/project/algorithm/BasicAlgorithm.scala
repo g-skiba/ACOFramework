@@ -6,7 +6,7 @@ import project.config.AlgorithmConfig
 import project.logging.AcoLogger
 import project.pheromone.{BasicPheromoneTable, Pheromone}
 import project.problem.BaseProblem
-import project.repo.{BaseSolutionRepo, ParetoSolutionRepo}
+import project.repo.{BaseSolutionRepo, ParetoSolutionRepo, SingleObjectiveSolutionRepo}
 import project.solution.BaseSolution
 import project.weights.ColonyWeightsSelector
 
@@ -17,7 +17,15 @@ class BasicAlgorithm(
     algorithmConfig: AlgorithmConfig,
     seed: Option[Long] = None
 ) extends BaseAlgorithm {
-  val solutionRepo = new ParetoSolutionRepo()
+  private val solutionRepo = problem.dimensions match {
+    case 1 => new SingleObjectiveSolutionRepo
+    case _ => new ParetoSolutionRepo
+  }
+  private val weightsSelector = problem.dimensions match {
+    case 1 => ColonyWeightsSelector.D1
+    case 2 => new ColonyWeightsSelector.D2.Uniform(0.0, 1.0, algorithmConfig.antsNum)
+    case _ => ???
+  }
 
   override def run(resultsWriter: AcoLogger): BaseSolutionRepo = {
     val rnd = random(seed)
@@ -28,8 +36,6 @@ class BasicAlgorithm(
       problem.dimensions,
       rnd
     )
-
-    val weightsSelector = new ColonyWeightsSelector.D2.Uniform(0.0, 1.0, algorithmConfig.antsNum)
 
     val colony = BasicColony(
       algorithmConfig.alpha,
