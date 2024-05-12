@@ -54,7 +54,8 @@ class BasicAlgorithm(
 
       resultsWriter.iterationResult(
         iteration,
-        solutionRepo.paretoSolutionsForLastIteration
+        solutionRepo.paretoSolutionsForLastIteration,
+        solutionRepo.globalParetoSolutions
       )
     }
     solutionRepo

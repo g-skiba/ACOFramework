@@ -16,8 +16,8 @@ class IraceTimeAsResultStdOutLogger extends AcoLogger {
   def runTimeInfo(timeNano: Long): Unit =
     println(s"${TimeUnit.NANOSECONDS.toMillis(timeNano)} ${TimeUnit.NANOSECONDS.toSeconds(timeNano)}")
 
-  def iterationResult(iteration: Int, result: IndexedSeq[BaseSolution]): Unit =
-    println((iteration, result.head.evaluation.head))
+  def iterationResult(iteration: Int, iterationResult: IndexedSeq[BaseSolution], globalResult: IndexedSeq[BaseSolution]): Unit =
+    println((iteration, iterationResult.head.evaluation.head, globalResult.head.evaluation.head))
 
   def globalBestResult(result: IndexedSeq[BaseSolution]): Unit = ()
   //      print(result.head.evaluation.head)

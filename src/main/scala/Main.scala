@@ -71,10 +71,10 @@ object Main {
 
   def createLogger(runId: String, metadata: Map[String, String], hvCalc: Option[Hypervolume2DCalculator]): AcoLogger = {
     // can be used for loggers writing to files
-    def createFileAndWriter(): Option[PrintWriter] = {
+    def createFileAndWriter(prefix: String): Option[PrintWriter] = {
       if (writeToFile) {
         val outResultsFile = new File(
-          Paths.get("logs", timestampStr, s"results_$runId.csv").toUri
+          Paths.get("logs", timestampStr, prefix, s"${prefix}_results_$runId.csv").toUri
         )
         outResultsFile.getParentFile.mkdirs()
         Some(new PrintWriter(outResultsFile))
@@ -83,7 +83,8 @@ object Main {
       }
     }
 
-    val fileLogger = new StdOutAndCsvFileBuffering2DLogger(runId, writeToStdOut, createFileAndWriter(), hvCalc.get)
+    val fileLogger = new StdOutAndCsvFileBuffering2DLogger(
+      runId, writeToStdOut, createFileAndWriter("iteration"), createFileAndWriter("global"), hvCalc.get)
     sumoCollectorUrl match {
       case None => fileLogger
       case Some(sumoCollectorUrl) =>

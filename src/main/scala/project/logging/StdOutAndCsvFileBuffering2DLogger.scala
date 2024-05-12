@@ -8,16 +8,29 @@ import java.io.PrintWriter
 import java.util.concurrent.TimeUnit
 
 class StdOutAndCsvFileBuffering2DLogger(
-  runId: String, 
+  runId: String,
   writeToStdOut: Boolean,
-  resultsWriter: Option[PrintWriter],
+  iterationResultsWriter: Option[PrintWriter],
+  globalResultsWriter: Option[PrintWriter],
   hvCalc: Hypervolume2DCalculator
 ) extends AcoLogger {
-  private val sb = new StringBuilder()
+  private val iterationSB = new StringBuilder()
+  private val globalSB = new StringBuilder()
+
   protected def doPrint(msg: String): Unit = {
-    if (writeToStdOut) println(msg)
-    sb.append(msg)
-    sb.append(";")
+    doPrint(msg, msg, msg)
+  }
+  protected def doPrint(stdOutMsg: String, iterationFileMsg: String, globalFileMsg: String): Unit = {
+    if (writeToStdOut) println(stdOutMsg)
+    iterationResultsWriter.foreach { _ =>
+      iterationSB.append(iterationFileMsg)
+      iterationSB.append(";")
+    }
+    globalResultsWriter.foreach { _ =>
+      globalSB.append(globalFileMsg)
+      globalSB.append(";")
+    }
+
   }
 
   override def config(problemConfig: ProblemConfig): Unit = {
@@ -28,18 +41,27 @@ class StdOutAndCsvFileBuffering2DLogger(
     doPrint(TimeUnit.NANOSECONDS.toMillis(timeNano).toString)
   }
 
-  override def iterationResult(iteration: Int, result: IndexedSeq[BaseSolution]): Unit = {
-    doPrint(hvCalc.calculateRemainingPartFromUnsorted(result.map(_.evaluation)).toString)
+  override def iterationResult(iteration: Int, iterationResult: IndexedSeq[BaseSolution], globalResult: IndexedSeq[BaseSolution]): Unit = {
+    val itHV = hvCalc.calculateRemainingPartFromUnsorted(iterationResult.map(_.evaluation)).toString
+    val gHV = hvCalc.calculateRemainingPartFromUnsorted(globalResult.map(_.evaluation)).toString
+    doPrint(iteration + "\t" + itHV + "\t" + gHV, itHV, gHV)
   }
 
   override def globalBestResult(result: IndexedSeq[BaseSolution]): Unit = {
-    doPrint(hvCalc.calculateRemainingPartFromUnsorted(result.map(_.evaluation)).toString)
+    // this is written in the global file as a result of last iteration
+//    doPrint(hvCalc.calculateRemainingPartFromUnsorted(result.map(_.evaluation)).toString)
   }
 
   override def close(): Unit = {
-    val msg = sb.result()
-    resultsWriter.foreach(_.println(msg))
-    resultsWriter.foreach(_.close())
+    def writeAndClose(writer: Option[PrintWriter], msgSB: StringBuilder): Unit = {
+      writer.foreach { w =>
+        val msg = msgSB.result()
+        w.println(msg)
+        w.close()
+      }
+    }
+    writeAndClose(iterationResultsWriter, iterationSB)
+    writeAndClose(globalResultsWriter, globalSB)
   }
 }
 

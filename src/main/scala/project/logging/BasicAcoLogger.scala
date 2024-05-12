@@ -31,9 +31,10 @@ abstract class BasicAcoLogger(runId: String) extends AcoLogger {
 
   override def iterationResult(
     iteration: Int,
-    result: IndexedSeq[BaseSolution]
+    iterationResult: IndexedSeq[BaseSolution],
+    globalResult: IndexedSeq[BaseSolution]
   ): Unit = {
-    printLog(s"I: $iteration; R: ${resultsString(result)}")
+    printLog(s"I: $iteration; R: ${resultsString(iterationResult)}; G: ${resultsString(globalResult)}")
   }
 
   override def globalBestResult(result: IndexedSeq[BaseSolution]): Unit = {
