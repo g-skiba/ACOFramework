@@ -3,6 +3,7 @@ package project.pheromone
 import project.config.TwoDimPheromoneConfig
 import project.config.TwoDimPheromoneConfig.{GetType, UpdateType}
 import project.graph.Edge
+import project.repo.BaseSolutionRepo
 import project.solution.BaseSolution
 
 import scala.annotation.tailrec
@@ -20,6 +21,7 @@ class TwoDimPheromone(
     val pheromoneDimension: Int, // TODO for now ignored, we assume 1-dim problem
     minValue: Double,
     maxValue: Double,
+    updateAnts: Option[Int],
     twoDimPheromoneSize: Int,
     getType: TwoDimPheromoneConfig.GetType,
     updateType: TwoDimPheromoneConfig.UpdateType,
@@ -124,20 +126,22 @@ class TwoDimPheromone(
     Array(v)
   }
 
-  override def pheromoneUpdate(solutions: Seq[BaseSolution]): Unit = {
+  override def pheromoneUpdate(solutionsRepo: BaseSolutionRepo): Unit = {
     cache.clear()
-    //min would be the first and max would be the last?!
-    val minCost = solutions.iterator.map(_.evaluation.head).min
-    val maxCost = solutions.iterator.map(_.evaluation.head).max
+
+    val solutions = solutionsRepo.paretoSolutionsForLastIteration
+    val sortedSolutions = solutions.sortBy(_.evaluation.head).take(updateAnts.getOrElse(solutions.size))
+    val minCost = sortedSolutions.head.evaluation.head
+    val maxCost = sortedSolutions.last.evaluation.head
     val partDiff = (maxCost - minCost) / twoDimPheromoneSize
     if (debug) println(partDiff)
 
     def calcPartFromEvaluation(cost: Double): Int =
       ((cost - minCost) / partDiff).toInt.min(twoDimPheromoneSize - 1)
-    def calcPartFromIndex(ind: Int): Int = ind * twoDimPheromoneSize / solutions.size
-    if (debug)
+    def calcPartFromIndex(ind: Int): Int = ind * twoDimPheromoneSize / sortedSolutions.size
+    if (debug) {
       println(
-        solutions
+        sortedSolutions
           .map(_.evaluation.head)
           .map(calcPartFromEvaluation)
           .groupBy(identity)
@@ -146,9 +150,8 @@ class TwoDimPheromone(
           .toList
           .sortBy(_._1)
       )
-    if (debug)
       println(
-        solutions.zipWithIndex
+        sortedSolutions.zipWithIndex
           .map(_._2)
           .map(calcPartFromIndex)
           .groupBy(identity)
@@ -157,8 +160,9 @@ class TwoDimPheromone(
           .toList
           .sortBy(_._1)
       )
+    }
 
-    solutions.zipWithIndex
+    sortedSolutions.zipWithIndex
       .groupBy { case (solution, ind) =>
         //both versions give acceptable results
         updateType match {

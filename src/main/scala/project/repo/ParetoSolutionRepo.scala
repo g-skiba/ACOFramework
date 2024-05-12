@@ -3,22 +3,24 @@ package project.repo
 import pareto.getParetoFrontMin
 import project.solution.BaseSolution
 
-import scala.collection.mutable.Map as MMap
+import scala.collection.mutable.SortedMap as MSortedMap
 
 class ParetoSolutionRepo extends BaseSolutionRepo {
-  private var global: IndexedSeq[BaseSolution] = IndexedSeq.empty
+  private val paretoSolutions: MSortedMap[Int, IndexedSeq[BaseSolution]] = MSortedMap.empty
+  private var globalPareto: IndexedSeq[BaseSolution] = IndexedSeq.empty
 
-  override def addSolutions(iteration: Int, newSolutions: IndexedSeq[BaseSolution]): IndexedSeq[BaseSolution] = {
+  override def addSolutions(iteration: Int, newSolutions: IndexedSeq[BaseSolution]): Unit = {
+    super.addSolutions(iteration, newSolutions)
+
     val selectedFromNew = selectParetoFront(newSolutions)
-    solutions.update(iteration, selectedFromNew)
-
-    val globalWithNew = global ++ selectedFromNew
-    global = selectParetoFront(globalWithNew)
-
-    selectedFromNew
+    paretoSolutions(iteration) = selectedFromNew
+    val globalWithNew = globalPareto ++ selectedFromNew
+    globalPareto = selectParetoFront(globalWithNew)
   }
 
-  override def globalBest: Seq[BaseSolution] = global
+  override def globalParetoSolutions: IndexedSeq[BaseSolution] = globalPareto
+
+  override def paretoSolutionsForLastIteration: IndexedSeq[BaseSolution] = paretoSolutions.last._2
 
   private def selectParetoFront(solutions: IndexedSeq[BaseSolution]): IndexedSeq[BaseSolution] = {
     solutions.iterator.zip(getParetoFrontMin(solutions)(_.evaluation).iterator).collect {

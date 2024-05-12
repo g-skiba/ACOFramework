@@ -21,7 +21,8 @@ object Pheromone {
           config.extinction,
           config.resolvePheromoneDimension.getOrElse(optimizationTargetsCount),
           config.minValue,
-          config.maxValue
+          config.maxValue,
+          config.resolveTakenAntsToPheromoneUpdate
         )
       case PheromoneType.TwoDim =>
         project.pheromone.TwoDimPheromone(
@@ -31,6 +32,7 @@ object Pheromone {
           config.resolvePheromoneDimension.getOrElse(optimizationTargetsCount),
           config.minValue,
           config.maxValue,
+          config.resolveTakenAntsToPheromoneUpdate,
           config.twoDimConfig.twoDimSize,
           config.twoDimConfig.resolveGetType,
           config.twoDimConfig.resolveUpdateType,

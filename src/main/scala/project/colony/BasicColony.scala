@@ -5,6 +5,7 @@ import project.decision.BasicDecisionAlgorithm
 import project.graph.{Edge, Node}
 import project.pheromone.BasePheromoneTable
 import project.problem.BaseProblem
+import project.repo.BaseSolutionRepo
 import project.solution.BaseSolution
 import project.weights.ColonyWeightsSelector
 
@@ -52,8 +53,8 @@ class BasicColony[T](
     solutions.result()
   }
 
-  def pheromoneUpdate(solutions: IndexedSeq[BaseSolution]): Unit = {
-    pheromoneTable.pheromoneUpdate(solutions)
+  def pheromoneUpdate(solutionsRepo: BaseSolutionRepo): Unit = {
+    pheromoneTable.pheromoneUpdate(solutionsRepo)
     pheromoneTable.afterUpdatesAction()
   }
 }

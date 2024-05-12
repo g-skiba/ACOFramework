@@ -28,11 +28,11 @@ class StdOutAndCsvFileBuffering2DLogger(
     doPrint(TimeUnit.NANOSECONDS.toMillis(timeNano).toString)
   }
 
-  override def iterationResult(iteration: Int, result: Seq[BaseSolution]): Unit = {
+  override def iterationResult(iteration: Int, result: IndexedSeq[BaseSolution]): Unit = {
     doPrint(hvCalc.calculateFromUnsorted(result.map(_.evaluation)).toString)
   }
 
-  override def globalBestResult(result: Seq[BaseSolution]): Unit = {
+  override def globalBestResult(result: IndexedSeq[BaseSolution]): Unit = {
     doPrint(hvCalc.calculateFromUnsorted(result.map(_.evaluation)).toString)
   }
 

@@ -43,12 +43,12 @@ class BasicAlgorithm(
 
     for (iteration <- 0 until algorithmConfig.iterations) {
       val solutions = colony.run(iteration)
-      val iterationParetoFront = solutionRepo.addSolutions(iteration, solutions)
-      colony.pheromoneUpdate(iterationParetoFront)
+      solutionRepo.addSolutions(iteration, solutions)
+      colony.pheromoneUpdate(solutionRepo)
 
       resultsWriter.iterationResult(
         iteration,
-        solutionRepo.solutionsForIteration(iteration)
+        solutionRepo.paretoSolutionsForLastIteration
       )
     }
     solutionRepo

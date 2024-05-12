@@ -10,7 +10,7 @@ import scala.collection.mutable
 trait AcoLogger {
   def config(problemConfig: ProblemConfig): Unit
   def runTimeInfo(timeNano: Long): Unit
-  def iterationResult(iteration: Int, result: Seq[BaseSolution]): Unit
-  def globalBestResult(result: Seq[BaseSolution]): Unit
+  def iterationResult(iteration: Int, result: IndexedSeq[BaseSolution]): Unit
+  def globalBestResult(result: IndexedSeq[BaseSolution]): Unit
   def close(): Unit
 }

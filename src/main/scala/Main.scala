@@ -111,7 +111,7 @@ object Main {
         val result = baseAlgorithm.run(logger)
         val end = System.nanoTime()
 
-        logger.globalBestResult(result.globalBest)
+        logger.globalBestResult(result.globalParetoSolutions)
 
         logger.runTimeInfo(end - start)
       } finally {

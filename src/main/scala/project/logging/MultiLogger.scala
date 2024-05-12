@@ -12,12 +12,12 @@ class MultiLogger(loggers: Seq[AcoLogger]) extends AcoLogger {
 
   override def iterationResult(
     iteration: Int,
-    result: Seq[BaseSolution]
+    result: IndexedSeq[BaseSolution]
   ): Unit = {
     loggers.foreach(_.iterationResult(iteration, result))
   }
 
-  override def globalBestResult(result: Seq[BaseSolution]): Unit =
+  override def globalBestResult(result: IndexedSeq[BaseSolution]): Unit =
     loggers.foreach(_.globalBestResult(result))
 
   override def close(): Unit =

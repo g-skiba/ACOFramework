@@ -28,9 +28,6 @@ class SingleObjectiveSolver(
       optimizationTargetsCount = 1,
       rnd
     )
-    val takenAntsToPheromoneUpdate =
-      algorithmConfig.pheromoneConfig.resolveTakenAntsToPheromoneUpdate
-        .getOrElse(algorithmConfig.antsNum)
 
     val colony = BasicColony(
       algorithmConfig.alpha,
@@ -43,22 +40,12 @@ class SingleObjectiveSolver(
     )
     for (iteration <- 0 until algorithmConfig.iterations) {
       val solutions = colony.run(iteration)
-      val selectedSolution =
-        solutionRepo.addSolutions(iteration, solutions).head
+      solutionRepo.addSolutions(iteration, solutions)
+      colony.pheromoneUpdate(solutionRepo)
 
-      val minCost =
-        selectedSolution.evaluation.sum // for single objective it's the same as with .zip(heuristicWeights).map(_ * _)
       resultsWriter.iterationResult(
         iteration,
-        solutionRepo.solutionsForIteration(iteration)
-      )
-
-      colony.pheromoneUpdate(
-        solutions
-          .sortBy(
-            _.evaluation.sum
-          ) // for single objective it's the same as with .zip(heuristicWeights).map(_ * _)
-          .take(takenAntsToPheromoneUpdate)
+        solutionRepo.paretoSolutionsForLastIteration
       )
     }
     solutionRepo
