@@ -29,11 +29,11 @@ class StdOutAndCsvFileBuffering2DLogger(
   }
 
   override def iterationResult(iteration: Int, result: IndexedSeq[BaseSolution]): Unit = {
-    doPrint(hvCalc.calculateFromUnsorted(result.map(_.evaluation)).toString)
+    doPrint(hvCalc.calculateRemainingPartFromUnsorted(result.map(_.evaluation)).toString)
   }
 
   override def globalBestResult(result: IndexedSeq[BaseSolution]): Unit = {
-    doPrint(hvCalc.calculateFromUnsorted(result.map(_.evaluation)).toString)
+    doPrint(hvCalc.calculateRemainingPartFromUnsorted(result.map(_.evaluation)).toString)
   }
 
   override def close(): Unit = {

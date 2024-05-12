@@ -29,7 +29,7 @@ class Mtsp(nodes: Seq[Node], matrices: Seq[Map[Edge, Double]])
         .map(n1 => nodes.iterator.filter(_ != n1).map(n2 => matrices(dimension)(Edge(n1, n2))).max) //find max outgoing edge per node
       maxesPerNode.sum
     }
-    new Hypervolume2DCalculator((overestimation(0), overestimation(1)), surfacePartToAxes = true)
+    new Hypervolume2DCalculator((overestimation(0), overestimation(1)))
   }
 
   override def evaluate(solution: SolutionUnderConstruction[TspState]): IndexedSeq[Double] = {
