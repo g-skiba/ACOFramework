@@ -24,7 +24,7 @@ class BasicAlgorithm(
   private val weightsSelector = problem.dimensions match {
     case 1 => ColonyWeightsSelector.D1
     case 2 => new ColonyWeightsSelector.D2.Uniform(0.0, 1.0, algorithmConfig.antsNum)
-    case _ => ???
+    case n => throw new RuntimeException(s"No weights selector implemented for $n-dimensional problem")
   }
 
   override def run(resultsWriter: AcoLogger): BaseSolutionRepo = {

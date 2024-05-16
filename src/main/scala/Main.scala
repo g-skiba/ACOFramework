@@ -91,7 +91,7 @@ object Main {
         val globalWriter = createFileAndWriter("global")
         val hvCalc = problem.getHypervolumeCalculator.get
         new StdOutAndCsvFileBuffering2DLogger(runId, writeToStdOut, iterationWriter, globalWriter, hvCalc)
-      case _ => ???
+      case n => new StdOutLogger(runId)
     }
     sumoCollectorUrl match {
       case None => basicLogger
