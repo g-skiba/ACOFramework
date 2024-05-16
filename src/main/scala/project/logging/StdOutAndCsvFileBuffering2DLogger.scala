@@ -20,8 +20,10 @@ class StdOutAndCsvFileBuffering2DLogger(
   protected def doPrint(msg: String): Unit = {
     doPrint(msg, msg, msg)
   }
-  protected def doPrint(stdOutMsg: String, iterationFileMsg: String, globalFileMsg: String): Unit = {
-    if (writeToStdOut) println(stdOutMsg)
+  protected def doPrint(stdOutMsg: String, iterationFileMsg: String, globalFileMsg: String,
+                        stdoutPrinter: String => Unit = println(_)
+                       ): Unit = {
+    if (writeToStdOut) stdoutPrinter(stdOutMsg)
     iterationResultsWriter.foreach { _ =>
       iterationSB.append(iterationFileMsg)
       iterationSB.append(";")
@@ -38,7 +40,7 @@ class StdOutAndCsvFileBuffering2DLogger(
   }
 
   override def runTimeInfo(timeNano: Long): Unit = {
-    doPrint(TimeUnit.NANOSECONDS.toMillis(timeNano).toString)
+    doPrint(TimeUnit.NANOSECONDS.toSeconds(timeNano).toString)
   }
 
   override def iterationResult(iteration: Int, iterationResult: IndexedSeq[BaseSolution], globalResult: IndexedSeq[BaseSolution]): Unit = {
@@ -48,8 +50,8 @@ class StdOutAndCsvFileBuffering2DLogger(
   }
 
   override def globalBestResult(result: IndexedSeq[BaseSolution]): Unit = {
-    // this is written in the global file as a result of last iteration
-//    doPrint(hvCalc.calculateRemainingPartFromUnsorted(result.map(_.evaluation)).toString)
+    val finalResult = hvCalc.calculateRemainingPartFromUnsorted(result.map(_.evaluation)).toString
+    doPrint(finalResult, "", "", s => print(s"$s "))
   }
 
   override def close(): Unit = {

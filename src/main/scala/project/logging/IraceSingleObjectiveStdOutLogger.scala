@@ -19,7 +19,7 @@ class IraceSingleObjectiveStdOutLogger extends AcoLogger {
     println(s" ${TimeUnit.NANOSECONDS.toSeconds(timeNano)}")
 
   def iterationResult(iteration: Int, iterationResult: IndexedSeq[BaseSolution], globalResult: IndexedSeq[BaseSolution]): Unit =
-    println((iteration, iterationResult.head.evaluation.head, globalResult.head.evaluation.head))
+    println(s"$iteration\t${iterationResult.head.evaluation.head}\t${globalResult.head.evaluation.head}")
 
   def globalBestResult(result: IndexedSeq[BaseSolution]): Unit =
     print(result.head.evaluation.head)

@@ -19,6 +19,7 @@ import pareto.{Hypervolume2DCalculator, getParetoFrontMin}
 import project.config.PheromoneConfig.PheromoneType
 import project.config.{AlgorithmConfig, PheromoneConfig, ProblemConfig, TwoDimPheromoneConfig}
 import project.logging.{AcoLogger, IraceSingleObjectiveStdOutLogger, MultiLogger, StdOutAndCsvFileBuffering2DLogger, StdOutLogger, SumoLogicLogger}
+import project.problem.BaseProblem
 
 import java.io.{File, FileInputStream, PrintWriter}
 import java.nio.charset.StandardCharsets
@@ -69,7 +70,7 @@ object Main {
     }
   }
 
-  def createLogger(runId: String, metadata: Map[String, String], hvCalc: Option[Hypervolume2DCalculator]): AcoLogger = {
+  def createLogger(runId: String, problem: BaseProblem[_], metadata: Map[String, String]): AcoLogger = {
     // can be used for loggers writing to files
     def createFileAndWriter(prefix: String): Option[PrintWriter] = {
       if (writeToFile) {
@@ -83,13 +84,20 @@ object Main {
       }
     }
 
-    val fileLogger = new StdOutAndCsvFileBuffering2DLogger(
-      runId, writeToStdOut, createFileAndWriter("iteration"), createFileAndWriter("global"), hvCalc.get)
+    val basicLogger = problem.dimensions match {
+      case 1 => new IraceSingleObjectiveStdOutLogger
+      case 2 =>
+        val iterationWriter = createFileAndWriter("iteration")
+        val globalWriter = createFileAndWriter("global")
+        val hvCalc = problem.getHypervolumeCalculator.get
+        new StdOutAndCsvFileBuffering2DLogger(runId, writeToStdOut, iterationWriter, globalWriter, hvCalc)
+      case _ => ???
+    }
     sumoCollectorUrl match {
-      case None => fileLogger
+      case None => basicLogger
       case Some(sumoCollectorUrl) =>
         val sumo = new SumoLogicLogger(runId, sumoCollectorUrl, metadata)
-        new MultiLogger(Seq(fileLogger, sumo))
+        new MultiLogger(Seq(basicLogger, sumo))
     }
   }
 
@@ -102,7 +110,7 @@ object Main {
     for (i <- 1 to config.repeat) {
       val runId = s"${prefix}_$i"
       val logger = loggerOverride.getOrElse(
-        createLogger(runId, config.toMap, baseAlgorithm.problem.getHypervolumeCalculator)
+        createLogger(runId, baseAlgorithm.problem, config.toMap)
       )
       try {
         logger.config(config)
