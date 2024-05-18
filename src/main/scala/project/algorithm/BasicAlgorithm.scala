@@ -4,6 +4,7 @@ import pareto.getParetoFrontMin
 import project.colony.{BaseColony, BasicColony}
 import project.config.AlgorithmConfig
 import project.logging.AcoLogger
+import project.logging.DebugLogger.debug
 import project.pheromone.{BasicPheromoneTable, Pheromone}
 import project.problem.BaseProblem
 import project.repo.{BaseSolutionRepo, ParetoSolutionRepo, SingleObjectiveSolutionRepo}
@@ -27,7 +28,7 @@ class BasicAlgorithm(
     case n => throw new RuntimeException(s"No weights selector implemented for $n-dimensional problem")
   }
 
-  override def run(resultsWriter: AcoLogger): BaseSolutionRepo = {
+  override def run(logger: AcoLogger): BaseSolutionRepo = {
     val rnd = random(seed)
 
     val pheromoneTable = Pheromone.create(
@@ -49,10 +50,11 @@ class BasicAlgorithm(
 
     for (iteration <- 0 until algorithmConfig.iterations) {
       val solutions = colony.run(iteration)
+      debug(s"Created ${solutions.size} solutions: ${solutions.map(_.evaluation).sortBy(_.head)}")
       solutionRepo.addSolutions(iteration, solutions)
       colony.pheromoneUpdate(solutionRepo)
 
-      resultsWriter.iterationResult(
+      logger.iterationResult(
         iteration,
         solutionRepo.paretoSolutionsForLastIteration,
         solutionRepo.globalParetoSolutions

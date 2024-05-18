@@ -13,6 +13,8 @@ case class AlgorithmConfig(
     this(100, 200, 2.0, 3.0, new PheromoneConfig())
   }
 
+  def debug: Boolean = antsNum < 30 && iterations < 30
+  
   override def toString: String = {
     s"antsNum: $antsNum; iterations: $iterations; alpha: $alpha; beta: $beta; $pheromoneConfig"
   }

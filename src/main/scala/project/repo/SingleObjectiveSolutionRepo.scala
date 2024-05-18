@@ -1,6 +1,7 @@
 package project.repo
 
 import pareto.getParetoFrontMin
+import project.logging.DebugLogger.debug
 import project.solution.BaseSolution
 
 import scala.collection.mutable.SortedMap as MSortedMap
@@ -18,5 +19,9 @@ class SingleObjectiveSolutionRepo extends BaseSolutionRepo {
 
   override def globalParetoSolutions: IndexedSeq[BaseSolution] = global.toIndexedSeq
 
-  override def paretoSolutionsForLastIteration: IndexedSeq[BaseSolution] = IndexedSeq(bestSolutions.last._2)
+  override def paretoSolutionsForLastIteration: IndexedSeq[BaseSolution] = {
+    val solution = bestSolutions.last._2
+    debug(s"Retrieved best solution from last iteration: ${solution.evaluation}")
+    IndexedSeq(solution)
+  }
 }

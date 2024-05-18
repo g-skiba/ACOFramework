@@ -3,6 +3,7 @@ package project.colony
 import project.ant.{BaseAnt, BasicAnt}
 import project.decision.BasicDecisionAlgorithm
 import project.graph.{Edge, Node}
+import project.logging.DebugLogger.debug
 import project.pheromone.BasePheromoneTable
 import project.problem.BaseProblem
 import project.repo.BaseSolutionRepo
@@ -28,6 +29,7 @@ class BasicColony[T](
     for (i <- 0 until antNumb) {
       ants.append(
         new BasicAnt(
+          i,
           startingNode = problem.startingNode,
           problem = problem,
           decision = new BasicDecisionAlgorithm(

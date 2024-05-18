@@ -1,5 +1,6 @@
 package project.repo
 
+import project.logging.DebugLogger.debug
 import project.solution.BaseSolution
 
 import scala.collection.mutable.SortedMap as MSortedMap
@@ -13,7 +14,9 @@ abstract class BaseSolutionRepo {
   def globalParetoSolutions: IndexedSeq[BaseSolution]
 
   def solutionsForLastIteration: IndexedSeq[BaseSolution] = {
-    allSolutions.last._2
+    val solutions = allSolutions.last._2
+    debug(s"Retrieved all ${solutions.size} last iteration solutions from repo - ${solutions.map(_.evaluation).sortBy(_.head)}")
+    solutions
   }
   def paretoSolutionsForLastIteration: IndexedSeq[BaseSolution]
 

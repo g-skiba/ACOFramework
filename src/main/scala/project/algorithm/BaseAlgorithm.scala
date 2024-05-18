@@ -11,7 +11,7 @@ import scala.util.Random
 
 abstract class BaseAlgorithm {
   val problem: BaseProblem[_]
-  def run(resultsWriter: AcoLogger): BaseSolutionRepo
+  def run(logger: AcoLogger): BaseSolutionRepo
   
   def random(seed: Option[Long]): Random = seed.map(Random(_)).getOrElse(Random())
 }

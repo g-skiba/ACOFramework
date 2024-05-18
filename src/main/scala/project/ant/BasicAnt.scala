@@ -2,6 +2,7 @@ package project.ant
 
 import project.decision.BaseDecisionAlgorithm
 import project.graph.{Edge, Node}
+import project.logging.DebugLogger.debug
 import project.problem.BaseProblem
 import project.solution.BaseSolution
 import project.weights.AntWeightsSelector
@@ -9,10 +10,11 @@ import project.weights.AntWeightsSelector
 import scala.annotation.tailrec
 
 class BasicAnt[T](
-    startingNode: Node,
-    problem: BaseProblem[T],
-    decision: BaseDecisionAlgorithm[T],
-    weightsSelector: AntWeightsSelector,
+  ind: Int,
+  startingNode: Node,
+  problem: BaseProblem[T],
+  decision: BaseDecisionAlgorithm[T],
+  weightsSelector: AntWeightsSelector,
 ) extends BaseAnt[T](
       startingNode,
       problem,
@@ -23,6 +25,7 @@ class BasicAnt[T](
     var solution = problem.initSolution
     val pheromoneWeights = weightsSelector.pheromoneWeightsForIteration(iteration)
     val heuristicWeights = weightsSelector.heuristicWeightsForIteration(iteration)
+//    debug(s"Ant $ind using weights ${pheromoneWeights.mkString("(", ", ", ")")}, ${heuristicWeights.mkString("(", ", ", ")")}")
 
     @tailrec
     def iter(): BaseSolution = {

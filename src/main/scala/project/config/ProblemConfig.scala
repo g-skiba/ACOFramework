@@ -13,6 +13,8 @@ case class ProblemConfig(
     this("", new java.util.ArrayList[String](), 100, new AlgorithmConfig())
   }
 
+  def debug: Boolean = algorithmConfig.debug
+
   override def toString: String = {
     s"problemType: $problemType; problemFiles: ${String.join(",", problemFiles)}; " +
       s"repeat: $repeat; $algorithmConfig"

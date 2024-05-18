@@ -18,7 +18,7 @@ import project.algorithm.BaseAlgorithm
 import pareto.{Hypervolume2DCalculator, getParetoFrontMin}
 import project.config.PheromoneConfig.PheromoneType
 import project.config.{AlgorithmConfig, PheromoneConfig, ProblemConfig, TwoDimPheromoneConfig}
-import project.logging.{AcoLogger, IraceSingleObjectiveStdOutLogger, MultiLogger, StdOutAndCsvFileBuffering2DLogger, StdOutLogger, SumoLogicLogger}
+import project.logging.{AcoLogger, DebugLogger, IraceSingleObjectiveStdOutLogger, MultiLogger, StdOutAndCsvFileBuffering2DLogger, StdOutLogger, SumoLogicLogger}
 import project.problem.BaseProblem
 
 import java.io.{File, FileInputStream, PrintWriter}
@@ -54,6 +54,7 @@ object Main {
     if (writeConfigurationFile) writeConfFile(input)
     val yaml = new Yaml(new Constructor(classOf[ProblemConfig]))
     val conf = yaml.load[ProblemConfig](input)
+    if (conf.debug) DebugLogger.enable()
     runConfiguration(conf)
   }
 

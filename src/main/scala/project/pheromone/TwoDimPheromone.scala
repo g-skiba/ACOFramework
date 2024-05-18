@@ -3,6 +3,7 @@ package project.pheromone
 import project.config.TwoDimPheromoneConfig
 import project.config.TwoDimPheromoneConfig.{GetType, UpdateType}
 import project.graph.Edge
+import project.logging.DebugLogger.debug
 import project.repo.BaseSolutionRepo
 import project.solution.BaseSolution
 
@@ -15,19 +16,20 @@ import scala.util.Random
   * iteration solutions)
   */
 class TwoDimPheromone(
-    edges: Seq[Edge],
-    val increment: Double,
-    val extinction: Double,
-    val pheromoneDimension: Int, // TODO for now ignored, we assume 1-dim problem
-    minValue: Double,
-    maxValue: Double,
-    updateAnts: Option[Int],
-    twoDimPheromoneSize: Int,
-    getType: TwoDimPheromoneConfig.GetType,
-    updateType: TwoDimPheromoneConfig.UpdateType,
-    rnd: Random,
-    debug: Boolean = false
+  edges: Seq[Edge],
+  val increment: Double,
+  val extinction: Double,
+  val pheromoneDimension: Int, // TODO for now ignored, we assume 1-dim problem
+  minValue: Double,
+  maxValue: Double,
+  updateAnts: Option[Int],
+  twoDimPheromoneSize: Int,
+  getType: TwoDimPheromoneConfig.GetType,
+  updateType: TwoDimPheromoneConfig.UpdateType,
+  rnd: Random,
+  detailedDebug: Boolean = false
 ) extends BasePheromoneTable {
+  debug(s"Creating two dim pheromone table with $pheromoneDimension dimensions (ignored), $twoDimPheromoneSize pheromone size and $updateAnts update ants")
   require(
     twoDimPheromoneSize % 2 == 0,
     "Temporary assumption for `getPheromone` based on pairing values starting from edges"
@@ -66,7 +68,7 @@ class TwoDimPheromone(
     } else {
       values(index)
     }
-    if (debug) println(res)
+    if (detailedDebug) debug(res)
     Array(res)
   }
 
@@ -81,7 +83,7 @@ class TwoDimPheromone(
       if (weightedSum) values(i) * weight else math.pow(values(i), weight)
     }
     val value = if (weightedSum) weightedValues.sum else weightedValues.product
-    if (debug) println((value, values))
+    if (detailedDebug) println((value, values))
     Array(value)
   }
 
@@ -95,7 +97,7 @@ class TwoDimPheromone(
       val pos = values(i)
       val neg = values(twoDimPheromoneSize - i - 1)
       val v = ((pos + neg) / 2) + (pos - neg) * (twoDimPheromoneSize / 2 - i)
-      if (debug) println(v)
+      if (detailedDebug) debug(v)
 
       //alternatives
 //      ensureMinMax(v) //seems worse?
@@ -103,7 +105,7 @@ class TwoDimPheromone(
       v
     }.sum / (twoDimPheromoneSize / 2)
 
-    if (debug) println((value, values))
+    if (detailedDebug) debug((value, values))
 
     //additional adjustments?
     Array(ensureMinMax(value, minV = currentMin))
@@ -122,7 +124,7 @@ class TwoDimPheromone(
     val min = values.min
     val max = values.max
     val v = min + (max - min) * expectedValue
-    if (debug) println((expectedValue, v, values))
+    if (detailedDebug) debug((expectedValue, v, values))
     Array(v)
   }
 
@@ -130,17 +132,23 @@ class TwoDimPheromone(
     cache.clear()
 
     val solutions = solutionsRepo.paretoSolutionsForLastIteration
+
     val sortedSolutions = solutions.sortBy(_.evaluation.head).take(updateAnts.getOrElse(solutions.size))
+    require(
+      updateAnts.forall(_ == sortedSolutions.size),
+      s"Wanted: $updateAnts update ants, got ${sortedSolutions.size} solutions"
+    )
+
     val minCost = sortedSolutions.head.evaluation.head
     val maxCost = sortedSolutions.last.evaluation.head
     val partDiff = (maxCost - minCost) / twoDimPheromoneSize
-    if (debug) println(partDiff)
+    if (detailedDebug) debug(partDiff)
 
     def calcPartFromEvaluation(cost: Double): Int =
       ((cost - minCost) / partDiff).toInt.min(twoDimPheromoneSize - 1)
     def calcPartFromIndex(ind: Int): Int = ind * twoDimPheromoneSize / sortedSolutions.size
-    if (debug) {
-      println(
+    if (detailedDebug) {
+      debug(
         sortedSolutions
           .map(_.evaluation.head)
           .map(calcPartFromEvaluation)
@@ -150,7 +158,7 @@ class TwoDimPheromone(
           .toList
           .sortBy(_._1)
       )
-      println(
+      debug(
         sortedSolutions.zipWithIndex
           .map(_._2)
           .map(calcPartFromIndex)
@@ -162,6 +170,7 @@ class TwoDimPheromone(
       )
     }
 
+    debug(s"Updating pheromone with ${sortedSolutions.size} solutions - ${sortedSolutions.map(_.evaluation)}")
     sortedSolutions.zipWithIndex
       .groupBy { case (solution, ind) =>
         //both versions give acceptable results
@@ -201,9 +210,9 @@ class TwoDimPheromone(
       values.map(extinctAndEnsureMinMax)
     )
     currentMin = extinctAndEnsureMinMax(currentMin)
-    if (debug) {
+    if (detailedDebug) {
       val values = pheromone.values.flatten
-      println((values.min, values.max, values.sum / values.size))
+      debug((values.min, values.max, values.sum / values.size))
     }
   }
 
