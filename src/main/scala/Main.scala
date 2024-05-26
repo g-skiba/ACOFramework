@@ -17,7 +17,7 @@ import project.algorithm.BasicAlgorithm
 import project.algorithm.BaseAlgorithm
 import pareto.{Hypervolume2DCalculator, getParetoFrontMin}
 import project.config.PheromoneConfig.PheromoneType
-import project.config.{AlgorithmConfig, PheromoneConfig, ProblemConfig, TwoDimPheromoneConfig}
+import project.config.{AlgorithmConfig, PheromoneConfig, ProblemConfig, SolutionsSelectionStrategy, TwoDimPheromoneConfig}
 import project.logging.{AcoLogger, DebugLogger, IraceSingleObjectiveStdOutLogger, MultiLogger, StdOutAndCsvFileBuffering2DLogger, StdOutLogger, SumoLogicLogger}
 import project.problem.BaseProblem
 
@@ -204,6 +204,14 @@ object RunLoop {
     )
     val minValues = List(0.001)
     val maxValues = List(0.999)
+    def solutionsSelectionStrategies(pheromoneType: PheromoneType) = {
+      import SolutionsSelectionStrategy._
+      pheromoneType match {
+        case PheromoneType.Basic => Seq(LastIterationAll) // also LastIterationPareto, GlobalPareto for multi-objective problems?
+        case PheromoneType.TwoDim => Seq(LastIterationAll, LastIterationPareto, GlobalPareto)
+      }
+    }
+
     val takenAntsToPheromoneUpdates = (for {
       tpe <- tpes
       antsNum <- antsNums
@@ -247,6 +255,7 @@ object RunLoop {
       (phIncrement, phExtinction) <- incrementsAndExtinctions
       phMinValue <- minValues
       phMaxValue <- maxValues
+      solutionsSelectionStrategy <- solutionsSelectionStrategies(phTpe)
       takenAntsToPheromoneUpdate <- takenAntsToPheromoneUpdates(phTpe, antsNum)
       twoDimConfig <- {
         phTpe match {
@@ -263,8 +272,8 @@ object RunLoop {
       }
     } yield {
       val pheromoneConfig = PheromoneConfig(
-        phTpe.toString, phDimension, phIncrement, phExtinction, phMinValue, phMaxValue, takenAntsToPheromoneUpdate,
-        twoDimConfig
+        phTpe.toString, phDimension, phIncrement, phExtinction, phMinValue, phMaxValue,
+        solutionsSelectionStrategy.toString, takenAntsToPheromoneUpdate, twoDimConfig
       )
       val algorithmConfig = AlgorithmConfig(antsNum, iterations, alpha, beta, pheromoneConfig)
       val problemConfig = ProblemConfig(problemType, List(problemInstance).asJava, repeat, algorithmConfig)
@@ -296,6 +305,7 @@ object CmdMain {
     val antsNum: ScallopOption[Int] = opt[Int](default = Some(100))
     val iterations: ScallopOption[Int] = opt[Int](default = Some(200))
     val pheromoneType: ScallopOption[String] = choice(PheromoneType.values.map(_.toString))
+    val solutionsSelectionStrategy: ScallopOption[String] = choice(SolutionsSelectionStrategy.values.map(_.toString))
     val twoDimPhSize: ScallopOption[Int] = opt[Int]()
     val updateType: ScallopOption[String] = choice(TwoDimPheromoneConfig.UpdateType.values.map(_.toString))
     val getType: ScallopOption[String] = choice(TwoDimPheromoneConfig.GetType.values.map(_.toString))
@@ -323,7 +333,7 @@ object CmdMain {
         assert(conf.updateType.isEmpty)
         PheromoneConfig(
           conf.pheromoneType(), phDimension, phIncrement, phExtinction, phMinValue, phMaxValue,
-          takenAntsToPheromoneUpdate, new TwoDimPheromoneConfig()
+          conf.solutionsSelectionStrategy(), takenAntsToPheromoneUpdate, new TwoDimPheromoneConfig()
         )
       case PheromoneType.TwoDim =>
         val twoDimSize = conf.twoDimPhSize()
@@ -332,7 +342,7 @@ object CmdMain {
         val twoDimConfig = TwoDimPheromoneConfig(twoDimSize, getType, updateType)
         PheromoneConfig(
           conf.pheromoneType(), phDimension, phIncrement, phExtinction, phMinValue, phMaxValue,
-          takenAntsToPheromoneUpdate, twoDimConfig
+          conf.solutionsSelectionStrategy(), takenAntsToPheromoneUpdate, twoDimConfig
         )
 
     val problemType = "tsp" // or "tsp" for now

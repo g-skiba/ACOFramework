@@ -1,5 +1,6 @@
 package project.pheromone
 
+import project.config.SolutionsSelectionStrategy
 import project.graph.{Edge, Node}
 import project.logging.DebugLogger.debug
 import project.repo.BaseSolutionRepo
@@ -9,13 +10,14 @@ import scala.collection.mutable.Map as MMap
 
 //wiele macierzy feromonów nie ma sensu przy takiej implementacji updatu feromonów
 class BasicPheromoneTable(
-    edges: Seq[Edge],
-    val increment: Double,
-    val extinction: Double,
-    val pheromoneDimension: Int,
-    minValue: Double,
-    maxValue: Double,
-    updateAnts: Option[Int]
+  edges: Seq[Edge],
+  val increment: Double,
+  val extinction: Double,
+  val pheromoneDimension: Int,
+  minValue: Double,
+  maxValue: Double,
+  solutionsSelectionStrategy: SolutionsSelectionStrategy,
+  updateAnts: Option[Int]
 ) extends BasePheromoneTable {
   debug(s"Creating basic pheromone table with $pheromoneDimension dimensions and $updateAnts update ants")
 
@@ -25,7 +27,7 @@ class BasicPheromoneTable(
   override def getPheromone(edge: Edge): Array[Double] = pheromone(edge)
 
   override def pheromoneUpdate(solutionsRepo: BaseSolutionRepo): Unit = {
-    val solutions = solutionsRepo.solutionsForLastIteration
+    val solutions = solutionsSelectionStrategy(solutionsRepo)
 
     def updateDim(dim: Int, solutionsForDim: IndexedSeq[BaseSolution]): Unit = {
       require(

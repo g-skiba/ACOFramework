@@ -34,6 +34,7 @@ algorithmConfig:
     maxValue: 0.999
     pheromoneDimension: -1 # 0 or below means optimization targets count
     takenAntsToPheromoneUpdate: -1 # 0 or below means all ants
+    solutionsSelectionStrategy: LastIterationPareto # LastIterationAll, LastIterationPareto, GlobalPareto
     twoDimConfig: # applicable only for TwoDim type
       size: 10
       getType: ExponentialRandom # options: ExponentialRandom, WeightedCombination, PairingCombination

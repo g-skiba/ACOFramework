@@ -1,6 +1,6 @@
 package project.pheromone
 
-import project.config.TwoDimPheromoneConfig
+import project.config.{SolutionsSelectionStrategy, TwoDimPheromoneConfig}
 import project.config.TwoDimPheromoneConfig.{GetType, UpdateType}
 import project.graph.Edge
 import project.logging.DebugLogger.debug
@@ -22,6 +22,7 @@ class TwoDimPheromone(
   val pheromoneDimension: Int, // TODO for now ignored, we assume 1-dim problem
   minValue: Double,
   maxValue: Double,
+  solutionsSelectionStrategy: SolutionsSelectionStrategy,
   updateAnts: Option[Int],
   twoDimPheromoneSize: Int,
   getType: TwoDimPheromoneConfig.GetType,
@@ -130,9 +131,8 @@ class TwoDimPheromone(
 
   override def pheromoneUpdate(solutionsRepo: BaseSolutionRepo): Unit = {
     cache.clear()
-
-    val solutions = solutionsRepo.paretoSolutionsForLastIteration
-
+    
+    val solutions = solutionsSelectionStrategy(solutionsRepo)
     val sortedSolutions = solutions.sortBy(_.evaluation.head).take(updateAnts.getOrElse(solutions.size))
     require(
       updateAnts.forall(_ == sortedSolutions.size),

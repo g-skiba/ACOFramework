@@ -24,7 +24,7 @@ class ParetoSolutionRepo extends BaseSolutionRepo {
 
   override def paretoSolutionsForLastIteration: IndexedSeq[BaseSolution] = {
     val solutions = paretoSolutions.last._2
-    debug(s"Retrieved ${solutions.size} pareto solutions from last iteration - ${solutions.map(_.evaluation).sortBy(_.head)}")
+    debug(s"Retrieved ${solutions.size} Pareto solutions from last iteration - ${solutions.map(_.evaluation).sortBy(_.head)}")
     solutions
   }
 
