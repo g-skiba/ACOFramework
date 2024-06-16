@@ -160,13 +160,13 @@ object Main {
 
 object RunLoop {
   def main(args: Array[String]): Unit = {
-    val problemType = "tsp"
+    val problemType = "mtsp"
     val repeat = 10
 
     //ProblemConfig
     val problemInstances = List(
-      "mtsp/berlin52.tsp",
-      "mtsp/lust_kroA100.tsp",
+//      "mtsp/berlin52.tsp",
+      List("mtsp/lust_kroA100.tsp", "mtsp/lust_kroB100.tsp"),
 //      "mtsp/tsp225.tsp",
 //      "mtsp/a280mod.tsp",
 //      "mtsp/pcb442.tsp",
@@ -207,7 +207,7 @@ object RunLoop {
     def solutionsSelectionStrategies(pheromoneType: PheromoneType) = {
       import SolutionsSelectionStrategy._
       pheromoneType match {
-        case PheromoneType.Basic => Seq(LastIterationAll) // also LastIterationPareto, GlobalPareto for multi-objective problems?
+        case PheromoneType.Basic => Seq(LastIterationAll, LastIterationPareto, GlobalPareto)
         case PheromoneType.TwoDim => Seq(LastIterationAll, LastIterationPareto, GlobalPareto)
       }
     }
@@ -245,7 +245,7 @@ object RunLoop {
 
     val ec: ExecutionContext = ExecutionContextHelper.fixed("worker", size = 12)
     val futures = for {
-      problemInstance <- problemInstances
+      problemInstances <- problemInstances
       antsNum <- antsNums
       iterations <- iterationsNums
       alpha <- alphas
@@ -276,7 +276,7 @@ object RunLoop {
         solutionsSelectionStrategy.toString, takenAntsToPheromoneUpdate, twoDimConfig
       )
       val algorithmConfig = AlgorithmConfig(antsNum, iterations, alpha, beta, pheromoneConfig)
-      val problemConfig = ProblemConfig(problemType, List(problemInstance).asJava, repeat, algorithmConfig)
+      val problemConfig = ProblemConfig(problemType, problemInstances.asJava, repeat, algorithmConfig)
 
 //      problemConfig
       Future {
