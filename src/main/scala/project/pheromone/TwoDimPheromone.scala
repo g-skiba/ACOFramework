@@ -230,7 +230,7 @@ class TwoDimPheromone(
     if (detailedDebug) {
       pheromone.foreach { p =>
         val values = p.flatten
-        debug((values.min, values.max, values.sum / values.size))
+        debug((values.min, values.max, values.sum / values.length))
       }
     }
   }
