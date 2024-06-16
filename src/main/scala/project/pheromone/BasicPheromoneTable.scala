@@ -26,8 +26,6 @@ class BasicPheromoneTable(
   override def getPheromone(edge: Edge): Array[Double] = pheromone(edge)
 
   override def pheromoneUpdate(solutionsRepo: BaseSolutionRepo): Unit = {
-    val solutions = solutionsSelectionStrategy(solutionsRepo)
-
     def updateDim(dim: Int, solutionsForDim: IndexedSeq[BaseSolution]): Unit = {
       require(
         updateAnts.forall(_ == solutionsForDim.size),
@@ -44,6 +42,8 @@ class BasicPheromoneTable(
             }
         }
     }
+    
+    val solutions = solutionsSelectionStrategy(solutionsRepo)
 
     def optionallySortedSolutions(dim: Int): IndexedSeq[BaseSolution] = {
       updateAnts.map(_ => solutions.sortBy(_.evaluation(dim))).getOrElse(solutions)

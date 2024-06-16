@@ -19,7 +19,7 @@ class TwoDimPheromone(
   edges: Seq[Edge],
   val increment: Double,
   val extinction: Double,
-  val pheromoneDimension: Int, // TODO for now ignored, we assume 1-dim problem
+  val pheromoneDimension: Int, // TODO for now assuming this is the same as the number of optimization targets
   minValue: Double,
   maxValue: Double,
   solutionsSelectionStrategy: SolutionsSelectionStrategy,
@@ -30,32 +30,40 @@ class TwoDimPheromone(
   rnd: Random,
   detailedDebug: Boolean = false
 ) extends BasePheromoneTable {
-  debug(s"Creating two dim pheromone table with $pheromoneDimension dimensions (ignored), $twoDimPheromoneSize pheromone size and $updateAnts update ants")
+  debug(s"Creating two dim pheromone table with $pheromoneDimension dimensions, $twoDimPheromoneSize pheromone size and $updateAnts update ants")
   require(
     twoDimPheromoneSize % 2 == 0,
     "Temporary assumption for `getPheromone` based on pairing values starting from edges"
   )
   private val cache: MMap[Edge, Array[Double]] = MMap.empty
 
-  val pheromone: MMap[Edge, IndexedSeq[Double]] =
-    edges.map((_, IndexedSeq.fill(twoDimPheromoneSize)(maxValue))).to(MMap)
+  val pheromone: Array[MMap[Edge, IndexedSeq[Double]]] =
+    Array.fill(pheromoneDimension)(edges.map((_, IndexedSeq.fill(twoDimPheromoneSize)(maxValue))).to(MMap))
   private var currentMin = maxValue
 
   override def getPheromone(edge: Edge): Array[Double] = {
-    getType match {
-      case GetType.ExponentialRandom => exponentialRandom(edge, maxUpTo = false) //can't cache since it's randomized
-      case GetType.ExponentialRandomMax => exponentialRandom(edge, maxUpTo = true) //can't cache since it's randomized
-      case GetType.WeightedCombination => cache.getOrElseUpdate(edge, weightedCombination(edge))
-      case GetType.PairingCombination => cache.getOrElseUpdate(edge, pairingCombination(edge))
-      case GetType.ExpectedCombination => cache.getOrElseUpdate(edge, expectedCombination(edge))
+    def calculate = {
+      Array.tabulate[Double](pheromoneDimension) { dim =>
+        val phValues = pheromone(dim)(edge)
+
+        getType match {
+          case GetType.ExponentialRandom => exponentialRandom(phValues, maxUpTo = false)
+          case GetType.ExponentialRandomMax => exponentialRandom(phValues, maxUpTo = true)
+          case GetType.WeightedCombination => weightedCombination(phValues)
+          case GetType.PairingCombination => pairingCombination(phValues)
+          case GetType.ExpectedCombination => expectedCombination(phValues)
+        }
+      }
     }
+
+    if (getType.isRandomized) calculate
+    else cache.getOrElseUpdate(edge, calculate)
   }
 
-  private def exponentialRandom(edge: Edge, maxUpTo: Boolean): Array[Double] = {
+  private def exponentialRandom(values: IndexedSeq[Double], maxUpTo: Boolean): Double = {
     val random = rnd.nextInt((1 << twoDimPheromoneSize) - 1) + 1
     val log = math.log(random) / math.log(2)
     val index = twoDimPheromoneSize - 1 - log.toInt
-    val values = pheromone(edge)
 
     val res = if (maxUpTo) {
       @tailrec
@@ -70,12 +78,11 @@ class TwoDimPheromone(
       values(index)
     }
     if (detailedDebug) debug(res)
-    Array(res)
+    res
   }
 
-  private def weightedCombination(edge: Edge): Array[Double] = {
+  private def weightedCombination(values: IndexedSeq[Double]): Double = {
     val weightedSum = false
-    val values = pheromone(edge)
     //these values could be precalculated / cached (per iteration)
     val weightedValues = (0 until twoDimPheromoneSize).iterator.map { i =>
       val weight =
@@ -85,11 +92,10 @@ class TwoDimPheromone(
     }
     val value = if (weightedSum) weightedValues.sum else weightedValues.product
     if (detailedDebug) println((value, values))
-    Array(value)
+    value
   }
 
-  private def pairingCombination(edge: Edge): Array[Double] = {
-    val values = pheromone(edge)
+  private def pairingCombination(values: IndexedSeq[Double]): Double = {
     //these values could be precalculated / cached (per iteration)
     //pairing from outside to the center; within pairs calculate "final value" based on avg and diff
     // then the contrast between "positive" and "negative" values should be reinforced
@@ -109,12 +115,11 @@ class TwoDimPheromone(
     if (detailedDebug) debug((value, values))
 
     //additional adjustments?
-    Array(ensureMinMax(value, minV = currentMin))
-//    Array(value)
+    ensureMinMax(value, minV = currentMin)
+//    value
   }
 
-  private def expectedCombination(edge: Edge): Array[Double] = {
-    val values = pheromone(edge)
+  private def expectedCombination(values: IndexedSeq[Double]): Double = {
     val sum = values.sum
     // calculate "expected score" of the edge (between 0 and 1)
     val expectedValue = values.reverseIterator.zipWithIndex.map { case (v, ind) =>
@@ -126,74 +131,95 @@ class TwoDimPheromone(
     val max = values.max
     val v = min + (max - min) * expectedValue
     if (detailedDebug) debug((expectedValue, v, values))
-    Array(v)
+    v
   }
 
   override def pheromoneUpdate(solutionsRepo: BaseSolutionRepo): Unit = {
     cache.clear()
-    
-    val solutions = solutionsSelectionStrategy(solutionsRepo)
-    val sortedSolutions = solutions.sortBy(_.evaluation.head).take(updateAnts.getOrElse(solutions.size))
-    require(
-      updateAnts.forall(_ == sortedSolutions.size),
-      s"Wanted: $updateAnts update ants, got ${sortedSolutions.size} solutions"
-    )
 
-    val minCost = sortedSolutions.head.evaluation.head
-    val maxCost = sortedSolutions.last.evaluation.head
-    val partDiff = (maxCost - minCost) / twoDimPheromoneSize
-    if (detailedDebug) debug(partDiff)
+    def updateDim(dim: Int, sortedSolutions: IndexedSeq[BaseSolution]): Unit = {
+      require(
+        updateAnts.forall(_ == sortedSolutions.size),
+        s"Wanted: $updateAnts update ants, got ${sortedSolutions.size} solutions"
+      )
 
-    def calcPartFromEvaluation(cost: Double): Int =
-      ((cost - minCost) / partDiff).toInt.min(twoDimPheromoneSize - 1)
-    def calcPartFromIndex(ind: Int): Int = ind * twoDimPheromoneSize / sortedSolutions.size
-    if (detailedDebug) {
-      debug(
-        sortedSolutions
-          .map(_.evaluation.head)
-          .map(calcPartFromEvaluation)
-          .groupBy(identity)
-          .view
-          .mapValues(_.size)
-          .toList
-          .sortBy(_._1)
-      )
-      debug(
-        sortedSolutions.zipWithIndex
-          .map(_._2)
-          .map(calcPartFromIndex)
-          .groupBy(identity)
-          .view
-          .mapValues(_.size)
-          .toList
-          .sortBy(_._1)
-      )
+      val minCost = sortedSolutions.head.evaluation.head
+      val maxCost = sortedSolutions.last.evaluation.head
+      val partDiff = (maxCost - minCost) / twoDimPheromoneSize
+      if (detailedDebug) debug(partDiff)
+
+      def calcPartFromEvaluation(cost: Double): Int =
+        ((cost - minCost) / partDiff).toInt.min(twoDimPheromoneSize - 1)
+      def calcPartFromIndex(ind: Int): Int = ind * twoDimPheromoneSize / sortedSolutions.size
+      if (detailedDebug) {
+        debug(
+          sortedSolutions
+            .map(_.evaluation.head)
+            .map(calcPartFromEvaluation)
+            .groupBy(identity)
+            .view
+            .mapValues(_.size)
+            .toList
+            .sortBy(_._1)
+        )
+        debug(
+          sortedSolutions.zipWithIndex
+            .map(_._2)
+            .map(calcPartFromIndex)
+            .groupBy(identity)
+            .view
+            .mapValues(_.size)
+            .toList
+            .sortBy(_._1)
+        )
+      }
+
+      debug(s"Updating pheromone with ${sortedSolutions.size} solutions - ${sortedSolutions.map(_.evaluation)}")
+      sortedSolutions.zipWithIndex
+        .groupBy { case (solution, ind) =>
+          //both versions give acceptable results
+          updateType match {
+            case UpdateType.PartFromEvaluation =>
+              calcPartFromEvaluation(solution.evaluation.head)
+            case UpdateType.PartFromIndex =>
+              calcPartFromIndex(ind)
+          }
+        }
+        .foreach { case (part, partSolutions) =>
+          val partIncrement = increment / partSolutions.size
+          partSolutions.foreach { case (solution, _) =>
+            solution.solution
+              .sliding(2)
+              .map(x => Edge(x.head, x.last))
+              .foreach(edge =>
+                pheromone(dim).updateWith(edge)(pheromones =>
+                  pheromones.map(ph => ph.updated(part, ph(part) + partIncrement))
+                )
+              )
+          }
+        }
     }
 
-    debug(s"Updating pheromone with ${sortedSolutions.size} solutions - ${sortedSolutions.map(_.evaluation)}")
-    sortedSolutions.zipWithIndex
-      .groupBy { case (solution, ind) =>
-        //both versions give acceptable results
-        updateType match {
-          case UpdateType.PartFromEvaluation =>
-            calcPartFromEvaluation(solution.evaluation.head)
-          case UpdateType.PartFromIndex =>
-            calcPartFromIndex(ind)
+    val solutions = solutionsSelectionStrategy(solutionsRepo)
+
+    def sortedSolutions(dim: Int): IndexedSeq[BaseSolution] = {
+      solutions.sortBy(_.evaluation(dim))
+    }
+
+    val takeSolutions = updateAnts.getOrElse(solutions.size)
+    pheromoneDimension match {
+      case 1 =>
+        updateDim(0, sortedSolutions(0).take(takeSolutions))
+      case 2 =>
+        val sorted = sortedSolutions(0)
+        updateDim(0, sorted.take(takeSolutions))
+        updateDim(1, sorted.reverseIterator.take(takeSolutions).toIndexedSeq)
+      case _ =>
+        for (dim <- 0 until pheromoneDimension) {
+          val sorted = sortedSolutions(dim)
+          updateDim(dim, sorted.take(takeSolutions))
         }
-      }
-      .foreach { case (part, partSolutions) =>
-        val partIncrement = increment / partSolutions.size
-        partSolutions.foreach { case (solution, _) =>
-          solution.solution
-            .sliding(2)
-            .map(x => Edge(x.head, x.last))
-            .foreach(edge =>
-              pheromone.updateWith(edge)(pheromones =>
-                pheromones.map(ph => ph.updated(part, ph(part) + partIncrement))
-              )
-            )
-        }
-      }
+    }
   }
 
   private def ensureMinMax(double: Double, maxV: Double = maxValue, minV: Double = minValue): Double = {
@@ -206,13 +232,15 @@ class TwoDimPheromone(
       ensureMinMax(e)
     }
 
-    pheromone.mapValuesInPlace((_, values) =>
+    pheromone.foreach(_.mapValuesInPlace((_, values) =>
       values.map(extinctAndEnsureMinMax)
-    )
+    ))
     currentMin = extinctAndEnsureMinMax(currentMin)
     if (detailedDebug) {
-      val values = pheromone.values.flatten
-      debug((values.min, values.max, values.sum / values.size))
+      pheromone.foreach { p =>
+        val values = p.values.flatten
+        debug((values.min, values.max, values.sum / values.size))
+      }
     }
   }
 

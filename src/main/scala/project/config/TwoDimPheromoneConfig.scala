@@ -35,8 +35,12 @@ case class TwoDimPheromoneConfig(
 }
 
 object TwoDimPheromoneConfig {
-  enum GetType {
-    case ExponentialRandom, ExponentialRandomMax, WeightedCombination, PairingCombination, ExpectedCombination
+  enum GetType(val isRandomized: Boolean) {
+    case ExponentialRandom extends GetType(true)
+    case ExponentialRandomMax extends GetType(true)
+    case WeightedCombination extends GetType(false)
+    case PairingCombination extends GetType(false)
+    case ExpectedCombination extends GetType(false)
   }
   enum UpdateType {
     case PartFromEvaluation, PartFromIndex
