@@ -20,10 +20,13 @@ class BasicPheromoneTable(
 ) extends BasePheromoneTable {
   debug(s"Creating basic pheromone table with $pheromoneDimension dimensions and $updateAnts update ants")
 
-  private val pheromone: MMap[Edge, Array[Double]] =
-    edges.map((_, Array.fill(pheromoneDimension)(maxValue))).to(MMap)
+  // indexed by edges' cantor value
+  private val pheromone: Array[Array[Double]] = {
+    val maxCantorValue = edges.iterator.map(e => e.cantorValue).max
+    Array.fill(maxCantorValue + 1)(Array.fill(pheromoneDimension)(maxValue))
+  }
 
-  override def getPheromone(edge: Edge): Array[Double] = pheromone(edge)
+  override def getPheromone(edge: Edge): Array[Double] = pheromone(edge.cantorValue)
 
   override def pheromoneUpdate(solutionsRepo: BaseSolutionRepo): Unit = {
     def updateDim(dim: Int, solutionsForDim: IndexedSeq[BaseSolution]): Unit = {
@@ -37,7 +40,7 @@ class BasicPheromoneTable(
             .sliding(2)
             .map(x => Edge(x.head, x.last))
             .foreach { edge =>
-              val edgePheromones = pheromone(edge)
+              val edgePheromones = pheromone(edge.cantorValue)
               edgePheromones(dim) += increment
             }
         }
@@ -70,9 +73,7 @@ class BasicPheromoneTable(
       val e = double * (1 - extinction)
       e.min(maxValue).max(minValue)
     }
-    pheromone.mapValuesInPlace((_, values) =>
-      values.map(extinctAndEnsureMinMax)
-    )
+    pheromone.foreach(_.mapInPlace(extinctAndEnsureMinMax))
   }
 
 }

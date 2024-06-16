@@ -35,16 +35,19 @@ class TwoDimPheromone(
     twoDimPheromoneSize % 2 == 0,
     "Temporary assumption for `getPheromone` based on pairing values starting from edges"
   )
-  private val cache: MMap[Edge, Array[Double]] = MMap.empty
+  private val maxCantorValue = edges.iterator.map(e => e.cantorValue).max
+  // indexed by edges' cantor value
+  private val cache: ArrayCache[Array[Double]] = new ArrayCache[Array[Double]](maxCantorValue, null)
 
-  val pheromone: Array[MMap[Edge, Array[Double]]] =
-    Array.fill(pheromoneDimension)(edges.map((_, Array.fill(twoDimPheromoneSize)(maxValue))).to(MMap))
+  // indexed by dim and edges' cantor value
+  val pheromone: Array[Array[Array[Double]]] =
+    Array.fill(pheromoneDimension)(Array.fill(maxCantorValue + 1)(Array.fill(twoDimPheromoneSize)(maxValue)))
   private var currentMin = maxValue
 
   override def getPheromone(edge: Edge): Array[Double] = {
     def calculate = {
       Array.tabulate[Double](pheromoneDimension) { dim =>
-        val phValues = pheromone(dim)(edge)
+        val phValues = pheromone(dim)(edge.cantorValue)
 
         getType match {
           case GetType.ExponentialRandom => exponentialRandom(phValues, maxUpTo = false)
@@ -57,7 +60,7 @@ class TwoDimPheromone(
     }
 
     if (getType.isRandomized) calculate
-    else cache.getOrElseUpdate(edge, calculate)
+    else cache.getOrElseUpdate(edge.cantorValue, calculate)
   }
 
   private def exponentialRandom(values: Array[Double], maxUpTo: Boolean): Double = {
@@ -192,7 +195,7 @@ class TwoDimPheromone(
               .sliding(2)
               .map(x => Edge(x.head, x.last))
               .foreach { edge =>
-                val pheromones = pheromone(dim)(edge)
+                val pheromones = pheromone(dim)(edge.cantorValue)
                 pheromones(part) += increment
               }
           }
@@ -231,13 +234,11 @@ class TwoDimPheromone(
       ensureMinMax(e)
     }
 
-    pheromone.foreach(_.mapValuesInPlace((_, values) =>
-      values.map(extinctAndEnsureMinMax)
-    ))
+    pheromone.foreach(_.foreach(_.mapInPlace(extinctAndEnsureMinMax)))
     currentMin = extinctAndEnsureMinMax(currentMin)
     if (detailedDebug) {
       pheromone.foreach { p =>
-        val values = p.values.flatten
+        val values = p.flatten
         debug((values.min, values.max, values.sum / values.size))
       }
     }
