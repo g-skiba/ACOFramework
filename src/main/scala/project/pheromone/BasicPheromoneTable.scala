@@ -3,6 +3,7 @@ package project.pheromone
 import project.config.SolutionsSelectionStrategy
 import project.graph.{Edge, Node}
 import project.logging.DebugLogger.debug
+import project.logging.WarnLogger.warn
 import project.repo.BaseSolutionRepo
 import project.solution.BaseSolution
 
@@ -30,11 +31,10 @@ class BasicPheromoneTable(
 
   override def pheromoneUpdate(solutionsRepo: BaseSolutionRepo): Unit = {
     def updateDim(dim: Int, solutionsForDim: IndexedSeq[BaseSolution]): Unit = {
-      require(
-        updateAnts.forall(_ == solutionsForDim.size),
-        s"Wanted: $updateAnts update ants, got ${solutionsForDim.size} solutions"
-      )
-      debug(s"Updating dimension $dim using ${solutionsForDim.size} solutions: ${solutionsForDim.map(_.evaluation).sortBy(e => e.applyOrElse(dim, _ => e.head))}")
+      if (!updateAnts.forall(_ == solutionsForDim.size)) {
+        warn(s"Wanted: $updateAnts update ants, got ${solutionsForDim.size} solutions")
+      }
+      debug(s"Updating pheromone for dimension $dim using ${solutionsForDim.size} solutions: ${solutionsForDim.map(_.evaluation).sortBy(e => e.applyOrElse(dim, _ => e.head))}")
       solutionsForDim.foreach { solution =>
           solution.solution
             .sliding(2)

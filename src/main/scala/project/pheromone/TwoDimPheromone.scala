@@ -4,6 +4,7 @@ import project.config.{SolutionsSelectionStrategy, TwoDimPheromoneConfig}
 import project.config.TwoDimPheromoneConfig.{GetType, UpdateType}
 import project.graph.Edge
 import project.logging.DebugLogger.debug
+import project.logging.WarnLogger.warn
 import project.repo.BaseSolutionRepo
 import project.solution.BaseSolution
 
@@ -94,7 +95,7 @@ class TwoDimPheromone(
       if (weightedSum) values(i) * weight else math.pow(values(i), weight)
     }
     val value = if (weightedSum) weightedValues.sum else weightedValues.product
-    if (detailedDebug) println((value, values))
+    if (detailedDebug) println((value, values.mkString("[", ",", "]")))
     value
   }
 
@@ -115,7 +116,7 @@ class TwoDimPheromone(
       v
     }.sum / (twoDimPheromoneSize / 2)
 
-    if (detailedDebug) debug((value, values))
+    if (detailedDebug) debug((value, values.mkString("[", ",", "]")))
 
     //additional adjustments?
     ensureMinMax(value, minV = currentMin)
@@ -133,7 +134,7 @@ class TwoDimPheromone(
     val min = values.min
     val max = values.max
     val v = min + (max - min) * expectedValue
-    if (detailedDebug) debug((expectedValue, v, values))
+    if (detailedDebug) debug((expectedValue, v, values.mkString("[", ",", "]")))
     v
   }
 
@@ -141,10 +142,9 @@ class TwoDimPheromone(
     cache.clear()
 
     def updateDim(dim: Int, sortedSolutions: IndexedSeq[BaseSolution]): Unit = {
-      require(
-        updateAnts.forall(_ == sortedSolutions.size),
-        s"Wanted: $updateAnts update ants, got ${sortedSolutions.size} solutions"
-      )
+      if (!updateAnts.forall(_ == sortedSolutions.size)) {
+        warn(s"Wanted: $updateAnts update ants, got ${sortedSolutions.size} solutions")
+      }
 
       val minCost = sortedSolutions.head.evaluation.head
       val maxCost = sortedSolutions.last.evaluation.head
@@ -177,7 +177,7 @@ class TwoDimPheromone(
         )
       }
 
-      debug(s"Updating pheromone with ${sortedSolutions.size} solutions - ${sortedSolutions.map(_.evaluation)}")
+      debug(s"Updating pheromone for dimension $dim with ${sortedSolutions.size} solutions - ${sortedSolutions.map(_.evaluation)}")
       sortedSolutions.zipWithIndex
         .groupBy { case (solution, ind) =>
           //both versions give acceptable results
