@@ -45,26 +45,17 @@ class BasicPheromoneTable(
             }
         }
     }
-    
-    val solutions = solutionsSelectionStrategy(solutionsRepo)
 
-    def optionallySortedSolutions(dim: Int): IndexedSeq[BaseSolution] = {
-      updateAnts.map(_ => solutions.sortBy(_.evaluation(dim))).getOrElse(solutions)
+    val solutions = solutionsSelectionStrategy(solutionsRepo)
+    val takeSolutions = updateAnts.getOrElse(solutions.size)
+
+    def sortAndLimitSolutions(dim: Int): IndexedSeq[BaseSolution] = {
+      solutions.sortBy(_.evaluation(dim)).take(takeSolutions)
     }
 
-    val takeSolutions = updateAnts.getOrElse(solutions.size)
-    pheromoneDimension match {
-      case 1 =>
-        updateDim(0, optionallySortedSolutions(0).take(takeSolutions))
-      case 2 =>
-        val optionallySorted = optionallySortedSolutions(0)
-        updateDim(0, optionallySorted.take(takeSolutions))
-        updateDim(1, optionallySorted.takeRight(takeSolutions))
-      case _ =>
-        for (dim <- 0 until pheromoneDimension) {
-          val optionallySorted = optionallySortedSolutions(dim)
-          updateDim(dim, optionallySorted.take(takeSolutions))
-        }
+    for (dim <- 0 until pheromoneDimension) {
+      val sortedTopSolutions = sortAndLimitSolutions(dim)
+      updateDim(dim, sortedTopSolutions.take(takeSolutions))
     }
   }
 

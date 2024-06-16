@@ -203,24 +203,15 @@ class TwoDimPheromone(
     }
 
     val solutions = solutionsSelectionStrategy(solutionsRepo)
+    val takeSolutions = updateAnts.getOrElse(solutions.size)
 
-    def sortedSolutions(dim: Int): IndexedSeq[BaseSolution] = {
-      solutions.sortBy(_.evaluation(dim))
+    def sortAndLimitSolutions(dim: Int): IndexedSeq[BaseSolution] = {
+      solutions.sortBy(_.evaluation(dim)).take(takeSolutions)
     }
 
-    val takeSolutions = updateAnts.getOrElse(solutions.size)
-    pheromoneDimension match {
-      case 1 =>
-        updateDim(0, sortedSolutions(0).take(takeSolutions))
-      case 2 =>
-        val sorted = sortedSolutions(0)
-        updateDim(0, sorted.take(takeSolutions))
-        updateDim(1, sorted.reverseIterator.take(takeSolutions).toIndexedSeq)
-      case _ =>
-        for (dim <- 0 until pheromoneDimension) {
-          val sorted = sortedSolutions(dim)
-          updateDim(dim, sorted.take(takeSolutions))
-        }
+    for (dim <- 0 until pheromoneDimension) {
+      val optionallySorted = sortAndLimitSolutions(dim)
+      updateDim(dim, optionallySorted.take(takeSolutions))
     }
   }
 
