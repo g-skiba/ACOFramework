@@ -37,8 +37,8 @@ class TwoDimPheromone(
   )
   private val cache: MMap[Edge, Array[Double]] = MMap.empty
 
-  val pheromone: Array[MMap[Edge, IndexedSeq[Double]]] =
-    Array.fill(pheromoneDimension)(edges.map((_, IndexedSeq.fill(twoDimPheromoneSize)(maxValue))).to(MMap))
+  val pheromone: Array[MMap[Edge, Array[Double]]] =
+    Array.fill(pheromoneDimension)(edges.map((_, Array.fill(twoDimPheromoneSize)(maxValue))).to(MMap))
   private var currentMin = maxValue
 
   override def getPheromone(edge: Edge): Array[Double] = {
@@ -60,7 +60,7 @@ class TwoDimPheromone(
     else cache.getOrElseUpdate(edge, calculate)
   }
 
-  private def exponentialRandom(values: IndexedSeq[Double], maxUpTo: Boolean): Double = {
+  private def exponentialRandom(values: Array[Double], maxUpTo: Boolean): Double = {
     val random = rnd.nextInt((1 << twoDimPheromoneSize) - 1) + 1
     val log = math.log(random) / math.log(2)
     val index = twoDimPheromoneSize - 1 - log.toInt
@@ -81,7 +81,7 @@ class TwoDimPheromone(
     res
   }
 
-  private def weightedCombination(values: IndexedSeq[Double]): Double = {
+  private def weightedCombination(values: Array[Double]): Double = {
     val weightedSum = false
     //these values could be precalculated / cached (per iteration)
     val weightedValues = (0 until twoDimPheromoneSize).iterator.map { i =>
@@ -95,7 +95,7 @@ class TwoDimPheromone(
     value
   }
 
-  private def pairingCombination(values: IndexedSeq[Double]): Double = {
+  private def pairingCombination(values: Array[Double]): Double = {
     //these values could be precalculated / cached (per iteration)
     //pairing from outside to the center; within pairs calculate "final value" based on avg and diff
     // then the contrast between "positive" and "negative" values should be reinforced
@@ -119,7 +119,7 @@ class TwoDimPheromone(
 //    value
   }
 
-  private def expectedCombination(values: IndexedSeq[Double]): Double = {
+  private def expectedCombination(values: Array[Double]): Double = {
     val sum = values.sum
     // calculate "expected score" of the edge (between 0 and 1)
     val expectedValue = values.reverseIterator.zipWithIndex.map { case (v, ind) =>
@@ -191,11 +191,10 @@ class TwoDimPheromone(
             solution.solution
               .sliding(2)
               .map(x => Edge(x.head, x.last))
-              .foreach(edge =>
-                pheromone(dim).updateWith(edge)(pheromones =>
-                  pheromones.map(ph => ph.updated(part, ph(part) + partIncrement))
-                )
-              )
+              .foreach { edge =>
+                val pheromones = pheromone(dim)(edge)
+                pheromones(part) += increment
+              }
           }
         }
     }
