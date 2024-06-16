@@ -8,7 +8,6 @@ import project.solution.BaseSolution
 
 import scala.collection.mutable.Map as MMap
 
-//wiele macierzy feromonów nie ma sensu przy takiej implementacji updatu feromonów
 class BasicPheromoneTable(
   edges: Seq[Edge],
   val increment: Double,

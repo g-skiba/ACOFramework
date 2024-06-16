@@ -30,12 +30,13 @@ algorithmConfig:
     tpe: Basic
     increment: 0.05
     extinction: 0.05
+    pheromoneTpe: Basic
     minValue: 0.001
     maxValue: 0.999
     pheromoneDimension: -1 # 0 or below means optimization targets count
     takenAntsToPheromoneUpdate: -1 # 0 or below means all ants
     solutionsSelectionStrategy: LastIterationPareto # LastIterationAll, LastIterationPareto, GlobalPareto
     twoDimConfig: # applicable only for TwoDim type
-      size: 10
-      getType: ExponentialRandom # options: ExponentialRandom, WeightedCombination, PairingCombination
-      updateType: PartFromEvaluation # options: PartFromEvaluation, PartFromIndex
+      twoDimSize: 10
+      twoDimGetType: PairingCombination # options: ExponentialRandom, ExponentialRandomMax, WeightedCombination, PairingCombination, ExpectedCombination
+      twoDimUpdateType: PartFromIndex # options: PartFromEvaluation, PartFromIndex
