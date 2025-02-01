@@ -5,8 +5,8 @@ object DebugLogger {
 
   def enable(): Unit = {
     enabled = true
-    debug("Debug logging enabled")
+    println("Debug logging enabled")
   }
 
-  def debug(any: => Any): Unit = if (enabled) println(any)
+  def debug(any: => Any): Unit = if (enabled) println(s"Debug: $any")
 }

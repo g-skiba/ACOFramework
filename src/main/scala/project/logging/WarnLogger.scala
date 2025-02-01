@@ -4,9 +4,9 @@ object WarnLogger {
   private var enabled: Boolean = true
 
   def disable(): Unit = {
-    enabled = true
-    warn("Debug logging enabled")
+    enabled = false
+    println("Warn logging disabled")
   }
 
-  def warn(any: => Any): Unit = if (enabled) println(any)
+  def warn(any: => Any): Unit = if (enabled) println(s"Warn: $any")
 }

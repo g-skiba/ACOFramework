@@ -18,7 +18,7 @@ import project.algorithm.BaseAlgorithm
 import pareto.{Hypervolume2DCalculator, getParetoFrontMin}
 import project.config.PheromoneConfig.PheromoneType
 import project.config.{AlgorithmConfig, PheromoneConfig, ProblemConfig, SolutionsSelectionStrategy, TwoDimPheromoneConfig}
-import project.logging.{AcoLogger, DebugLogger, IraceSingleObjectiveStdOutLogger, MultiLogger, StdOutAndCsvFileBuffering2DLogger, StdOutLogger, SumoLogicLogger}
+import project.logging.{AcoLogger, DebugLogger, IraceSingleObjectiveStdOutLogger, MultiLogger, StdOutAndCsvFileBuffering2DLogger, StdOutLogger, SumoLogicLogger, WarnLogger}
 import project.problem.BaseProblem
 
 import java.io.{File, FileInputStream, PrintWriter}
@@ -43,6 +43,7 @@ object Main {
 
   val enableLogsBuffering = false
   val writeToStdOut = true
+  if (!writeToStdOut) WarnLogger.disable()
   val writeToFile = false
   val writeConfigurationFile = false
   val sumoCollectorUrl: Option[String] =
