@@ -10,8 +10,8 @@ import java.util.concurrent.TimeUnit
  * measuring execution time of the algorithm when testing configurations against test instances list).
  */
 class IraceTimeAsResultStdOutLogger extends AcoLogger {
-  def config(problemConfig: ProblemConfig): Unit =
-    println(problemConfig)
+  def config(problemConfig: ProblemConfig, repeat: Int): Unit =
+    println(s"$problemConfig, repeat: $repeat")
 
   def runTimeInfo(timeNano: Long): Unit =
     println(s"${TimeUnit.NANOSECONDS.toMillis(timeNano)} ${TimeUnit.NANOSECONDS.toSeconds(timeNano)}")

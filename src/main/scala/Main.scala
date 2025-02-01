@@ -108,13 +108,13 @@ object Main {
     loggerOverride: Option[AcoLogger]
   ): Unit = {
     val prefix = s"${config.problemType}_${new Date().getTime.toHexString}_${Random.alphanumeric.take(5).mkString}"
-    for (i <- 1 to config.repeat) {
+    for (i <- 1 to config.repeats) {
       val runId = s"${prefix}_$i"
       val logger = loggerOverride.getOrElse(
         createLogger(runId, baseAlgorithm.problem, config.toMap)
       )
       try {
-        logger.config(config)
+        logger.config(config, i)
 
         val start = System.nanoTime()
         val result = baseAlgorithm.run(logger)

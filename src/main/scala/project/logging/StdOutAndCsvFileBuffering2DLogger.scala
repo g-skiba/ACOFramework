@@ -17,13 +17,14 @@ class StdOutAndCsvFileBuffering2DLogger(
   private val iterationSB = new StringBuilder()
   private val globalSB = new StringBuilder()
 
+  protected def doPrintToStdout(stdOutMsg: String, stdoutPrinter: String => Unit = println(_)): Unit = {
+    if (writeToStdOut) stdoutPrinter(stdOutMsg)
+  }
   protected def doPrint(msg: String): Unit = {
     doPrint(msg, msg, msg)
   }
-  protected def doPrint(stdOutMsg: String, iterationFileMsg: String, globalFileMsg: String,
-                        stdoutPrinter: String => Unit = println(_)
-                       ): Unit = {
-    if (writeToStdOut) stdoutPrinter(stdOutMsg)
+  protected def doPrint(stdOutMsg: String, iterationFileMsg: String, globalFileMsg: String): Unit = {
+    doPrintToStdout(stdOutMsg)
     iterationResultsWriter.foreach { _ =>
       iterationSB.append(iterationFileMsg)
       iterationSB.append(";")
@@ -35,8 +36,8 @@ class StdOutAndCsvFileBuffering2DLogger(
 
   }
 
-  override def config(problemConfig: ProblemConfig): Unit = {
-    doPrint(problemConfig.toCsv)
+  override def config(problemConfig: ProblemConfig, repeat: Int): Unit = {
+    doPrint(s"${problemConfig.toCsv};$repeat")
   }
 
   override def runTimeInfo(timeNano: Long): Unit = {
@@ -51,7 +52,7 @@ class StdOutAndCsvFileBuffering2DLogger(
 
   override def globalBestResult(result: IndexedSeq[BaseSolution]): Unit = {
     val finalResult = hvCalc.calculateRemainingPartFromUnsorted(result.map(_.evaluation)).toString
-    doPrint(finalResult, "", "", s => print(s"$s "))
+    doPrintToStdout(finalResult, s => print(s"$s "))
   }
 
   override def close(): Unit = {

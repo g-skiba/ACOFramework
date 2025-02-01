@@ -12,8 +12,8 @@ import java.util.concurrent.TimeUnit
  * output should be globalBestResult() and runTimeInfo().
  */
 class IraceSingleObjectiveStdOutLogger extends AcoLogger {
-  def config(problemConfig: ProblemConfig): Unit =
-    println(problemConfig)
+  def config(problemConfig: ProblemConfig, repeat: Int): Unit =
+    println(s"$problemConfig, repeat: $repeat")
 
   def runTimeInfo(timeNano: Long): Unit =
     println(s" ${TimeUnit.NANOSECONDS.toSeconds(timeNano)}")

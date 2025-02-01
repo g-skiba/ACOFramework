@@ -8,7 +8,7 @@ import java.util.concurrent.TimeUnit
 import scala.collection.mutable
 
 trait AcoLogger {
-  def config(problemConfig: ProblemConfig): Unit
+  def config(problemConfig: ProblemConfig, repeat: Int): Unit
   def runTimeInfo(timeNano: Long): Unit
   def iterationResult(iteration: Int, iterationResult: IndexedSeq[BaseSolution], globalResult: IndexedSeq[BaseSolution]): Unit
   def globalBestResult(result: IndexedSeq[BaseSolution]): Unit

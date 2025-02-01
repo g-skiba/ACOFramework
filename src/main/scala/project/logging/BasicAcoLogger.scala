@@ -21,8 +21,8 @@ abstract class BasicAcoLogger(runId: String) extends AcoLogger {
       .mkString("[", ",", "]")
   }
 
-  override def config(problemConfig: ProblemConfig): Unit = {
-    printLog(s"Config: $problemConfig")
+  override def config(problemConfig: ProblemConfig, repeat: Int): Unit = {
+    printLog(s"Config: $problemConfig, repeat: $repeat")
   }
 
   override def runTimeInfo(timeNano: Long): Unit = {

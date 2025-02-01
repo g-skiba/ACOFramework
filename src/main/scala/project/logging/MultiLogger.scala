@@ -4,8 +4,8 @@ import project.config.ProblemConfig
 import project.solution.BaseSolution
 
 class MultiLogger(loggers: Seq[AcoLogger]) extends AcoLogger {
-  override def config(problemConfig: ProblemConfig): Unit =
-    loggers.foreach(_.config(problemConfig))
+  override def config(problemConfig: ProblemConfig, repeat: Int): Unit =
+    loggers.foreach(_.config(problemConfig, repeat))
 
   override def runTimeInfo(timeNano: Long): Unit =
     loggers.foreach(_.runTimeInfo(timeNano))
