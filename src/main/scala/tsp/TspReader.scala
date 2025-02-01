@@ -57,6 +57,7 @@ object TspReader {
                     case "EUC_2D" =>
                       edgeWeightType = Some(EUC_2D)
                   }
+                case "COMMENT" => // ignore
 
                 case _ =>
                   System.err.println(s"WARNING: Unsupported: $name")

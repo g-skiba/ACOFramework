@@ -84,8 +84,7 @@ object VrpReader {
                 case "CAPACITY" =>
                   capacity = Some(value.toInt)
 
-                case "COMMENT" =>
-                  System.err.println(s"$value")
+                case "COMMENT" => //ignore
 
                 case _ =>
                   System.err.println(s"WARNING: Unsupported: $name")
