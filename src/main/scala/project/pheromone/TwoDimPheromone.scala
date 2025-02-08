@@ -147,8 +147,8 @@ class TwoDimPheromone(
         warn(s"Wanted: $updateAnts update ants, got ${sortedSolutions.size} solutions")
       }
 
-      val minCost = sortedSolutions.head.evaluation.head
-      val maxCost = sortedSolutions.last.evaluation.head
+      val minCost = sortedSolutions.head.evaluation(dim)
+      val maxCost = sortedSolutions.last.evaluation(dim)
       val partDiff = (maxCost - minCost) / twoDimPheromoneSize
       if (detailedDebug) debug(partDiff)
 
@@ -158,7 +158,7 @@ class TwoDimPheromone(
       if (detailedDebug) {
         debug(
           sortedSolutions
-            .map(_.evaluation.head)
+            .map(_.evaluation(dim))
             .map(calcPartFromEvaluation)
             .groupBy(identity)
             .view
@@ -184,7 +184,7 @@ class TwoDimPheromone(
           //both versions give acceptable results
           updateType match {
             case UpdateType.PartFromEvaluation =>
-              calcPartFromEvaluation(solution.evaluation.head)
+              calcPartFromEvaluation(solution.evaluation(dim))
             case UpdateType.PartFromIndex =>
               calcPartFromIndex(ind)
           }
