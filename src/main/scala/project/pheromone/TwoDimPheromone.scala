@@ -60,8 +60,9 @@ class TwoDimPheromone(
       }
     }
 
-    if (getType.isRandomized) calculate
-    else cache.getOrElseUpdate(edge.cantorValue, calculate)
+//    if (getType.isRandomized) calculate
+//    else cache.getOrElseUpdate(edge.cantorValue, calculate)
+    cache.getOrElseUpdate(edge.cantorValue, calculate)
   }
 
   private def exponentialRandom(values: Array[Double], maxUpTo: Boolean): Double = {
