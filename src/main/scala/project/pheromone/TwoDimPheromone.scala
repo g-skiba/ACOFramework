@@ -141,8 +141,11 @@ class TwoDimPheromone(
 
   override def pheromoneUpdate(solutionsRepo: BaseSolutionRepo): Unit = {
     cache.clear()
-
-    def updateDim(dim: Int, sortedSolutions: IndexedSeq[BaseSolution]): Unit = {
+    val solutions = solutionsSelectionStrategy(solutionsRepo)
+    val takeSolutions = updateAnts.getOrElse(solutions.size)
+    
+    def updateDim(dim: Int): Unit = {
+      val sortedSolutions = solutions.sortBy(_.evaluation(dim)).take(takeSolutions)
       if (!updateAnts.forall(_ == sortedSolutions.size)) {
         warn(s"Wanted: $updateAnts update ants, got ${sortedSolutions.size} solutions")
       }
@@ -203,16 +206,8 @@ class TwoDimPheromone(
         }
     }
 
-    val solutions = solutionsSelectionStrategy(solutionsRepo)
-    val takeSolutions = updateAnts.getOrElse(solutions.size)
-
-    def sortAndLimitSolutions(dim: Int): IndexedSeq[BaseSolution] = {
-      solutions.sortBy(_.evaluation(dim)).take(takeSolutions)
-    }
-
     for (dim <- 0 until pheromoneDimension) {
-      val optionallySorted = sortAndLimitSolutions(dim)
-      updateDim(dim, optionallySorted.take(takeSolutions))
+      updateDim(dim)
     }
   }
 

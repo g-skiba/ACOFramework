@@ -30,7 +30,11 @@ class BasicPheromoneTable(
   override def getPheromone(edge: Edge): Array[Double] = pheromone(edge.cantorValue)
 
   override def pheromoneUpdate(solutionsRepo: BaseSolutionRepo): Unit = {
-    def updateDim(dim: Int, solutionsForDim: IndexedSeq[BaseSolution]): Unit = {
+    val solutions = solutionsSelectionStrategy(solutionsRepo)
+    val takeSolutions = updateAnts.getOrElse(solutions.size)
+    
+    def updateDim(dim: Int): Unit = {
+      val solutionsForDim = solutions.sortBy(_.evaluation(dim)).take(takeSolutions)
       if (!updateAnts.forall(_ == solutionsForDim.size)) {
         warn(s"Wanted: $updateAnts update ants, got ${solutionsForDim.size} solutions")
       }
@@ -46,16 +50,8 @@ class BasicPheromoneTable(
         }
     }
 
-    val solutions = solutionsSelectionStrategy(solutionsRepo)
-    val takeSolutions = updateAnts.getOrElse(solutions.size)
-
-    def sortAndLimitSolutions(dim: Int): IndexedSeq[BaseSolution] = {
-      solutions.sortBy(_.evaluation(dim)).take(takeSolutions)
-    }
-
     for (dim <- 0 until pheromoneDimension) {
-      val sortedTopSolutions = sortAndLimitSolutions(dim)
-      updateDim(dim, sortedTopSolutions.take(takeSolutions))
+      updateDim(dim)
     }
   }
 
