@@ -18,7 +18,7 @@ import project.algorithm.BaseAlgorithm
 import pareto.{Hypervolume2DCalculator, getParetoFrontMin}
 import project.config.PheromoneConfig.PheromoneType
 import project.config.{AlgorithmConfig, PheromoneConfig, ProblemConfig, SolutionsSelectionStrategy, TwoDimPheromoneConfig}
-import project.logging.{AcoLogger, DebugLogger, IraceSingleObjectiveStdOutLogger, MultiLogger, StdOutAndCsvFileBuffering2DLogger, StdOutLogger, SumoLogicLogger, WarnLogger}
+import project.logging.{AcoLogger, DebugLogger, IraceSingleObjectiveStdOutLogger, MultiLogger, StdOutAndCsvFileBuffering2DLogger, StdOutAndCsvFileBufferingRepeatAgnosticOnlyFinalResult2DLogger, StdOutLogger, SumoLogicLogger, WarnLogger}
 import project.problem.BaseProblem
 
 import java.io.{File, FileInputStream, PrintWriter}
@@ -89,10 +89,13 @@ object Main {
     val basicLogger = problem.dimensions match {
       case 1 => new IraceSingleObjectiveStdOutLogger
       case 2 =>
+//        val resultsWriter = createFileAndWriter("results")
+//        val hvCalc = problem.getHypervolumeCalculator.get
+//        new StdOutAndCsvFileBufferingRepeatAgnosticOnlyFinalResult2DLogger(writeToStdOut, resultsWriter, hvCalc)
         val iterationWriter = createFileAndWriter("iteration")
         val globalWriter = createFileAndWriter("global")
         val hvCalc = problem.getHypervolumeCalculator.get
-        new StdOutAndCsvFileBuffering2DLogger(runId, writeToStdOut, iterationWriter, globalWriter, hvCalc)
+        new StdOutAndCsvFileBuffering2DLogger(writeToStdOut, iterationWriter, globalWriter, hvCalc)
       case n => new StdOutLogger(runId)
     }
     sumoCollectorUrl match {
@@ -109,6 +112,8 @@ object Main {
     loggerOverride: Option[AcoLogger]
   ): Unit = {
     val prefix = s"${config.problemType}_${new Date().getTime.toHexString}_${Random.alphanumeric.take(5).mkString}"
+//    val logger = createLogger(prefix, baseAlgorithm.problem, config.toMap)
+//    try {
     for (i <- 1 to config.repeats) {
       val runId = s"${prefix}_$i"
       val logger = loggerOverride.getOrElse(
@@ -128,6 +133,9 @@ object Main {
         logger.close()
       }
     }
+//    } finally {
+//      logger.foreach(_.close())
+//    }
   }
 
   def runConfiguration(conf: ProblemConfig, seed: Option[Long] = None, loggerOverride: Option[AcoLogger] = None): Unit = {
@@ -296,6 +304,165 @@ object RunLoop {
   }
 }
 
+/**
+ * In order to run this and get a file with final results from all repeats per config+instance, you need to modify the
+ * runAlgorithm and createLogger functions to create a StdOutAndCsvFileBufferingRepeatAgnosticOnlyFinalResult2DLogger
+ * once for all repeats.
+ */
+object TestConfigsOnInstances {
+  def main(args: Array[String]): Unit = {
+    val problemType = "mtsp"
+    val repeat = 20
+
+    //ProblemConfig
+    val problemInstances = List(
+      //      "mtsp/berlin52.tsp",
+//      List("mtsp/kroA150.tsp", "mtsp/kroB150.tsp"), //"mtsp/kroC100.tsp", "mtsp/kroD100.tsp", "mtsp/kroE100.tsp"
+//      List("mtsp/kroA200.tsp", "mtsp/kroB200.tsp"), //"mtsp/kroC100.tsp", "mtsp/kroD100.tsp", "mtsp/kroE100.tsp"
+      List("mtsp/kroE100.tsp", "mtsp/kroF100.tsp"), //"mtsp/kroC100.tsp", "mtsp/kroD100.tsp", "mtsp/kroE100.tsp"
+      List("mtsp/kroA300.tsp", "mtsp/kroB300.tsp"), //"mtsp/kroC100.tsp", "mtsp/kroD100.tsp", "mtsp/kroE100.tsp"
+//      List("mtsp/paquete_euclidA100.tsp", "mtsp/paquete_euclidB100.tsp"),
+      //      "mtsp/tsp225.tsp",
+      //      "mtsp/a280mod.tsp",
+      //      "mtsp/pcb442.tsp",
+      //      "mtsp/rat575.tsp"
+    )
+
+    //AlgorithmConfig
+    val antsNum = 100
+    val iterationsNum = 300
+    val alpha = 2.0
+    val beta = 3.0
+
+    //PheromoneConfig
+    val phDimension = -1
+    val minValue = 0.001
+    val maxValue = 0.999
+
+    import TwoDimPheromoneConfig._
+
+    val config1 = {
+      val twoDimPhConfig = TwoDimPheromoneConfig(
+        20, GetType.ExponentialRandomMax.toString, UpdateType.PartFromEvaluation.toString
+      )
+      val pheromoneConfig = PheromoneConfig(
+        PheromoneType.TwoDim.toString, phDimension, 0.05, 0.05, minValue, maxValue,
+        SolutionsSelectionStrategy.LastIterationPareto.toString, 60, twoDimPhConfig
+      )
+      AlgorithmConfig(antsNum, iterationsNum, alpha, beta, pheromoneConfig)
+    }
+    val config2 = {
+      val twoDimPhConfig = TwoDimPheromoneConfig(
+        20, GetType.ExponentialRandomMax.toString, UpdateType.PartFromEvaluation.toString
+      )
+      val pheromoneConfig = PheromoneConfig(
+        PheromoneType.TwoDim.toString, phDimension, 0.05, 0.05, minValue, maxValue,
+        SolutionsSelectionStrategy.LastIterationPareto.toString, 100, twoDimPhConfig
+      )
+      AlgorithmConfig(antsNum, iterationsNum, alpha, beta, pheromoneConfig)
+    }
+    val config4 = {
+      val twoDimPhConfig = TwoDimPheromoneConfig(
+        10, GetType.ExponentialRandomMax.toString, UpdateType.PartFromIndex.toString
+      )
+      val pheromoneConfig = PheromoneConfig(
+        PheromoneType.TwoDim.toString, phDimension, 0.05, 0.05, minValue, maxValue,
+        SolutionsSelectionStrategy.LastIterationPareto.toString, 100, twoDimPhConfig
+      )
+      AlgorithmConfig(antsNum, iterationsNum, alpha, beta, pheromoneConfig)
+    }
+    val config6 = {
+      val twoDimPhConfig = TwoDimPheromoneConfig(
+        4, GetType.ExponentialRandomMax.toString, UpdateType.PartFromEvaluation.toString
+      )
+      val pheromoneConfig = PheromoneConfig(
+        PheromoneType.TwoDim.toString, phDimension, 0.05, 0.05, minValue, maxValue,
+        SolutionsSelectionStrategy.LastIterationPareto.toString, 10, twoDimPhConfig
+      )
+      AlgorithmConfig(antsNum, iterationsNum, alpha, beta, pheromoneConfig)
+    }
+    val config7 = {
+      val twoDimPhConfig = TwoDimPheromoneConfig(
+        4, GetType.ExponentialRandom.toString, UpdateType.PartFromEvaluation.toString
+      )
+      val pheromoneConfig = PheromoneConfig(
+        PheromoneType.TwoDim.toString, phDimension, 0.05, 0.05, minValue, maxValue,
+        SolutionsSelectionStrategy.LastIterationAll.toString, 30, twoDimPhConfig
+      )
+      AlgorithmConfig(antsNum, iterationsNum, alpha, beta, pheromoneConfig)
+    }
+    val config8 = {
+      val twoDimPhConfig = TwoDimPheromoneConfig(
+        20, GetType.ExponentialRandom.toString, UpdateType.PartFromEvaluation.toString
+      )
+      val pheromoneConfig = PheromoneConfig(
+        PheromoneType.TwoDim.toString, phDimension, 0.05, 0.05, minValue, maxValue,
+        SolutionsSelectionStrategy.LastIterationAll.toString, 60, twoDimPhConfig
+      )
+      AlgorithmConfig(antsNum, iterationsNum, alpha, beta, pheromoneConfig)
+    }
+    val config12 = {
+      val twoDimPhConfig = TwoDimPheromoneConfig(
+        20, GetType.ExponentialRandomMax.toString, UpdateType.PartFromEvaluation.toString
+      )
+      val pheromoneConfig = PheromoneConfig(
+        PheromoneType.TwoDim.toString, phDimension, 0.1, 0.1, minValue, maxValue,
+        SolutionsSelectionStrategy.LastIterationPareto.toString, 60, twoDimPhConfig
+      )
+      AlgorithmConfig(antsNum, iterationsNum, alpha, beta, pheromoneConfig)
+    }
+    val config44 = {
+      val pheromoneConfig = PheromoneConfig(
+        PheromoneType.Basic.toString, phDimension, 0.05, 0.05, minValue, maxValue,
+        SolutionsSelectionStrategy.LastIterationPareto.toString, 10, new TwoDimPheromoneConfig() // irrelevant
+      )
+      AlgorithmConfig(antsNum, iterationsNum, alpha, beta, pheromoneConfig)
+    }
+
+    val config45 = {
+      val pheromoneConfig = PheromoneConfig(
+        PheromoneType.Basic.toString, phDimension, 0.05, 0.05, minValue, maxValue,
+        SolutionsSelectionStrategy.LastIterationAll.toString, 10, new TwoDimPheromoneConfig() // irrelevant
+      )
+      AlgorithmConfig(antsNum, iterationsNum, alpha, beta, pheromoneConfig)
+    }
+
+    val algConfigs = List(
+      config1,
+      config2,
+      config4,
+      config6,
+      config7,
+      config8,
+      config12,
+      config44,
+      config45
+    )
+
+    val ec: ExecutionContext = ExecutionContextHelper.fixed("worker", size = 12)
+    val futures = for {
+      problemInstances <- problemInstances
+      algorithmConfig <- algConfigs
+    } yield {
+      val problemConfig = ProblemConfig(problemType, problemInstances.asJava, repeat, algorithmConfig)
+
+      Future {
+        println(problemConfig)
+        Try(Main.runConfiguration(problemConfig)).failed.foreach { e =>
+          println(problemConfig)
+          e.printStackTrace()
+        }
+      }(ec)
+    }
+
+    //    println(futures.size)
+    {
+      import ExecutionContext.Implicits.global
+      Await.result(Future.sequence(futures), Duration.Inf)
+    }
+  }
+}
+
 object CmdMain {
   import org.rogach.scallop._
   class Config(arguments: Seq[String]) extends ScallopConf(arguments) {
@@ -306,7 +473,7 @@ object CmdMain {
     val antsNum: ScallopOption[Int] = opt[Int](default = Some(100))
     val iterations: ScallopOption[Int] = opt[Int](default = Some(200))
     val pheromoneType: ScallopOption[String] = choice(PheromoneType.values.map(_.toString))
-    val solutionsSelectionStrategy: ScallopOption[String] = choice(SolutionsSelectionStrategy.values.map(_.toString))
+    val solutionsSelectionStrategy: ScallopOption[String] = choice(SolutionsSelectionStrategy.values.map(_.toString)) // might require default = Some("LastIterationAll") for old TSP irace configurations
     val twoDimPhSize: ScallopOption[Int] = opt[Int]()
     val updateType: ScallopOption[String] = choice(TwoDimPheromoneConfig.UpdateType.values.map(_.toString))
     val getType: ScallopOption[String] = choice(TwoDimPheromoneConfig.GetType.values.map(_.toString))

@@ -8,12 +8,11 @@ import java.io.PrintWriter
 import java.util.concurrent.TimeUnit
 
 class StdOutAndCsvFileBuffering2DLogger(
-  runId: String,
   writeToStdOut: Boolean,
   iterationResultsWriter: Option[PrintWriter],
   globalResultsWriter: Option[PrintWriter],
   hvCalc: Hypervolume2DCalculator
-) extends AcoLogger {
+) extends AcoLogger with FileBuffering {
   private val iterationSB = new StringBuilder()
   private val globalSB = new StringBuilder()
 
@@ -56,15 +55,7 @@ class StdOutAndCsvFileBuffering2DLogger(
   }
 
   override def close(): Unit = {
-    def writeAndClose(writer: Option[PrintWriter], msgSB: StringBuilder): Unit = {
-      writer.foreach { w =>
-        val msg = msgSB.result()
-        w.println(msg)
-        w.close()
-      }
-    }
     writeAndClose(iterationResultsWriter, iterationSB)
     writeAndClose(globalResultsWriter, globalSB)
   }
 }
-
