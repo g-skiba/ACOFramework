@@ -471,7 +471,7 @@ object CmdMain {
     val alpha: ScallopOption[Double] = opt[Double]()
     val beta: ScallopOption[Double] = opt[Double]()
     val antsNum: ScallopOption[Int] = opt[Int](default = Some(100))
-    val iterations: ScallopOption[Int] = opt[Int](default = Some(200))
+    val iterations: ScallopOption[Int] = opt[Int](default = Some(300))
     val pheromoneType: ScallopOption[String] = choice(PheromoneType.values.map(_.toString))
     val solutionsSelectionStrategy: ScallopOption[String] = choice(SolutionsSelectionStrategy.values.map(_.toString)) // might require default = Some("LastIterationAll") for old TSP irace configurations
     val twoDimPhSize: ScallopOption[Int] = opt[Int]()
@@ -513,21 +513,23 @@ object CmdMain {
           conf.solutionsSelectionStrategy(), takenAntsToPheromoneUpdate, twoDimConfig
         )
 
-    val problemType = "tsp" // or "tsp" for now
-    val instance = conf.instance()
+    val problemType = "mtsp" // or "tsp" for now
+    val instanceFilenames = conf.instance()
     val folder = problemType match {
-      case "tsp" => "mtsp"
-      case "cvrp" if instance.startsWith("A")=> "cvrp/A"
-      case "cvrp" if instance.startsWith("B")=> "cvrp/B"
+      case "tsp" | "mtsp" => "mtsp"
+      case "cvrp" if instanceFilenames.startsWith("A-")=> "cvrp/A"
+      case "cvrp" if instanceFilenames.startsWith("B-")=> "cvrp/B"
       case "cvrp" => "cvrp/dim100plus"
       case _ => throw new IllegalArgumentException("Invalid problem type and/or instance")
     }
     val extension = problemType match {
-      case "tsp" => "tsp"
+      case "tsp" | "mtsp" => "tsp"
       case "cvrp" => "vrp"
     }
-    val problemInstance = s"$folder/$instance.$extension"
-    val problemFiles = List(problemInstance).asJava
+    val problemFiles = instanceFilenames.split(",").toList.map { filename =>
+      val file = s"$folder/$filename.$extension"
+      file
+    }.asJava
     val repeat = 1
 
     val antsNum = conf.antsNum()
@@ -538,7 +540,6 @@ object CmdMain {
     val problemConfig = ProblemConfig(problemType, problemFiles, repeat, algorithmConfig)
 
     val seed = conf.seed.toOption
-    val logger = new IraceSingleObjectiveStdOutLogger
-    Main.runConfiguration(problemConfig, seed, Some(logger))
+    Main.runConfiguration(problemConfig, seed)
   }
 }

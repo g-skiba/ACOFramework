@@ -51,6 +51,9 @@ class StdOutAndCsvFileBuffering2DLogger(
 
   override def globalBestResult(result: IndexedSeq[BaseSolution]): Unit = {
     val finalResult = hvCalc.calculateRemainingPartFromUnsorted(result.map(_.evaluation)).toString
+//    result.foreach { res =>
+//      doPrintToStdout(res.evaluation.mkString(" "))
+//    }
     doPrintToStdout(finalResult, s => print(s"$s "))
   }
 
