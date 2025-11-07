@@ -9,3 +9,6 @@ irace_results/
 target
 /project
 /logs
+/.idea/
+/.bsp/
+/null/Coursier/cache/
