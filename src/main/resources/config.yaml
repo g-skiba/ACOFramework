@@ -2,39 +2,74 @@
 #problemType: tsp
 #problemFiles:
 #  - mtsp//lust_kroA100.tsp
+#
+#  - mtsp//bier127.tsp
+#  - mtsp//ch130.tsp
+#  - mtsp//ch150.tsp
+#  - mtsp//eil101.tsp
+#  - mtsp//kroA100.tsp
+#  - mtsp//kroA150.tsp
+#  - mtsp//kroB100.tsp
+#  - mtsp//kroB150.tsp
+#  - mtsp//kroC100.tsp
+#  - mtsp//kroD100.tsp
+#  - mtsp//kroE100.tsp
+#  - mtsp//lin105.tsp
+#  - mtsp//pr76.tsp
+#  - mtsp//pr107.tsp
+#  - mtsp//pr124.tsp
+#  - mtsp//pr136.tsp
+#  - mtsp//pr144.tsp
+#  - mtsp//pr152.tsp
+#  - mtsp//rat99.tsp
+#  - mtsp//rd100.tsp
+#  - mtsp//st70.tsp
+#  - mtsp//u159.tsp
 
 # mtsp
-#problemType: mtsp
-#problemFiles:
+problemType: mtsp
+problemFiles:
 #  - mtsp//lust_kroA100.tsp
 #  - mtsp//lust_kroB100.tsp
+#  - mtsp//kroA100.tsp
+#  - mtsp//kroB100.tsp
+#  - mtsp//kroC100.tsp
+#  - mtsp//kroD100.tsp
+  - mtsp//euclidA500.tsp
+  - mtsp//euclidB500.tsp
   # - mtsp//lust_euclidA100.tsp
   # - mtsp//lust_euclidB100.tsp
+#    - mtsp/berlin52.tsp
+#    - mtsp/tsp225.tsp
+#  - mtsp/a280mod.tsp
+  #  - mtsp/pcb442.tsp
+  #  - mtsp/rat575.tsp
+  #  - mtsp/pr2392.tsp
   # - mtsp//dimacs_15_a.tsp
   # - mtsp//dimacs_15_b.tsp
   # - mtsp//dimacs_15_c.tsp
 
 # cvrp
-problemType: cvrp
-problemFiles:
-  - cvrp//A//A-n32-k5.vrp
+#problemType: cvrp
+#problemFiles:
+#  - cvrp//A//A-n32-k5.vrp
 
 # algorithm
 repeats: 1
 algorithmConfig:
   antsNum: 100
-  iterations: 200
+  iterations: 300
   alpha: 2.0
   beta: 3.0
   pheromoneConfig:
-    tpe: Basic
-    increment: 0.05
-    extinction: 0.05
     pheromoneTpe: Basic
+#    pheromoneTpe: TwoDim
+    increment: 0.1
+    extinction: 0.1
     minValue: 0.001
     maxValue: 0.999
     pheromoneDimension: -1 # 0 or below means optimization targets count
-    takenAntsToPheromoneUpdate: -1 # 0 or below means all ants
+    takenAntsToPheromoneUpdate: 10 # 0 or below means all ants
     solutionsSelectionStrategy: LastIterationPareto # LastIterationAll, LastIterationPareto, GlobalPareto
     twoDimConfig: # applicable only for TwoDim type
       twoDimSize: 10
