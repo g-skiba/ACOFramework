@@ -130,3 +130,43 @@
 
 #twoDimAll
 #1.3649 4.7456         0.0566         24        TwoDim            8 PartFromEvaluation PairingCombination
+
+#####################################
+
+# mtsp
+
+# basic
+alpha   beta pheromoneDelta updateAnts solutionsSelectionStrategy pheromoneType
+# selective #44 (top #1 basic)
+#2.0   3.0             0.05          10        LastIterationPareto         Basic
+# selective #45 (top #2 basic)
+2.0   3.0             0.05          10        LastIterationAll            Basic
+# irace selected
+#2.691 4.8517         0.0891         10        LastIterationPareto         Basic
+
+# two dim params
+#alpha   beta pheromoneDelta updateAnts solutionsSelectionStrategy pheromoneType twoDimPhSize         updateType              getType
+# selective #1
+#2.0   3.0               0.05          60        LastIterationPareto         TwoDim        20  PartFromEvaluation  ExponentialRandomMax
+# selective #2
+#2.0   3.0               0.05          100        LastIterationPareto         TwoDim        20  PartFromEvaluation  ExponentialRandomMax
+# selective #4
+#2.0   3.0               0.05          100        LastIterationPareto         TwoDim        10  PartFromIndex  ExponentialRandomMax
+# selective #6
+#2.0   3.0               0.05          10        LastIterationPareto         TwoDim        4  PartFromEvaluation  ExponentialRandomMax
+# selective #7
+#2.0   3.0               0.05          30        LastIterationAll            TwoDim        4  PartFromEvaluation  ExponentialRandom
+# selective #8
+#2.0   3.0               0.05          60        LastIterationAll             TwoDim        20  PartFromEvaluation  ExponentialRandom
+# selective #12
+#2.0   3.0               0.1          60        LastIterationPareto         TwoDim        20  PartFromEvaluation  ExponentialRandomMax
+# irace expRndMax
+#1.6406 4.7953         0.0433         36        LastIterationPareto        TwoDim           14 PartFromEvaluation ExponentialRandomMax
+# irace expRnd
+#1.369 4.8534         0.0711         94        LastIterationPareto        TwoDim           20 PartFromEvaluation ExponentialRandom
+# irace pairing
+#1.7993 4.9801         0.0573         75        LastIterationPareto        TwoDim           14 PartFromEvaluation PairingCombination
+# irace expected
+#3.1165 4.9069         0.0805         35               GlobalPareto        TwoDim           12 PartFromIndex ExpectedCombination
+# irace weighted
+#0.6865 4.7997         0.0416         83        LastIterationPareto        TwoDim           20 PartFromEvaluation WeightedCombination

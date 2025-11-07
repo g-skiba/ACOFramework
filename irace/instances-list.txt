@@ -28,9 +28,14 @@
 # B-n68-k9
 # B-n57-k7
 
-tai150d
-tai150b
-CMT4
-M-n121-k7
-CMT13
-E-n101-k8
+# tai150d
+# tai150b
+# CMT4
+# M-n121-k7
+# CMT13
+# E-n101-k8
+
+kroA100,kroB100
+kroC100,kroD100
+paquete_euclidA100,paquete_euclidB100
+kroA300,kroB300

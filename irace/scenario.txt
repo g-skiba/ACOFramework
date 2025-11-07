@@ -67,7 +67,7 @@ testInstancesFile = "test-instances-list.txt"
 firstTest = 12
 
 ## Number of instances evaluated between elimination tests.
-eachTest = 3
+eachTest = 4
 
 ## Executable called for each configuration that executes the target algorithm
 ## to be tuned. See the templates and examples provided.
@@ -105,11 +105,11 @@ targetRunnerRetries = 3
 
 ## Maximum number of runs (invocations of targetRunner) that will be
 ## performed. It determines the maximum budget of experiments for the tuning.
-maxExperiments = 10
+# maxExperiments = 10
 
 ## Maximum total execution time in seconds for the executions of targetRunner.
 ## targetRunner must return two values: cost and time.
-# maxTime = 100000
+maxTime = 200000
 
 ## Fraction (smaller than 1) of the budget used to estimate the mean
 ## computation time of a configuration. Only used when maxTime > 0

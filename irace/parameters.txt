@@ -39,6 +39,7 @@ beta		"--beta "		r	(0.1, 5)
 pheromoneDelta	"--pheromone-delta "	r	(0.04, 0.1)
 updateAnts	"--update-ants "	i	(1, 100)
 # updateAnts	"--update-ants "	c	(1)
+solutionsSelectionStrategy "--solutions-selection-strategy " c	("LastIterationPareto", "LastIterationAll", "GlobalPareto")
 
 
 pheromoneType	"--pheromone-type "	c	("Basic")
