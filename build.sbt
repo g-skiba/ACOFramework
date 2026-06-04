@@ -27,6 +27,14 @@ libraryDependencies += "org.yaml" % "snakeyaml" % "1.30"
 libraryDependencies += "com.lihaoyi" %% "requests" % "0.7.0"
 libraryDependencies += "org.rogach" %% "scallop" % "5.0.0"
 
+// jMetal 6.2 dependencies
+libraryDependencies += "org.uma.jmetal" % "jmetal-core" % "6.2"
+libraryDependencies += "org.uma.jmetal" % "jmetal-algorithm" % "6.2"
+libraryDependencies += "org.uma.jmetal" % "jmetal-problem" % "6.2"
+
+// MOEAFramework dependency
+libraryDependencies += "org.moeaframework" % "moeaframework" % "3.3"
+
 // Here, `libraryDependencies` is a set of dependencies, and by using `+=`,
 // we're adding the scala-parser-combinators dependency to the set of dependencies
 // that sbt will go and fetch when it starts up.
