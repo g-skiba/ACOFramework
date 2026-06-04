@@ -147,7 +147,7 @@ class TwoDimPheromone(
     def updateDim(dim: Int): Unit = {
       val sortedSolutions = solutions.sortBy(_.evaluation(dim)).take(takeSolutions)
       if (!updateAnts.forall(_ == sortedSolutions.size)) {
-        warn(s"Wanted: $updateAnts update ants, got ${sortedSolutions.size} solutions")
+//        warn(s"Wanted: $updateAnts update ants, got ${sortedSolutions.size} solutions")
       }
 
       val minCost = sortedSolutions.head.evaluation(dim)
@@ -200,7 +200,7 @@ class TwoDimPheromone(
               .map(x => Edge(x.head, x.last))
               .foreach { edge =>
                 val pheromones = pheromone(dim)(edge.cantorValue)
-                pheromones(part) += increment
+                pheromones(part) += increment //!!! got -2! POWINNO BYC PARTINCREMENT ZGODNIE Z OPISEM ALGORYTMU W ARTYKUŁACH O SINGLE-CRITERIA OPTIMIZATION!!!
               }
           }
         }

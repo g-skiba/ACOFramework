@@ -27,7 +27,7 @@ class BasicDecisionAlgorithm[T](
     def weightedProduct(values: Array[Double], weights: Array[Double]): Double = {
       require(values.length == weights.length, s"Arrays should be of the same sizes but are ${values.length} and ${weights.length}")
 
-      @tailrec
+      @tailrec // weighted sum is faster but weighted product gives better results
       def weightedProductInd(acc: Double, ind: Int): Double = {
         if (ind < values.length) { // b.length is the same as a.length
           weightedProductInd(acc * Math.pow(values(ind), weights(ind)), ind + 1)
