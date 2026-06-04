@@ -16,7 +16,7 @@ import org.uma.jmetal.problem.multiobjective.multiobjectivetsp.MultiObjectiveTSP
 import org.uma.jmetal.solution.permutationsolution.PermutationSolution
 import scala.jdk.CollectionConverters._
 
-object JMetalRunner {
+object JMetalTSPRunner {
   private def runMtsp(distanceFile: String, costFile: String): Unit = {
     def filePathFromResources(filename: String) = {
       s"mtsp/$filename.tsp"

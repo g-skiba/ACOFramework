@@ -87,7 +87,7 @@ class BiobjectiveTSP(fileA: String, fileB: String) extends AbstractProblem(1, 2)
   }
 }
 
-object MoeaRunner {
+object MoeaTSPRunner {
   def main(args: Array[String]): Unit = {
     // Make sure kroA100.tsp and kroB100.tsp are in your project root!
 //    val distanceFile = "kroA100"
