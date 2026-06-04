@@ -27,10 +27,10 @@ libraryDependencies += "org.yaml" % "snakeyaml" % "1.30"
 libraryDependencies += "com.lihaoyi" %% "requests" % "0.7.0"
 libraryDependencies += "org.rogach" %% "scallop" % "5.0.0"
 
-// jMetal 6.2 dependencies
-libraryDependencies += "org.uma.jmetal" % "jmetal-core" % "6.2"
-libraryDependencies += "org.uma.jmetal" % "jmetal-algorithm" % "6.2"
-libraryDependencies += "org.uma.jmetal" % "jmetal-problem" % "6.2"
+// jMetal 6.7 dependencies
+libraryDependencies += "org.uma.jmetal" % "jmetal-core" % "6.7"
+libraryDependencies += "org.uma.jmetal" % "jmetal-algorithm" % "6.7"
+libraryDependencies += "org.uma.jmetal" % "jmetal-problem" % "6.7"
 
 // MOEAFramework dependency
 libraryDependencies += "org.moeaframework" % "moeaframework" % "3.3"

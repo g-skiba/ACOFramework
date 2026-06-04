@@ -12,8 +12,7 @@ import tsp.{TspReader, TspsToMtsp}
 import java.util.concurrent.TimeUnit
 import scala.io.Source
 
-//import org.uma.jmetal.problem.multiobjective.multiobjectivetsp.BiObjectiveTSP
-import org.uma.jmetal.problem.multiobjective.MultiobjectiveTSP //multiobjectivetsp.BiObjectiveTSP
+import org.uma.jmetal.problem.multiobjective.multiobjectivetsp.MultiObjectiveTSP
 import org.uma.jmetal.solution.permutationsolution.PermutationSolution
 import scala.jdk.CollectionConverters._
 
@@ -43,7 +42,7 @@ object JMetalRunner {
 
     // Note: You must have kroA100.tsp and kroB100.tsp in the execution directory
     // Download them from standard TSP Libs or jMetal's resource folder on GitHub
-    val problem = new MultiobjectiveTSP(filePathFromRoot(distanceFile), filePathFromRoot(costFile))
+    val problem = new MultiObjectiveTSP(List(filePathFromRoot(distanceFile), filePathFromRoot(costFile)).asJava)
 
     // Configure selection, crossover, and mutation operators
     val crossover = new PMXCrossover(0.9)
