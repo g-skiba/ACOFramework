@@ -14,7 +14,9 @@ import scala.io.Source
 
 import org.uma.jmetal.problem.multiobjective.multiobjectivetsp.MultiObjectiveTSP
 import org.uma.jmetal.solution.permutationsolution.PermutationSolution
-import scala.jdk.CollectionConverters._
+import org.uma.jmetal.util.comparator.RankingAndCrowdingDistanceComparator
+
+import scala.jdk.CollectionConverters.*
 
 object JMetalTSPRunner {
   private def runMtsp(distanceFile: String, costFile: String): Unit = {
@@ -47,13 +49,13 @@ object JMetalTSPRunner {
     // Configure selection, crossover, and mutation operators
     val crossover = new PMXCrossover(0.9)
     val mutation = new PermutationSwapMutation[Integer](0.2)
-    val selection = new BinaryTournamentSelection[PermutationSolution[Integer]]()
+    val selection = new BinaryTournamentSelection[PermutationSolution[Integer]]() // TODO new RankingAndCrowdingDistanceComparator[PermutationSolution[Integer]]() ?
 
-    val maxEvaluations = 10000000
+    val maxEvaluations = 1000 //10000000
     val populationSize = 100
 
     // 1. Setup and Run NSGA-II
-    val nsgaii = new NSGAIIBuilder[PermutationSolution[Integer]](problem, crossover, mutation, populationSize)
+    val nsgaii = new NSGAIIBuilder(problem, crossover, mutation, populationSize)
       .setSelectionOperator(selection)
       .setMaxEvaluations(maxEvaluations)
       .build()
@@ -66,7 +68,7 @@ object JMetalTSPRunner {
     val nsgaiiTime = nsgaii2End - nsgaii2Start
 
     // 2. Setup and Run SPEA2
-    val spea2 = new SPEA2Builder[PermutationSolution[Integer]](problem, crossover, mutation)
+    val spea2 = new SPEA2Builder(problem, crossover, mutation)
       .setSelectionOperator(selection)
       .setPopulationSize(populationSize)
       .setMaxIterations(maxEvaluations / populationSize)
@@ -80,7 +82,7 @@ object JMetalTSPRunner {
     val spea2Time = spea2End - spea2Start
 
     // 3. Setup and Run PESA2
-    val pesa2 = new PESA2Builder[PermutationSolution[Integer]](problem, crossover, mutation)
+    val pesa2 = new PESA2Builder(problem, crossover, mutation)
       .setPopulationSize(populationSize)
       .setArchiveSize(100)
       .setBisections(8) //5 originally, 8 in moea?

@@ -31,8 +31,8 @@ libraryDependencies += "org.rogach" %% "scallop" % "5.0.0"
 libraryDependencies += "org.uma.jmetal" % "jmetal-core" % "6.7"
 libraryDependencies += "org.uma.jmetal" % "jmetal-algorithm" % "6.7"
 libraryDependencies += "org.uma.jmetal" % "jmetal-problem" % "6.7"
-//libraryDependencies += "org.uma.jmetal" % "jmetal-component" % "6.7"
-//libraryDependencies += "org.uma.jmetal" % "jmetal-auto" % "6.7"
+libraryDependencies += "org.uma.jmetal" % "jmetal-component" % "6.7"
+libraryDependencies += "org.uma.jmetal" % "jmetal-auto" % "6.7"
 
 // MOEAFramework dependency
 libraryDependencies += "org.moeaframework" % "moeaframework" % "3.3"

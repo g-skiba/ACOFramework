@@ -44,7 +44,7 @@ object JMetalMKPRunner {
     val mutation = new BitFlipMutation[BinarySolution](mutationProbability)
     val selection = new BinaryTournamentSelection[BinarySolution]() // TODO (new DominanceWithConstraintsComparator(new OverallConstraintViolationDegreeComparator[BinarySolution]) ?
 
-    val maxEvaluations = 1000
+    val maxEvaluations = 1000 //10000000
     val populationSize = 100
 
     // 1. Setup and Run NSGA-II
