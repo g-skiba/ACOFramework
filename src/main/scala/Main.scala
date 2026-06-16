@@ -3,6 +3,7 @@ import org.yaml.snakeyaml.constructor.Constructor
 
 import scala.jdk.CollectionConverters.*
 import tsp.TspReader
+import mokp.MokpParser
 import vrp.VrpReader
 import vrp.VrpToProblem
 
@@ -19,7 +20,7 @@ import pareto.{Hypervolume2DCalculator, getParetoFrontMin}
 import project.config.PheromoneConfig.PheromoneType
 import project.config.{AlgorithmConfig, PheromoneConfig, ProblemConfig, SolutionsSelectionStrategy, TwoDimPheromoneConfig}
 import project.logging.{AcoLogger, DebugLogger, IraceSingleObjectiveStdOutLogger, MultiLogger, StdOutAndCsvFileBuffering2DLogger, StdOutAndCsvFileBufferingRepeatAgnosticOnlyFinalResult2DLogger, StdOutLogger, SumoLogicLogger, WarnLogger}
-import project.problem.BaseProblem
+import project.problem.{BaseProblem, MokpProblem}
 
 import java.io.{File, FileInputStream, PrintWriter}
 import java.nio.charset.StandardCharsets
@@ -158,6 +159,16 @@ object Main {
         val vrp = VrpReader.read(Source.fromResource(conf.problemFiles.get(0)))
         val (reverseNameMap, vrpProblem) = VrpToProblem(vrp)
         val algo = BasicAlgorithm(vrpProblem, conf.algorithmConfig, seed)
+        runAlgorithm(algo, conf, loggerOverride)
+      case "mokp" =>
+        val mokpFile = conf.problemFiles.get(0)
+        val mokpSource = Try(Source.fromResource(mokpFile)).getOrElse {
+          val directPath = Paths.get(mokpFile)
+          val path = if (Files.exists(directPath)) directPath else Paths.get("src", "main", "resources", mokpFile)
+          Source.fromFile(path.toFile)
+        }
+        val mokpProblem = new MokpProblem(MokpParser.read(mokpSource))
+        val algo = BasicAlgorithm(mokpProblem, conf.algorithmConfig, seed)
         runAlgorithm(algo, conf, loggerOverride)
       case other =>
         throw NotImplementedError(

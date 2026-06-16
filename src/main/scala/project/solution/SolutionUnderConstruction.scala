@@ -11,3 +11,4 @@ case class SolutionUnderConstruction[T](nodes: ArrayBuffer[Node], state: T)
 // using mutable structures for improved performance
 case class TspState(nodesToVisit: mutable.Set[Node])
 case class VrpState(nodesToVisit: mutable.Set[Node], remainingCapacity: Int, vehicles: Int)
+case class MokpState(nodesToVisit: mutable.Set[Node], remainingCapacities: Array[Int])
