@@ -12,7 +12,9 @@ import org.uma.jmetal.solution.binarysolution.BinarySolution
 import org.uma.jmetal.solution.permutationsolution.PermutationSolution
 import org.uma.jmetal.util.comparator.constraintcomparator.impl.OverallConstraintViolationDegreeComparator
 import org.uma.jmetal.util.comparator.dominanceComparator.impl.DominanceWithConstraintsComparator
+import mokp.MokpParser
 import pareto.getParetoFrontMin
+import project.problem.MokpProblem
 import tsp.TspReader
 
 import java.util.concurrent.TimeUnit
@@ -29,14 +31,13 @@ object JMetalMKPRunner {
       }.toVector
     }
 
-    //    val hvCalculator = {
-    //      def tspFromFile(filename: String) = TspReader.read(Source.fromResource(filePathFromResources(filename)))
-    //
-    //      val (_, mtspProblem) = TspsToMtsp(Iterable(tspFromFile(distanceFile), tspFromFile(costFile)))
-    //      mtspProblem.getHypervolumeCalculator.get
-    //    }
+    val problemPath = "src/main/resources/mokpInstances/" + filename
+    val hvCalculator = {
+      val data = MokpParser.read(Source.fromFile(problemPath))
+      new MokpProblem(data).getHypervolumeCalculator.get
+    }
 
-    val problem = MultiObjectiveKnapsack.readMKP("src/main/resources/mokpInstances/" + filename)
+    val problem = MultiObjectiveKnapsack.readMKP(problemPath)
 
     // Configure selection, crossover, and mutation operators
     val crossover = new SinglePointCrossover[BinarySolution](0.9)
@@ -99,7 +100,7 @@ object JMetalMKPRunner {
         // Changing back to positive values for a human-readable output
         println(s"${-s(0)} ${-s(1)}")
       }
-//      println(hvCalculator.calculateRemainingPartFromUnsorted(population))
+      println(hvCalculator.calculateRemainingPartFromUnsorted(population))
       println(s"Run took: ${TimeUnit.NANOSECONDS.toSeconds(timeNano)}s")
     }
 
