@@ -51,7 +51,7 @@ object Main {
     None
 
   def main(args: Array[String]): Unit = {
-    val filename = "config.yaml"
+    val filename = "mokp_config.yaml"
     val input = new String(Files.readAllBytes(Paths.get(getClass.getResource(filename).toURI)))
     if (writeConfigurationFile) writeConfFile(input)
     val yaml = new Yaml(new Constructor(classOf[ProblemConfig]))
@@ -524,18 +524,20 @@ object CmdMain {
           conf.solutionsSelectionStrategy(), takenAntsToPheromoneUpdate, twoDimConfig
         )
 
-    val problemType = "mtsp" // or "tsp" for now
+    val problemType = "mokp"
     val instanceFilenames = conf.instance()
     val folder = problemType match {
       case "tsp" | "mtsp" => "mtsp"
       case "cvrp" if instanceFilenames.startsWith("A-")=> "cvrp/A"
       case "cvrp" if instanceFilenames.startsWith("B-")=> "cvrp/B"
       case "cvrp" => "cvrp/dim100plus"
+      case "mokp" => "mokpInstances"
       case _ => throw new IllegalArgumentException("Invalid problem type and/or instance")
     }
     val extension = problemType match {
       case "tsp" | "mtsp" => "tsp"
       case "cvrp" => "vrp"
+      case "mokp" => "dat"
     }
     val problemFiles = instanceFilenames.split(",").toList.map { filename =>
       val file = s"$folder/$filename.$extension"

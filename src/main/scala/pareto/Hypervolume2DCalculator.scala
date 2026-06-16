@@ -31,7 +31,7 @@ class Hypervolume2DCalculator(maxReferencePoint: (Double, Double), minReferenceP
         val curPoint = paretoFrontSorted(ind)
         val xDiff = refX - curPoint(0)
         val yDiff = curRefY - curPoint(1)
-        assert(xDiff > 0 && yDiff > 0)
+        assert(xDiff >= 0 && yDiff >= 0)
         calculate(ind + 1, curPoint(1), acc + xDiff * yDiff)
       }
     }

@@ -35,7 +35,14 @@
 # CMT13
 # E-n101-k8
 
-kroA100,kroB100
-kroC100,kroD100
-paquete_euclidA100,paquete_euclidB100
-kroA300,kroB300
+#kroA100,kroB100
+#kroC100,kroD100
+#paquete_euclidA100,paquete_euclidB100
+#kroA300,kroB300
+
+### MOKP
+1A/2KP50-11
+1A/2KP50-50
+1A/2KP50-92
+1B-A/2KP100-1A
+1B-B/2KP100-1B
