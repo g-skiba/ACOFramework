@@ -497,7 +497,7 @@ object CmdMain {
   def main(args: Array[String]): Unit = {
     val conf = new Config(args)
 
-    val phDimension = 1 // stale
+    val phDimension = -1 // mapped to number of objectives
     val phDelta = conf.pheromoneDelta()
     val phIncrement = phDelta
     val phExtinction = phDelta
