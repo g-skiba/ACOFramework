@@ -51,6 +51,11 @@ object JMetalMKPRunner {
     // 1. Setup and Run NSGA-II
     val nsgaii = new NSGAIIBuilder(problem, crossover, mutation, populationSize)
       .setSelectionOperator(selection)
+      .setDominanceComparator(
+        new DominanceWithConstraintsComparator(
+          new OverallConstraintViolationDegreeComparator[BinarySolution]
+        )
+      )
       .setMaxEvaluations(maxEvaluations)
       .build()
 
