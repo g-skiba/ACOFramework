@@ -80,8 +80,8 @@ class MokpProblem(data: MultiObjectiveKnapsackData)
     state
   }
 
-  override def getHeuristicValue(edge: Edge): Array[Double] = {
-    heuristic(edge.node1.number)(edge.node2.number)
+  override def getHeuristicValue(solution: SolutionUnderConstruction[MokpState], candidateNode: Node): Array[Double] = {
+    heuristic(solution.nodes.last.number)(candidateNode.number)
   }
 
   override def getHypervolumeCalculator: Option[Hypervolume2DCalculator] = Some(hypervolume2DCalculator)

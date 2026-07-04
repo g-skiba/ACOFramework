@@ -44,8 +44,8 @@ class TspProblem(nodes: List[Node], matrix: Map[Edge, Double])
     state
   }
 
-  override def getHeuristicValue(edge: Edge): Array[Double] = {
-    heuristic(edge.node1.number)(edge.node2.number)
+  override def getHeuristicValue(solution: SolutionUnderConstruction[TspState], candidateNode: Node): Array[Double] = {
+    heuristic(solution.nodes.last.number)(candidateNode.number)
   }
 
   override def getHypervolumeCalculator: Option[Hypervolume2DCalculator] = None

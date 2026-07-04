@@ -22,8 +22,9 @@ class BasicDecisionAlgorithm[T](
       alpha: Double,
       beta: Double,
       pheromoneWeights: Array[Double],
-      heuristicWeights: Array[Double]
-  )(edge: Edge): Double = {
+      heuristicWeights: Array[Double],
+      solution: SolutionUnderConstruction[T]
+  )(node: Node): Double = {
     def weightedProduct(values: Array[Double], weights: Array[Double]): Double = {
       require(values.length == weights.length, s"Arrays should be of the same sizes but are ${values.length} and ${weights.length}")
 
@@ -39,8 +40,9 @@ class BasicDecisionAlgorithm[T](
       weightedProductInd(1.0, 0)
     }
 
+    val edge = Edge(solution.nodes.last, node)
     val pheromone = weightedProduct(pheromoneTable.getPheromone(edge), pheromoneWeights)
-    val heuristic = weightedProduct(problem.getHeuristicValue(edge), heuristicWeights)
+    val heuristic = weightedProduct(problem.getHeuristicValue(solution, node), heuristicWeights)
     Math.pow(pheromone, alpha) * Math.pow(heuristic, beta)
   }
 
@@ -49,7 +51,7 @@ class BasicDecisionAlgorithm[T](
     pheromoneWeights: Array[Double],
     heuristicWeights: Array[Double]
   ): Option[Node] = {
-    val initializedAssessment = assessment(alpha, beta, pheromoneWeights, heuristicWeights)
+    val initializedAssessment = assessment(alpha, beta, pheromoneWeights, heuristicWeights, solution)
     val possibleMoves = problem
       .getPossibleMoves(solution)
       .toList
@@ -59,7 +61,7 @@ class BasicDecisionAlgorithm[T](
       val edgesWithCost = possibleMoves
         .map { node =>
           val edge = Edge(solution.nodes.last, node)
-          (edge, initializedAssessment(edge))
+          (edge, initializedAssessment(node))
         }
 
       val sumOfWeights = edgesWithCost.iterator.map(_._2).sum

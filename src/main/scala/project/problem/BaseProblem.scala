@@ -38,10 +38,10 @@ abstract class BaseProblem[T](
    */
   protected def updateState(state: T, node: Node): T
 
-  /** Function to evaluate distance between nodes into doubles depending from
-    * problem dimension
+  /** Function to evaluate a candidate move's heuristic values depending on
+    * problem dimension and current partial solution.
     */
-  def getHeuristicValue(edge: Edge): Array[Double]
+  def getHeuristicValue(solution: SolutionUnderConstruction[T], candidateNode: Node): Array[Double]
   
   def getHypervolumeCalculator: Option[Hypervolume2DCalculator]
 

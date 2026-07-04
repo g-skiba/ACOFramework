@@ -94,8 +94,8 @@ class VrpProblem(
     // TODO Vector(solution.state.vehicles + evaluation / vehiclesEvalMultiplier)
   }
 
-  override def getHeuristicValue(edge: Edge): Array[Double] = {
-    heuristic(edge.node1.number)(edge.node2.number)
+  override def getHeuristicValue(solution: SolutionUnderConstruction[VrpState], candidateNode: Node): Array[Double] = {
+    heuristic(solution.nodes.last.number)(candidateNode.number)
   }
 
   override def getHypervolumeCalculator: Option[Hypervolume2DCalculator] = None
