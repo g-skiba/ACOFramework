@@ -10,6 +10,7 @@ import org.uma.jmetal.problem.multiobjective.multiobjectiveknapsack.MultiObjecti
 import org.uma.jmetal.problem.multiobjective.multiobjectivetsp.MultiObjectiveTSP
 import org.uma.jmetal.solution.binarysolution.BinarySolution
 import org.uma.jmetal.solution.permutationsolution.PermutationSolution
+import org.uma.jmetal.util.ConstraintHandling
 import org.uma.jmetal.util.comparator.constraintcomparator.impl.OverallConstraintViolationDegreeComparator
 import org.uma.jmetal.util.comparator.dominanceComparator.impl.DominanceWithConstraintsComparator
 import mokp.MokpParser
@@ -24,11 +25,23 @@ import scala.jdk.CollectionConverters.*
 object JMetalMKPRunner {
   private def runMKP(filename: String): Unit = {
     def populationToParetoPoints(population: java.util.List[BinarySolution]): Seq[IndexedSeq[Double]] = {
-      require(population.asScala.forall(_.constraints().forall(_ >= 0)))
-      val asScala = population.asScala.map(_.objectives().toIndexedSeq).toIndexedSeq
-      asScala.iterator.zip(getParetoFrontMin(asScala)(identity).iterator).collect {
+      val feasible = population.asScala.filter(ConstraintHandling.isFeasible(_))
+      println(s"Population size: ${population.size()}, feasible: ${feasible.size}")
+      if (feasible.isEmpty) {
+        population.asScala.filterNot(ConstraintHandling.isFeasible).foreach { s =>
+          println(s"Infeasible objectives: ${s.objectives().mkString(", ")}")
+          println(s"Constraints: ${s.constraints().mkString(", ")}")
+          println(s"Selected bits: ${s.variables().asScala.map(_.cardinality()).sum}")
+        }
+      }
+
+      val asScala = feasible.map(_.objectives().toIndexedSeq).toIndexedSeq
+      val pareto = asScala.iterator.zip(getParetoFrontMin(asScala)(identity).iterator).collect {
         case (v, true) => v
       }.toVector
+
+      println(s"Feasible solutions: ${asScala.size}, pareto solutions: ${pareto.size}")
+      pareto
     }
 
     val problemPath = "src/main/resources/mokpInstances/" + filename
@@ -105,7 +118,8 @@ object JMetalMKPRunner {
         // Changing back to positive values for a human-readable output
         println(s"${-s(0)} ${-s(1)}")
       }
-      println(hvCalculator.calculateRemainingPartFromUnsorted(population))
+      if (population.isEmpty) println("No feasible Pareto points")
+      else println(hvCalculator.calculateRemainingPartFromUnsorted(population))
       println(s"Run took: ${TimeUnit.NANOSECONDS.toSeconds(timeNano)}s")
     }
 
