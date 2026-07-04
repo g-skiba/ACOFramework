@@ -56,19 +56,18 @@ object JMetalMKPRunner {
     val crossover = new SinglePointCrossover[BinarySolution](0.9)
     val mutationProbability = 1.0 / problem.totalNumberOfBits
     val mutation = new BitFlipMutation[BinarySolution](mutationProbability)
-    val selection = new BinaryTournamentSelection[BinarySolution]() // TODO (new DominanceWithConstraintsComparator(new OverallConstraintViolationDegreeComparator[BinarySolution]) ?
+    val dominanceComparator = new DominanceWithConstraintsComparator(new OverallConstraintViolationDegreeComparator[BinarySolution])
+//    val selection = new BinaryTournamentSelection[BinarySolution]()
+    val selection = new BinaryTournamentSelection[BinarySolution](dominanceComparator)
 
     val maxEvaluations = 1000 //10000000
+//    val maxEvaluations = 1000000
     val populationSize = 100
 
     // 1. Setup and Run NSGA-II
     val nsgaii = new NSGAIIBuilder(problem, crossover, mutation, populationSize)
       .setSelectionOperator(selection)
-      .setDominanceComparator(
-        new DominanceWithConstraintsComparator(
-          new OverallConstraintViolationDegreeComparator[BinarySolution]
-        )
-      )
+      .setDominanceComparator(dominanceComparator)
       .setMaxEvaluations(maxEvaluations)
       .build()
 
@@ -129,7 +128,7 @@ object JMetalMKPRunner {
   }
 
   def main(args: Array[String]): Unit = {
-//    runMKP("1B-B/2KP50-1B.dat")
-    runMKP("1A/2KP50-11.dat")
+//    runMKP("1A/2KP50-11.dat")
+    runMKP("1B-B/2KP50-1B.dat")
   }
 }
