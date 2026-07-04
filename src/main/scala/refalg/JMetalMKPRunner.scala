@@ -64,48 +64,62 @@ object JMetalMKPRunner {
 //    val maxEvaluations = 1000000
     val populationSize = 100
 
-    // 1. Setup and Run NSGA-II
-    val nsgaii = new NSGAIIBuilder(problem, crossover, mutation, populationSize)
-      .setSelectionOperator(selection)
-      .setDominanceComparator(dominanceComparator)
-      .setMaxEvaluations(maxEvaluations)
-      .build()
+    def runTimed(
+      algoName: String,
+      runAlgorithm: => java.util.List[BinarySolution]
+    ): (Seq[IndexedSeq[Double]], Long) = {
+      println(s"Running $algoName...")
+      val start = System.nanoTime()
+      val result = runAlgorithm
+      val end = System.nanoTime()
+      (populationToParetoPoints(result), end - start)
+    }
 
-    println("Running NSGA-II...")
-    val nsgaii2Start = System.nanoTime()
-    nsgaii.run()
-    val nsgaii2End = System.nanoTime()
-    val nsgaiiResult = populationToParetoPoints(nsgaii.result)
-    val nsgaiiTime = nsgaii2End - nsgaii2Start
+    def runNsgaii(): (Seq[IndexedSeq[Double]], Long) = {
+      val nsgaii = new NSGAIIBuilder(problem, crossover, mutation, populationSize)
+        .setSelectionOperator(selection)
+        .setDominanceComparator(dominanceComparator)
+        .setMaxEvaluations(maxEvaluations)
+        .build()
 
-    // 2. Setup and Run SPEA2
-    val spea2 = new SPEA2Builder(problem, crossover, mutation)
-      .setSelectionOperator(selection)
-      .setPopulationSize(populationSize)
-      .setMaxIterations(maxEvaluations / populationSize)
-      .build()
+      runTimed("NSGA-II", {
+        nsgaii.run()
+        nsgaii.result
+      })
+    }
 
-    println("Running SPEA2...")
-    val spea2Start = System.nanoTime()
-    spea2.run()
-    val spea2End = System.nanoTime()
-    val spea2Result = populationToParetoPoints(spea2.result)
-    val spea2Time = spea2End - spea2Start
+    def runSpea2(): (Seq[IndexedSeq[Double]], Long) = {
+      val spea2 = new SPEA2Builder(problem, crossover, mutation)
+        .setSelectionOperator(selection)
+        .setPopulationSize(populationSize)
+        .setMaxIterations(maxEvaluations / populationSize)
+        .build()
 
-    // 3. Setup and Run PESA2
-    val pesa2 = new PESA2Builder(problem, crossover, mutation)
-      .setPopulationSize(populationSize)
-      .setArchiveSize(100)
-      .setBisections(8) //5 originally, 8 in moea?
-      .setMaxEvaluations(maxEvaluations)
-      .build()
+      runTimed("SPEA2", {
+        spea2.run()
+        spea2.result
+      })
+    }
 
-    println("Running PESA2...")
-    val pesa2Start = System.nanoTime()
-    pesa2.run()
-    val pesa2End = System.nanoTime()
-    val pesa2Result = populationToParetoPoints(pesa2.result)
-    val pesa2Time = pesa2End - pesa2Start
+    def runPesa2(): (Seq[IndexedSeq[Double]], Long) = {
+      val pesa2 = new PESA2Builder(problem, crossover, mutation)
+        .setPopulationSize(populationSize)
+        .setArchiveSize(100)
+        .setBisections(8) //5 originally, 8 in moea?
+        .setMaxEvaluations(maxEvaluations)
+        .build()
+
+      runTimed("PESA2", {
+        pesa2.run()
+        pesa2.result
+      })
+    }
+
+    val algorithmsToRun = Seq(
+      "NSGA-II" -> (() => runNsgaii()),
+      "SPEA2" -> (() => runSpea2()),
+      "PESA2" -> (() => runPesa2())
+    )
 
     def printResults(algoName: String, population: Seq[IndexedSeq[Double]], timeNano: Long): Unit = {
       println(s"\n--- $algoName Pareto Front sample ---")
@@ -122,9 +136,10 @@ object JMetalMKPRunner {
       println(s"Run took: ${TimeUnit.NANOSECONDS.toSeconds(timeNano)}s")
     }
 
-    printResults("NSGA-II", nsgaiiResult, nsgaiiTime)
-    printResults("SPEA2", spea2Result, spea2Time)
-    printResults("PESA2", pesa2Result, pesa2Time)
+    algorithmsToRun.foreach { case (algoName, runAlgorithm) =>
+      val (result, timeNano) = runAlgorithm()
+      printResults(algoName, result, timeNano)
+    }
   }
 
   def main(args: Array[String]): Unit = {
