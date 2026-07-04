@@ -37,7 +37,7 @@ CONFIG_PARAMS=$*
 # EXE=~/bin/program 
 # EDIT THIS: Specify how parameters are given to your executable
 # EXE_PARAMS="--time 5 -i $INSTANCE --seed ${SEED} ${CONFIG_PARAMS}"
-PARAMS="--instance $INSTANCE ${CONFIG_PARAMS}"
+PARAMS="--instance $INSTANCE --seed ${SEED} ${CONFIG_PARAMS}"
 
 # if [ ! -x "$(command -v ${EXE})" ]; then
 #     error "${EXE}: not found or not executable (pwd: $(pwd))"
