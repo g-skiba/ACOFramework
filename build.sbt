@@ -14,6 +14,13 @@ scalaVersion := "3.1.0"
 
 name := "aco-framework"
 version := "0.1"
+assembly / mainClass := Some("CmdMain")
+assembly / assemblyMergeStrategy := {
+  case PathList("META-INF", "native-image", _*) => MergeStrategy.discard
+  case PathList("META-INF", "versions", "9", "module-info.class") => MergeStrategy.discard
+  case "module-info.class" => MergeStrategy.discard
+  case path => (assembly / assemblyMergeStrategy).value(path)
+}
 
 // Note, it's not required for you to define these three settings. These are
 // mostly only necessary if you intend to publish your library's binaries on a
