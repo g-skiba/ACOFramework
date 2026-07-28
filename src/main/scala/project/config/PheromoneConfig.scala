@@ -64,7 +64,7 @@ case class PheromoneConfig(
 
 object PheromoneConfig {
   enum PheromoneType {
-    case Basic, TwoDim
+    case Basic, TwoDim, ItemBasic, ItemTwoDim
   }
 }
 

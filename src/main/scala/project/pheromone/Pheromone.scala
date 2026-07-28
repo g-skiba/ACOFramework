@@ -15,7 +15,18 @@ object Pheromone {
   ): BasePheromoneTable = {
     config.resolvePheromoneType match {
       case PheromoneType.Basic =>
-        project.pheromone.BasicPheromoneTable(
+        BasicPheromoneTable(
+          edges,
+          config.increment,
+          config.extinction,
+          config.resolvePheromoneDimension.getOrElse(optimizationTargetsCount),
+          config.minValue,
+          config.maxValue,
+          config.resolveSolutionsSelectionStrategy,
+          config.resolveTakenAntsToPheromoneUpdate
+        )
+      case PheromoneType.ItemBasic =>
+        ItemBasicPheromoneTable(
           edges,
           config.increment,
           config.extinction,
@@ -26,7 +37,22 @@ object Pheromone {
           config.resolveTakenAntsToPheromoneUpdate
         )
       case PheromoneType.TwoDim =>
-        project.pheromone.TwoDimPheromone(
+        TwoDimPheromone(
+          edges,
+          config.increment,
+          config.extinction,
+          config.resolvePheromoneDimension.getOrElse(optimizationTargetsCount),
+          config.minValue,
+          config.maxValue,
+          config.resolveSolutionsSelectionStrategy,
+          config.resolveTakenAntsToPheromoneUpdate,
+          config.twoDimConfig.twoDimSize,
+          config.twoDimConfig.resolveGetType,
+          config.twoDimConfig.resolveUpdateType,
+          rnd
+        )
+      case PheromoneType.ItemTwoDim =>
+        ItemTwoDimPheromone(
           edges,
           config.increment,
           config.extinction,

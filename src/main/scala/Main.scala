@@ -227,8 +227,10 @@ object RunLoop {
     def solutionsSelectionStrategies(pheromoneType: PheromoneType) = {
       import SolutionsSelectionStrategy._
       pheromoneType match {
-        case PheromoneType.Basic => Seq(LastIterationAll, LastIterationPareto, GlobalPareto)
-        case PheromoneType.TwoDim => Seq(LastIterationAll, LastIterationPareto, GlobalPareto)
+        case PheromoneType.Basic | PheromoneType.ItemBasic =>
+          Seq(LastIterationAll, LastIterationPareto, GlobalPareto)
+        case PheromoneType.TwoDim | PheromoneType.ItemTwoDim =>
+          Seq(LastIterationAll, LastIterationPareto, GlobalPareto)
       }
     }
 
@@ -237,10 +239,10 @@ object RunLoop {
       antsNum <- antsNums
     } yield {
       val values = tpe match {
-        case PheromoneType.Basic =>
+        case PheromoneType.Basic | PheromoneType.ItemBasic =>
           List(1, antsNum / 2, -1)
 //          List(1)
-        case PheromoneType.TwoDim =>
+        case PheromoneType.TwoDim | PheromoneType.ItemTwoDim =>
           List(antsNum / 2, -1)
 //          List(-1)
       }
@@ -279,8 +281,9 @@ object RunLoop {
       takenAntsToPheromoneUpdate <- takenAntsToPheromoneUpdates(phTpe, antsNum)
       twoDimConfig <- {
         phTpe match {
-          case PheromoneConfig.PheromoneType.Basic => List(new TwoDimPheromoneConfig()) //irrelevant
-          case PheromoneConfig.PheromoneType.TwoDim =>
+          case PheromoneConfig.PheromoneType.Basic | PheromoneConfig.PheromoneType.ItemBasic =>
+            List(new TwoDimPheromoneConfig()) //irrelevant
+          case PheromoneConfig.PheromoneType.TwoDim | PheromoneConfig.PheromoneType.ItemTwoDim =>
             for {
               size <- twoDimSizes
               getType <- getTypes
@@ -506,7 +509,7 @@ object CmdMain {
     val takenAntsToPheromoneUpdate = conf.updateAnts()
 
     val pheromoneConfig = PheromoneType.valueOf(conf.pheromoneType()) match
-      case PheromoneType.Basic =>
+      case PheromoneType.Basic | PheromoneType.ItemBasic =>
         assert(conf.twoDimPhSize.isEmpty)
         assert(conf.getType.isEmpty)
         assert(conf.updateType.isEmpty)
@@ -514,7 +517,7 @@ object CmdMain {
           conf.pheromoneType(), phDimension, phIncrement, phExtinction, phMinValue, phMaxValue,
           conf.solutionsSelectionStrategy(), takenAntsToPheromoneUpdate, new TwoDimPheromoneConfig()
         )
-      case PheromoneType.TwoDim =>
+      case PheromoneType.TwoDim | PheromoneType.ItemTwoDim =>
         val twoDimSize = conf.twoDimPhSize()
         val getType = conf.getType()
         val updateType = conf.updateType()
