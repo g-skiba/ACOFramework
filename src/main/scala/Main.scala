@@ -492,6 +492,8 @@ object CmdMain {
     val updateType: ScallopOption[String] = choice(TwoDimPheromoneConfig.UpdateType.values.map(_.toString))
     val getType: ScallopOption[String] = choice(TwoDimPheromoneConfig.GetType.values.map(_.toString))
     val pheromoneDelta: ScallopOption[Double] = opt[Double]()
+    val pheromoneIncrement: ScallopOption[Double] = opt[Double]()
+    val pheromoneExtinction: ScallopOption[Double] = opt[Double]()
     val updateAnts: ScallopOption[Int] = opt[Int]()
 
     verify()
@@ -501,9 +503,17 @@ object CmdMain {
     val conf = new Config(args)
 
     val phDimension = -1 // mapped to number of objectives
-    val phDelta = conf.pheromoneDelta()
-    val phIncrement = phDelta
-    val phExtinction = phDelta
+    val phDelta = conf.pheromoneDelta.toOption
+    val phIncrement = conf.pheromoneIncrement.toOption
+      .orElse(phDelta)
+      .getOrElse(throw new IllegalArgumentException(
+        "Missing pheromone increment. Pass --pheromone-increment or --pheromone-delta."
+      ))
+    val phExtinction = conf.pheromoneExtinction.toOption
+      .orElse(phDelta)
+      .getOrElse(throw new IllegalArgumentException(
+        "Missing pheromone extinction. Pass --pheromone-extinction or --pheromone-delta."
+      ))
     val phMinValue = 0.001
     val phMaxValue = 0.999
     val takenAntsToPheromoneUpdate = conf.updateAnts()
