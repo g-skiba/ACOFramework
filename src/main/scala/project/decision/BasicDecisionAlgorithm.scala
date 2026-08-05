@@ -58,24 +58,23 @@ class BasicDecisionAlgorithm[T](
     if (possibleMoves.isEmpty) {
       None
     } else {
-      val edgesWithCost = possibleMoves
+      val nodesWithCost = possibleMoves
         .map { node =>
-          val edge = Edge(solution.nodes.last, node)
-          (edge, initializedAssessment(node))
+          (node, initializedAssessment(node))
         }
 
-      val sumOfWeights = edgesWithCost.iterator.map(_._2).sum
+      val sumOfWeights = nodesWithCost.iterator.map(_._2).sum
       val selectedRandom = random.nextDouble() * sumOfWeights
 
       @scala.annotation.tailrec
-      def select(acc: Double, possibilities: Iterator[(Edge, Double)]): Edge = {
+      def select(acc: Double, possibilities: Iterator[(Node, Double)]): Node = {
         val elem = possibilities.next()
         val newAcc = acc + elem._2
         if (selectedRandom < newAcc || !possibilities.hasNext) elem._1
         else select(newAcc, possibilities)
       }
 
-      Some(select(0.0, edgesWithCost.iterator).node2)
+      Some(select(0.0, nodesWithCost.iterator))
     }
   }
 }
