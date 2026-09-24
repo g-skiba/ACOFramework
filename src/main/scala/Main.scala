@@ -16,7 +16,7 @@ import tsp.TspToProblem
 import tsp.Tsp
 import project.algorithm.BasicAlgorithm
 import project.algorithm.BaseAlgorithm
-import pareto.{Hypervolume2DCalculator, getParetoFrontMin}
+import pareto.Hypervolume2DCalculator
 import project.config.PheromoneConfig.PheromoneType
 import project.config.{AlgorithmConfig, PheromoneConfig, ProblemConfig, SolutionsSelectionStrategy, TwoDimPheromoneConfig}
 import project.logging.{AcoLogger, DebugLogger, IraceSingleObjectiveStdOutLogger, MultiLogger, StdOutAndCsvFileBuffering2DLogger, StdOutAndCsvFileBufferingRepeatAgnosticOnlyFinalResult2DLogger, StdOutLogger, SumoLogicLogger, WarnLogger}

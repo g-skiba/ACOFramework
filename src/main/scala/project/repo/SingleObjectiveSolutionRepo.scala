@@ -1,6 +1,5 @@
 package project.repo
 
-import pareto.getParetoFrontMin
 import project.logging.DebugLogger.debug
 import project.solution.BaseSolution
 

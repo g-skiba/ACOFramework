@@ -1,6 +1,5 @@
 package project.algorithm
 
-import pareto.getParetoFrontMin
 import project.colony.{BaseColony, BasicColony}
 import project.config.AlgorithmConfig
 import project.logging.AcoLogger
