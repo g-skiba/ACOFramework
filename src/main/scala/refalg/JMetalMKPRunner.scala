@@ -60,8 +60,13 @@ object JMetalMKPRunner {
 //    val selection = new BinaryTournamentSelection[BinarySolution]()
     val selection = new BinaryTournamentSelection[BinarySolution](dominanceComparator)
 
-    val maxEvaluations = 1000 //10000000
 //    val maxEvaluations = 1000000
+    val maxEvaluations = problem.totalNumberOfBits match {
+      case 150 =>  2500000
+      case 250 =>  5000000
+      case 350 => 10000000
+      case 450 => 12500000
+    }
     val populationSize = 100
 
     def runTimed(
@@ -92,7 +97,7 @@ object JMetalMKPRunner {
       val spea2 = new SPEA2Builder(problem, crossover, mutation)
         .setSelectionOperator(selection)
         .setPopulationSize(populationSize)
-        .setMaxIterations(maxEvaluations / populationSize)
+        .setMaxIterations(maxEvaluations / populationSize / 4)
         .build()
 
       runTimed("SPEA2", {
@@ -106,7 +111,7 @@ object JMetalMKPRunner {
         .setPopulationSize(populationSize)
         .setArchiveSize(100)
         .setBisections(8) //5 originally, 8 in moea?
-        .setMaxEvaluations(maxEvaluations)
+        .setMaxEvaluations(maxEvaluations * 5)
         .build()
 
       runTimed("PESA2", {
