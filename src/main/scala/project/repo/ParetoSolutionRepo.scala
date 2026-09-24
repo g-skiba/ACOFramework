@@ -1,12 +1,13 @@
 package project.repo
 
 import pareto.getParetoFrontMin
+import project.graph.Node
 import project.logging.DebugLogger.debug
 import project.solution.BaseSolution
 
 import scala.collection.mutable.SortedMap as MSortedMap
 
-class ParetoSolutionRepo extends BaseSolutionRepo {
+class ParetoSolutionRepo(areSolutionsEquivalent: (Seq[Node], Seq[Node]) => Boolean) extends BaseSolutionRepo {
   private val paretoSolutions: MSortedMap[Int, IndexedSeq[BaseSolution]] = MSortedMap.empty
   private var globalPareto: IndexedSeq[BaseSolution] = IndexedSeq.empty
 
@@ -29,7 +30,7 @@ class ParetoSolutionRepo extends BaseSolutionRepo {
   }
 
   private def selectParetoFront(solutions: IndexedSeq[BaseSolution]): IndexedSeq[BaseSolution] = {
-    solutions.iterator.zip(getParetoFrontMin(solutions)(_.evaluation).iterator).collect {
+    solutions.iterator.zip(getParetoFrontMin(solutions)(_.evaluation, (s1, s2) => areSolutionsEquivalent(s1.solution, s2.solution)).iterator).collect {
       case (v, true) => v
     }.toVector
   }

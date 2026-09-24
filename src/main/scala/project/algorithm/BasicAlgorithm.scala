@@ -26,7 +26,7 @@ class BasicAlgorithm(
   override def run(logger: AcoLogger): BaseSolutionRepo = {
     val solutionRepo = problem.dimensions match {
       case 1 => new SingleObjectiveSolutionRepo
-      case _ => new ParetoSolutionRepo
+      case _ => new ParetoSolutionRepo(problem.areSolutionsEquivalent)
     }
     val rnd = random(seed)
 

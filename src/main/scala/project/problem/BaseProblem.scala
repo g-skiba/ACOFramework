@@ -20,6 +20,10 @@ abstract class BaseProblem[T](
     */
   def evaluate(solution: SolutionUnderConstruction[T]): IndexedSeq[Double]
 
+  /** Whether two completed node sequences represent the same solution. */
+  def areSolutionsEquivalent(first: Seq[Node], second: Seq[Node]): Boolean =
+    first == second
+
   /** Function that return all possible moves to ant, based on visited nodes
     */
   def getPossibleMoves(solution: SolutionUnderConstruction[T]): collection.Set[Node]

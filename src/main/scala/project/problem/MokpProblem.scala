@@ -66,6 +66,9 @@ class MokpProblem(
     Vector(-sums(0), -sums(1))
   }
 
+  override def areSolutionsEquivalent(first: Seq[Node], second: Seq[Node]): Boolean =
+    first.toSet == second.toSet
+
   override def getPossibleMoves(solution: SolutionUnderConstruction[MokpState]): collection.Set[Node] = {
     solution.state.nodesToVisit.filter { node =>
       capacities.indices.forall { constraint =>

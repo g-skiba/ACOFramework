@@ -5,7 +5,7 @@ import project.solution.BaseSolution
 
 /** Function that finds pareto front for minimization of criteria
   */
-def getParetoFrontMin[T](data: IndexedSeq[T])(eval: T => IndexedSeq[Double]): IndexedSeq[Boolean] = {
+def getParetoFrontMin[T](data: IndexedSeq[T])(eval: T => IndexedSeq[Double], areSolutionsEqual: (T, T) => Boolean = (s1: T, s2: T) => s1 == s2): IndexedSeq[Boolean] = {
   val isEfficient = Array.fill(data.size)(true)
   for (i <- isEfficient.indices) {
     if (isEfficient(i)) {
@@ -17,8 +17,8 @@ def getParetoFrontMin[T](data: IndexedSeq[T])(eval: T => IndexedSeq[Double]): In
           val scoreI = eval(dataI)
           val scoreJ = eval(dataJ)
 
-          def betterScore = scoreJ.zip(scoreI).exists(pair => pair._1 < pair._2)
-          def sameScoreButDifferentData = scoreJ.zip(scoreI).forall(pair => pair._1 == pair._2) && dataI != dataJ
+          def betterScore = scoreJ.iterator.zip(scoreI).exists(pair => pair._1 < pair._2)
+          def sameScoreButDifferentData = scoreJ.iterator.zip(scoreI).forall(pair => pair._1 == pair._2) && !areSolutionsEqual(dataI, dataJ)
 
           isEfficient(j) = betterScore || sameScoreButDifferentData
         }
@@ -64,5 +64,11 @@ object NonDominated {
       BaseSolution(Seq(Node(1), Node(2)), IndexedSeq(1.0)),
       BaseSolution(Seq(Node(1), Node(3)), IndexedSeq(1.0)),
     ))(_.evaluation) == Vector(true, true))
+
+    println(getParetoFrontMin(IndexedSeq(
+      BaseSolution(Seq(Node(1), Node(2)), IndexedSeq(1.0)),
+      BaseSolution(Seq(Node(1), Node(3)), IndexedSeq(1.0)),
+      BaseSolution(Seq(Node(3), Node(1)), IndexedSeq(1.0)),
+    ))(_.evaluation, (s1, s2) => s1.solution.toSet == s2.solution.toSet) == Vector(true, true, false))
   }
 }
