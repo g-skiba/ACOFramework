@@ -51,8 +51,24 @@ object JMetalTSPRunner {
     val mutation = new PermutationSwapMutation[Integer](0.2)
     val selection = new BinaryTournamentSelection[PermutationSolution[Integer]]() // TODO new RankingAndCrowdingDistanceComparator[PermutationSolution[Integer]]() ?
 
-    val maxEvaluations = 1000 //10000000
+    val numberOfCities = problem.numberOfVariables()
+    val maxEvaluations = numberOfCities match {
+      case 100 => 4000000
+      case 150 => 5000000
+      case 200 => 8000000
+      case 300 => 20000000
+      case 500 => 40000000
+      case size => throw new IllegalArgumentException(s"Unsupported TSP size: $size cities")
+    }
     val populationSize = 100
+    val speaIterationDivisor = numberOfCities match {
+      case 100 => 10
+      case 150 => 9
+      case 200 => 8
+      case 300 => 7
+      case 500 => 6
+      case size => throw new IllegalArgumentException(s"Unsupported TSP size: $size cities")
+    }
 
     // 1. Setup and Run NSGA-II
     val nsgaii = new NSGAIIBuilder(problem, crossover, mutation, populationSize)
@@ -71,7 +87,7 @@ object JMetalTSPRunner {
     val spea2 = new SPEA2Builder(problem, crossover, mutation)
       .setSelectionOperator(selection)
       .setPopulationSize(populationSize)
-      .setMaxIterations(maxEvaluations / populationSize)
+      .setMaxIterations(maxEvaluations / populationSize / speaIterationDivisor)
       .build()
 
     println("Running SPEA2...")
@@ -114,7 +130,10 @@ object JMetalTSPRunner {
   }
 
   def main(args: Array[String]): Unit = {
-//    runMtsp("kroA100", "kroB100")
+    runMtsp("kroE100", "kroF100")
+    runMtsp("kroA150", "kroB150")
+    runMtsp("kroA200", "kroB200")
+    runMtsp("euclidA300", "euclidB300")
     runMtsp("euclidA500", "euclidB500")
   }
 }
