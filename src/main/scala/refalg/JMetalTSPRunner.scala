@@ -70,6 +70,8 @@ object JMetalTSPRunner {
       case size => throw new IllegalArgumentException(s"Unsupported TSP size: $size cities")
     }
 
+    println(s"Running problem: $distanceFile, $costFile")
+
     // 1. Setup and Run NSGA-II
     val nsgaii = new NSGAIIBuilder(problem, crossover, mutation, populationSize)
       .setSelectionOperator(selection)
