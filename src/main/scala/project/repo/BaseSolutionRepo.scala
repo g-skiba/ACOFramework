@@ -13,6 +13,9 @@ abstract class BaseSolutionRepo {
   }
   def globalParetoSolutions: IndexedSeq[BaseSolution]
 
+  /** Ordered learning fronts for repositories that support multiobjective learning archives. */
+  def learningParetoFronts: IndexedSeq[IndexedSeq[BaseSolution]]
+
   def solutionsForLastIteration: IndexedSeq[BaseSolution] = {
     val solutions = allSolutions.last._2
     debug(s"Retrieved all ${solutions.size} last iteration solutions from repo - ${solutions.map(_.evaluation).sortBy(_.head)}")

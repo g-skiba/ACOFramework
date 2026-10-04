@@ -23,7 +23,7 @@ class ParetoSolutionRepo(
   private var learningArchive: IndexedSeq[IndexedSeq[ArchiveEntry]] = IndexedSeq.empty
 
   /** Ordered fronts of retained learning candidates, separate from the best-ever reporting front. */
-  def learningParetoFronts: IndexedSeq[IndexedSeq[BaseSolution]] =
+  override def learningParetoFronts: IndexedSeq[IndexedSeq[BaseSolution]] =
     learningArchive.map(_.map(_.value))
 
   override def addSolutions(iteration: Int, newSolutions: IndexedSeq[BaseSolution]): Unit = {

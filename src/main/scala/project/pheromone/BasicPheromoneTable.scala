@@ -30,7 +30,7 @@ class BasicPheromoneTable(
   override def getPheromone(edge: Edge): Array[Double] = pheromone(edge.cantorValue)
 
   override def pheromoneUpdate(solutionsRepo: BaseSolutionRepo): Unit = {
-    val solutions = solutionsSelectionStrategy(solutionsRepo)
+    val solutions = solutionsSelectionStrategy(solutionsRepo).flatten
     val takeSolutions = updateAnts.getOrElse(solutions.size)
     
     def updateDim(dim: Int): Unit = {

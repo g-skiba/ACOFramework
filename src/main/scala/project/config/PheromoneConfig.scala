@@ -68,10 +68,11 @@ object PheromoneConfig {
   }
 }
 
-enum SolutionsSelectionStrategy(fun: BaseSolutionRepo => IndexedSeq[BaseSolution]) {
-  def apply(solutionsRepo: BaseSolutionRepo): IndexedSeq[BaseSolution] = fun(solutionsRepo)
+enum SolutionsSelectionStrategy(fun: BaseSolutionRepo => IndexedSeq[IndexedSeq[BaseSolution]]) {
+  def apply(solutionsRepo: BaseSolutionRepo): IndexedSeq[IndexedSeq[BaseSolution]] = fun(solutionsRepo)
 
-  case LastIterationAll extends SolutionsSelectionStrategy(_.solutionsForLastIteration)
-  case LastIterationPareto extends SolutionsSelectionStrategy(_.paretoSolutionsForLastIteration)
-  case GlobalPareto extends SolutionsSelectionStrategy(_.globalParetoSolutions)
+  case LastIterationAll extends SolutionsSelectionStrategy(repo => IndexedSeq(repo.solutionsForLastIteration))
+  case LastIterationPareto extends SolutionsSelectionStrategy(repo => IndexedSeq(repo.paretoSolutionsForLastIteration))
+  case GlobalPareto extends SolutionsSelectionStrategy(repo => IndexedSeq(repo.globalParetoSolutions))
+  case ParetoFronts extends SolutionsSelectionStrategy(_.learningParetoFronts)
 }

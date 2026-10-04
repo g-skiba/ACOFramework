@@ -18,6 +18,9 @@ class SingleObjectiveSolutionRepo extends BaseSolutionRepo {
 
   override def globalParetoSolutions: IndexedSeq[BaseSolution] = global.toIndexedSeq
 
+  override def learningParetoFronts: IndexedSeq[IndexedSeq[BaseSolution]] =
+    throw new UnsupportedOperationException("Learning Pareto fronts are not supported by the single-objective repository")
+
   override def paretoSolutionsForLastIteration: IndexedSeq[BaseSolution] = {
     val solution = bestSolutions.last._2
     debug(s"Retrieved best solution from last iteration: ${solution.evaluation}")
