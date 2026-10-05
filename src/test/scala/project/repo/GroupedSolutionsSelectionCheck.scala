@@ -18,7 +18,7 @@ object GroupedSolutionsSelectionCheck {
   def main(args: Array[String]): Unit = {
     selectsOrderedGroups()
     preservesSingleObjectiveSelections()
-    preservesGlobalContributorLimits()
+    checksContributorLimits()
     println("Grouped solution selection checks passed")
   }
 
@@ -57,7 +57,7 @@ object GroupedSolutionsSelectionCheck {
     assert(unsupported)
   }
 
-  private def preservesGlobalContributorLimits(): Unit = {
+  private def checksContributorLimits(): Unit = {
     val a = solution(1, 1, 3)
     val b = solution(2, 2, 4)
     val c = solution(3, 3, 1)
@@ -66,8 +66,8 @@ object GroupedSolutionsSelectionCheck {
     repo.addSolutions(0, Vector(a, b, c))
     assert(repo.learningParetoFronts == Vector(Vector(a, c), Vector(b)))
 
-    // Both the old single group and the new fronts select a,b for objective 0 and c,a for objective 1.
-    // A per-front cutoff would also include c for objective 0 and b for objective 1; it belongs to the next increment.
+    // Basic tables still select a,b for objective 0 and c,a for objective 1.
+    // Both 2D tables select within each group, so ParetoFronts includes all three solutions for both objectives.
     for (selection <- Vector(SolutionsSelectionStrategy.LastIterationAll, SolutionsSelectionStrategy.ParetoFronts)) {
       val basic = new BasicPheromoneTable(edges, 0.25, 0.1, 2, 0.0, 1.0, selection, Some(2))
       val itemBasic = new ItemBasicPheromoneTable(edges, 0.25, 0.1, 2, 0.0, 1.0, selection, Some(2))
@@ -97,8 +97,14 @@ object GroupedSolutionsSelectionCheck {
             case (0, 0, 0) | (0, 1, 1) | (1, 2, 0) | (1, 0, 1) => true
             case _ => false
           }
-          val expectedValue = if (receivesDeposit) 1.25 else 1.0
           val edge = edges(edgeIndex)
+          val tableReceivesDeposit = if (selection == SolutionsSelectionStrategy.ParetoFronts) {
+            val expectedBuckets = if (updateType == UpdateType.PartFromIndex) {
+              Vector(Vector(0, 0, 1), Vector(0, 1, 0))
+            } else Vector(Vector(0, 1, 1), Vector(1, 1, 0))
+            bucket == expectedBuckets(dim)(edgeIndex)
+          } else receivesDeposit
+          val expectedValue = if (tableReceivesDeposit) 1.25 else 1.0
           assert(twoDim.pheromone(dim)(edge.cantorValue)(bucket) == expectedValue)
           assert(itemTwoDim.pheromone(dim)(edge.node2.number)(bucket) == expectedValue)
         }

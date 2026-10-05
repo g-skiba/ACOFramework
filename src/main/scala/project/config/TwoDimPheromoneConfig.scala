@@ -43,6 +43,6 @@ object TwoDimPheromoneConfig {
     case ExpectedCombination extends GetType(false)
   }
   enum UpdateType {
-    case PartFromEvaluation, PartFromIndex
+    case PartFromEvaluation, PartFromIndex, PartFromParetoFront
   }
 }

@@ -32,9 +32,18 @@ class TwoDimPheromone(
   detailedDebug: Boolean = false
 ) extends BasePheromoneTable {
   debug(s"Creating two dim pheromone table with $pheromoneDimension dimensions, $twoDimPheromoneSize pheromone size and $updateAnts update ants")
+  require(twoDimPheromoneSize > 0, "The pheromone table must contain at least one bucket")
   require(
     twoDimPheromoneSize % 2 == 0,
     "Temporary assumption for `getPheromone` based on pairing values starting from edges"
+  )
+  require(
+    updateType != UpdateType.PartFromParetoFront || Set(
+      SolutionsSelectionStrategy.ParetoFronts,
+      SolutionsSelectionStrategy.GlobalPareto,
+      SolutionsSelectionStrategy.LastIterationPareto
+    ).contains(solutionsSelectionStrategy),
+    "PartFromParetoFront requires a Pareto solution selection strategy"
   )
   private val maxCantorValue = edges.iterator.map(e => e.cantorValue).max
   // indexed by edges' cantor value
@@ -140,58 +149,47 @@ class TwoDimPheromone(
   }
 
   override def pheromoneUpdate(solutionsRepo: BaseSolutionRepo): Unit = {
+    val solutionGroups = solutionsSelectionStrategy(solutionsRepo)
+    require(
+      updateType != UpdateType.PartFromParetoFront || solutionGroups.size <= twoDimPheromoneSize,
+      "The number of Pareto fronts must not exceed the number of pheromone buckets"
+    )
     cache.clear()
-    val solutions = solutionsSelectionStrategy(solutionsRepo).flatten
-    val takeSolutions = updateAnts.getOrElse(solutions.size)
-    
+    val updateLimit = updateAnts.filter(_ > 0)
+
     def updateDim(dim: Int): Unit = {
-      val sortedSolutions = solutions.sortBy(_.evaluation(dim)).take(takeSolutions)
-      if (!updateAnts.forall(_ == sortedSolutions.size)) {
-//        warn(s"Wanted: $updateAnts update ants, got ${sortedSolutions.size} solutions")
+      val selectedGroups = solutionGroups.map { group =>
+        group.sortBy(_.evaluation(dim)).take(updateLimit.getOrElse(group.size))
       }
-
-      val minCost = sortedSolutions.head.evaluation(dim)
-      val maxCost = sortedSolutions.last.evaluation(dim)
-      val partDiff = (maxCost - minCost) / twoDimPheromoneSize
-      if (detailedDebug) debug(partDiff)
-
-      def calcPartFromEvaluation(cost: Double): Int =
-        ((cost - minCost) / partDiff).toInt.min(twoDimPheromoneSize - 1)
-      def calcPartFromIndex(ind: Int): Int = ind * twoDimPheromoneSize / sortedSolutions.size
-      if (detailedDebug) {
-        debug(
-          sortedSolutions
-            .map(_.evaluation(dim))
-            .map(calcPartFromEvaluation)
-            .groupBy(identity)
-            .view
-            .mapValues(_.size)
-            .toList
-            .sortBy(_._1)
-        )
-        debug(
-          sortedSolutions.zipWithIndex
-            .map(_._2)
-            .map(calcPartFromIndex)
-            .groupBy(identity)
-            .view
-            .mapValues(_.size)
-            .toList
-            .sortBy(_._1)
-        )
-      }
-
-      debug(s"Updating pheromone for dimension $dim with ${sortedSolutions.size} solutions - ${sortedSolutions.map(_.evaluation)}")
-      sortedSolutions.zipWithIndex
-        .groupBy { case (solution, ind) =>
-          //both versions give acceptable results
-          updateType match {
-            case UpdateType.PartFromEvaluation =>
-              calcPartFromEvaluation(solution.evaluation(dim))
-            case UpdateType.PartFromIndex =>
-              calcPartFromIndex(ind)
+      val solutionsWithParts: IndexedSeq[(BaseSolution, Int)] = updateType match {
+        case UpdateType.PartFromParetoFront =>
+          selectedGroups.zipWithIndex.flatMap { case (group, frontIndex) =>
+            group.map(solution => (solution, frontIndex))
           }
-        }
+        case UpdateType.PartFromEvaluation | UpdateType.PartFromIndex =>
+          val sortedSolutions = selectedGroups.flatten.sortBy(_.evaluation(dim))
+          if (sortedSolutions.isEmpty) IndexedSeq.empty
+          else {
+            val minCost = sortedSolutions.head.evaluation(dim)
+            val maxCost = sortedSolutions.last.evaluation(dim)
+            val partDiff = (maxCost - minCost) / twoDimPheromoneSize
+            if (detailedDebug) debug(partDiff)
+
+            sortedSolutions.zipWithIndex.map { case (solution, index) =>
+              val part = if (updateType == UpdateType.PartFromEvaluation) {
+                if (partDiff == 0.0) 0
+                else ((solution.evaluation(dim) - minCost) / partDiff).toInt.min(twoDimPheromoneSize - 1)
+              } else index * twoDimPheromoneSize / sortedSolutions.size
+              (solution, part)
+            }
+          }
+      }
+
+      debug(s"Updating pheromone for dimension $dim with ${solutionsWithParts.size} solutions - ${solutionsWithParts.map(_._1.evaluation)}")
+      val solutionsByPart = solutionsWithParts.groupBy(_._2)
+      if (detailedDebug) debug(solutionsByPart.toList.map { case (part, entries) => (part, entries.size) }.sortBy(_._1))
+
+      solutionsByPart
         .foreach { case (part, partSolutions) =>
           val partIncrement = increment / partSolutions.size
           partSolutions.foreach { case (solution, _) =>
