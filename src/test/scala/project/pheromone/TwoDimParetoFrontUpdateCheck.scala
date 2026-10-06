@@ -53,6 +53,7 @@ object TwoDimParetoFrontUpdateCheck {
     selectsAllWithoutAPositiveLimit()
     acceptsExistingParetoStrategies()
     handlesEmptyArchivesAndEqualValues()
+    preservesEmptyFrontPositions()
     validatesFrontMapping()
     println("TwoDim Pareto front update checks passed")
   }
@@ -124,6 +125,14 @@ object TwoDimParetoFrontUpdateCheck {
       case _: IllegalArgumentException => true
     }
     assert(rejected)
+  }
+
+  private def preservesEmptyFrontPositions(): Unit = {
+    val groups = Vector(Vector.empty[BaseSolution], Vector(solutions(1), solutions(0)), Vector.empty[BaseSolution], Vector(solutions(2)))
+    val selected = PheromoneUpdateSelection.selectForObjective(groups, 0, Some(1))
+    assert(selected == Vector(Vector.empty, Vector(solutions(0)), Vector.empty, Vector(solutions(2))))
+    assert(PheromoneUpdateSelection.assignBuckets(selected, 0, UpdateType.PartFromParetoFront, 4) ==
+      Vector((solutions(0), 1), (solutions(2), 3)))
   }
 
   private def validatesFrontMapping(): Unit = {

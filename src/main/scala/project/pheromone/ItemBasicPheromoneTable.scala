@@ -25,11 +25,10 @@ class ItemBasicPheromoneTable(
   override def getPheromone(edge: Edge): Array[Double] = pheromone(edge.node2.number)
 
   override def pheromoneUpdate(solutionsRepo: BaseSolutionRepo): Unit = {
-    val solutions = solutionsSelectionStrategy(solutionsRepo).flatten
-    val takeSolutions = updateAnts.getOrElse(solutions.size)
+    val solutionGroups = solutionsSelectionStrategy(solutionsRepo)
 
     def updateDim(dim: Int): Unit = {
-      val solutionsForDim = solutions.sortBy(_.evaluation(dim)).take(takeSolutions)
+      val solutionsForDim = PheromoneUpdateSelection.selectForObjective(solutionGroups, dim, updateAnts).flatten
 //      if (!updateAnts.forall(_ == solutionsForDim.size)) {
 //        warn(s"Wanted: $updateAnts update ants, got ${solutionsForDim.size} solutions")
 //      }

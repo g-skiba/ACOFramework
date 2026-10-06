@@ -6,7 +6,6 @@ import project.graph.Edge
 import project.logging.DebugLogger.debug
 import project.logging.WarnLogger.warn
 import project.repo.BaseSolutionRepo
-import project.solution.BaseSolution
 
 import scala.annotation.tailrec
 import scala.collection.mutable.Map as MMap
@@ -32,18 +31,10 @@ class TwoDimPheromone(
   detailedDebug: Boolean = false
 ) extends BasePheromoneTable {
   debug(s"Creating two dim pheromone table with $pheromoneDimension dimensions, $twoDimPheromoneSize pheromone size and $updateAnts update ants")
-  require(twoDimPheromoneSize > 0, "The pheromone table must contain at least one bucket")
+  PheromoneUpdateSelection.validateBucketConfiguration(solutionsSelectionStrategy, updateType, twoDimPheromoneSize)
   require(
     twoDimPheromoneSize % 2 == 0,
     "Temporary assumption for `getPheromone` based on pairing values starting from edges"
-  )
-  require(
-    updateType != UpdateType.PartFromParetoFront || Set(
-      SolutionsSelectionStrategy.ParetoFronts,
-      SolutionsSelectionStrategy.GlobalPareto,
-      SolutionsSelectionStrategy.LastIterationPareto
-    ).contains(solutionsSelectionStrategy),
-    "PartFromParetoFront requires a Pareto solution selection strategy"
   )
   private val maxCantorValue = edges.iterator.map(e => e.cantorValue).max
   // indexed by edges' cantor value
@@ -150,40 +141,12 @@ class TwoDimPheromone(
 
   override def pheromoneUpdate(solutionsRepo: BaseSolutionRepo): Unit = {
     val solutionGroups = solutionsSelectionStrategy(solutionsRepo)
-    require(
-      updateType != UpdateType.PartFromParetoFront || solutionGroups.size <= twoDimPheromoneSize,
-      "The number of Pareto fronts must not exceed the number of pheromone buckets"
-    )
+    PheromoneUpdateSelection.validateFrontCount(solutionGroups.size, updateType, twoDimPheromoneSize)
     cache.clear()
-    val updateLimit = updateAnts.filter(_ > 0)
 
     def updateDim(dim: Int): Unit = {
-      val selectedGroups = solutionGroups.map { group =>
-        group.sortBy(_.evaluation(dim)).take(updateLimit.getOrElse(group.size))
-      }
-      val solutionsWithParts: IndexedSeq[(BaseSolution, Int)] = updateType match {
-        case UpdateType.PartFromParetoFront =>
-          selectedGroups.zipWithIndex.flatMap { case (group, frontIndex) =>
-            group.map(solution => (solution, frontIndex))
-          }
-        case UpdateType.PartFromEvaluation | UpdateType.PartFromIndex =>
-          val sortedSolutions = selectedGroups.flatten.sortBy(_.evaluation(dim))
-          if (sortedSolutions.isEmpty) IndexedSeq.empty
-          else {
-            val minCost = sortedSolutions.head.evaluation(dim)
-            val maxCost = sortedSolutions.last.evaluation(dim)
-            val partDiff = (maxCost - minCost) / twoDimPheromoneSize
-            if (detailedDebug) debug(partDiff)
-
-            sortedSolutions.zipWithIndex.map { case (solution, index) =>
-              val part = if (updateType == UpdateType.PartFromEvaluation) {
-                if (partDiff == 0.0) 0
-                else ((solution.evaluation(dim) - minCost) / partDiff).toInt.min(twoDimPheromoneSize - 1)
-              } else index * twoDimPheromoneSize / sortedSolutions.size
-              (solution, part)
-            }
-          }
-      }
+      val selectedGroups = PheromoneUpdateSelection.selectForObjective(solutionGroups, dim, updateAnts)
+      val solutionsWithParts = PheromoneUpdateSelection.assignBuckets(selectedGroups, dim, updateType, twoDimPheromoneSize)
 
       debug(s"Updating pheromone for dimension $dim with ${solutionsWithParts.size} solutions - ${solutionsWithParts.map(_._1.evaluation)}")
       val solutionsByPart = solutionsWithParts.groupBy(_._2)

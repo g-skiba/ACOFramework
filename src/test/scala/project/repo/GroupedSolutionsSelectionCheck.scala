@@ -19,6 +19,8 @@ object GroupedSolutionsSelectionCheck {
     selectsOrderedGroups()
     preservesSingleObjectiveSelections()
     checksContributorLimits()
+    checksBasicTablesWithoutAPositiveLimit()
+    checksEmptyBasicUpdates()
     println("Grouped solution selection checks passed")
   }
 
@@ -66,14 +68,16 @@ object GroupedSolutionsSelectionCheck {
     repo.addSolutions(0, Vector(a, b, c))
     assert(repo.learningParetoFronts == Vector(Vector(a, c), Vector(b)))
 
-    // Basic tables still select a,b for objective 0 and c,a for objective 1.
-    // Both 2D tables select within each group, so ParetoFronts includes all three solutions for both objectives.
+    // Every table selects within each group, so ParetoFronts includes all three solutions for both objectives.
+    // LastIterationAll has one group and still selects a,b for objective 0 and c,a for objective 1.
     for (selection <- Vector(SolutionsSelectionStrategy.LastIterationAll, SolutionsSelectionStrategy.ParetoFronts)) {
       val basic = new BasicPheromoneTable(edges, 0.25, 0.1, 2, 0.0, 1.0, selection, Some(2))
       val itemBasic = new ItemBasicPheromoneTable(edges, 0.25, 0.1, 2, 0.0, 1.0, selection, Some(2))
       basic.pheromoneUpdate(repo)
       itemBasic.pheromoneUpdate(repo)
-      val expected = Vector(Vector(1.25, 1.25), Vector(1.25, 1.0), Vector(1.0, 1.25))
+      val expected = if (selection == SolutionsSelectionStrategy.ParetoFronts) {
+        Vector.fill(3)(Vector(1.25, 1.25))
+      } else Vector(Vector(1.25, 1.25), Vector(1.25, 1.0), Vector(1.0, 1.25))
       for ((edge, values) <- edges.zip(expected)) {
         assert(basic.getPheromone(edge).toVector == values)
         assert(itemBasic.getPheromone(edge).toVector == values)
@@ -109,6 +113,39 @@ object GroupedSolutionsSelectionCheck {
           assert(itemTwoDim.pheromone(dim)(edge.node2.number)(bucket) == expectedValue)
         }
       }
+    }
+  }
+
+  private def checksBasicTablesWithoutAPositiveLimit(): Unit = {
+    val edges = (1 to 3).map(id => Edge(Node(0), Node(id))).toVector
+    val repo = new ParetoSolutionRepo(sameNodes, paretoFrontsCount = 2)
+    repo.addSolutions(0, Vector(solution(1, 1, 3), solution(2, 2, 4), solution(3, 3, 1)))
+    for {
+      limit <- Vector(None, Some(0), Some(-1))
+      selection <- Vector(SolutionsSelectionStrategy.LastIterationAll, SolutionsSelectionStrategy.ParetoFronts)
+    } {
+      val basic = new BasicPheromoneTable(edges, 0.25, 0.1, 2, 0.0, 1.0, selection, limit)
+      val itemBasic = new ItemBasicPheromoneTable(edges, 0.25, 0.1, 2, 0.0, 1.0, selection, limit)
+      basic.pheromoneUpdate(repo)
+      itemBasic.pheromoneUpdate(repo)
+      for (edge <- edges) {
+        assert(basic.getPheromone(edge).toVector == Vector(1.25, 1.25))
+        assert(itemBasic.getPheromone(edge).toVector == Vector(1.25, 1.25))
+      }
+    }
+  }
+
+  private def checksEmptyBasicUpdates(): Unit = {
+    val edge = Edge(Node(0), Node(1))
+    val repo = new ParetoSolutionRepo(sameNodes)
+    repo.addSolutions(0, Vector.empty)
+    for (selection <- SolutionsSelectionStrategy.values) {
+      val basic = new BasicPheromoneTable(Vector(edge), 0.25, 0.1, 2, 0.0, 1.0, selection, Some(1))
+      val itemBasic = new ItemBasicPheromoneTable(Vector(edge), 0.25, 0.1, 2, 0.0, 1.0, selection, Some(1))
+      basic.pheromoneUpdate(repo)
+      itemBasic.pheromoneUpdate(repo)
+      assert(basic.getPheromone(edge).toVector == Vector(1.0, 1.0))
+      assert(itemBasic.getPheromone(edge).toVector == Vector(1.0, 1.0))
     }
   }
 }
