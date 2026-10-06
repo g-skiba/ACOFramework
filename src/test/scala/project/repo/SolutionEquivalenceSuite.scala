@@ -5,9 +5,8 @@ import project.graph.{Edge, Node}
 import project.problem.{MokpProblem, Mtsp}
 import project.solution.BaseSolution
 
-/** Run with `sbt "Test/runMain project.repo.SolutionEquivalenceCheck"`. */
-object SolutionEquivalenceCheck {
-  def main(args: Array[String]): Unit = {
+class SolutionEquivalenceSuite extends munit.FunSuite {
+  test("retain distinct tours with equal objective values") {
     val cities = (0 to 2).map(Node(_))
     val matrix = (for {
       from <- cities
@@ -23,7 +22,9 @@ object SolutionEquivalenceCheck {
     tourRepo.addSolutions(0, Vector(tour1, tour2))
     assert(tourRepo.paretoSolutionsForLastIteration == Vector(tour1, tour2))
     assert(tourRepo.globalParetoSolutions == Vector(tour1, tour2))
+  }
 
+  test("deduplicate reordered knapsack item sets while retaining distinct sets") {
     val mokp = new MokpProblem(MultiObjectiveKnapsackData(
       objectives = Vector(Vector(1, 1, 1), Vector(1, 1, 1)),
       constraints = Vector(Vector(1, 1, 1)),

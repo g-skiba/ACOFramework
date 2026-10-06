@@ -1,8 +1,5 @@
 package pareto
 
-import project.graph.Node
-import project.solution.BaseSolution
-
 /** Function that finds pareto front for minimization of criteria
   */
 def getParetoFrontMin[T](data: IndexedSeq[T])(eval: T => IndexedSeq[Double], areSolutionsEqual: (T, T) => Boolean = (s1: T, s2: T) => s1 == s2): IndexedSeq[Boolean] = {
@@ -26,49 +23,4 @@ def getParetoFrontMin[T](data: IndexedSeq[T])(eval: T => IndexedSeq[Double], are
     }
   }
   isEfficient
-}
-
-object NonDominated {
-  def main(args: Array[String]): Unit = {
-    println(getParetoFrontMin(Vector(Vector(1.0), Vector(2.0)))(identity) == Vector(true, false))
-    println(getParetoFrontMin(Vector(Vector(2.0), Vector(1.0)))(identity) == Vector(false, true))
-    println(getParetoFrontMin(Vector(Vector(1.0), Vector(1.0), Vector(2.0)))(identity) == Vector(true, false, false))
-    println(getParetoFrontMin(Vector(Vector(1.0), Vector(1.0)))(identity) == Vector(true, false))
-    println()
-
-    println(getParetoFrontMin(Vector(Vector(1.0, 0.0), Vector(2.0, 0.0)))(identity) == Vector(true, false))
-    println(getParetoFrontMin(Vector(Vector(2.0, 0.0), Vector(1.0, 0.0)))(identity) == Vector(false, true))
-    println(getParetoFrontMin(Vector(Vector(1.0, 0.0), Vector(1.0, 0.0), Vector(2.0, 0.0)))(identity) == Vector(true, false, false))
-    println(getParetoFrontMin(Vector(Vector(1.0, 0.0), Vector(1.0, 0.0)))(identity) == Vector(true, false))
-    println()
-
-    println(getParetoFrontMin(Vector(Vector(0.0, 1.0), Vector(0.0, 2.0)))(identity) == Vector(true, false))
-    println(getParetoFrontMin(Vector(Vector(0.0, 2.0), Vector(0.0, 1.0)))(identity) == Vector(false, true))
-    println(getParetoFrontMin(Vector(Vector(0.0, 1.0), Vector(0.0, 1.0), Vector(0.0, 2.0)))(identity) == Vector(true, false, false))
-    println(getParetoFrontMin(Vector(Vector(0.0, 1.0), Vector(0.0, 1.0)))(identity) == Vector(true, false))
-    println()
-
-    println(getParetoFrontMin(Vector(Vector(1.0, 0.0), Vector(0.0, 2.0)))(identity) == Vector(true, true))
-    println(getParetoFrontMin(Vector(Vector(2.0, 0.0), Vector(0.0, 1.0)))(identity) == Vector(true, true))
-    println()
-
-    println(getParetoFrontMin(IndexedSeq(
-      BaseSolution(Seq(Node(1), Node(2)), IndexedSeq(1.0)),
-      BaseSolution(Seq(Node(1), Node(2)), IndexedSeq(2.0)),
-    ))(_.evaluation) == Vector(true, false))
-    println(getParetoFrontMin(IndexedSeq(
-      BaseSolution(Seq(Node(1), Node(2)), IndexedSeq(1.0)),
-      BaseSolution(Seq(Node(1), Node(2)), IndexedSeq(1.0)),
-    ))(_.evaluation) == Vector(true, false))
-    println(getParetoFrontMin(IndexedSeq(
-      BaseSolution(Seq(Node(1), Node(2)), IndexedSeq(1.0)),
-      BaseSolution(Seq(Node(1), Node(3)), IndexedSeq(1.0)),
-    ))(_.evaluation) == Vector(true, true))
-
-    println(getParetoFrontMin(IndexedSeq(
-      BaseSolution(Seq(Node(1), Node(2)), IndexedSeq(1.0)),
-      BaseSolution(Seq(Node(1), Node(3)), IndexedSeq(1.0)),
-      BaseSolution(Seq(Node(3), Node(1)), IndexedSeq(1.0)),
-    ))(_.evaluation, (s1, s2) => s1.solution.toSet == s2.solution.toSet) == Vector(true, true, false))
-  }
 }

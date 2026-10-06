@@ -8,23 +8,13 @@ import project.solution.BaseSolution
 
 import scala.util.Random
 
-/** Run with `sbt "Test/runMain project.repo.GroupedSolutionsSelectionCheck"`. */
-object GroupedSolutionsSelectionCheck {
+class GroupedSolutionsSelectionSuite extends munit.FunSuite {
   private val sameNodes: (Seq[Node], Seq[Node]) => Boolean = (first, second) => first == second
 
   private def solution(id: Int, first: Double, second: Double): BaseSolution =
     BaseSolution(Vector(Node(0), Node(id)), Vector(first, second))
 
-  def main(args: Array[String]): Unit = {
-    selectsOrderedGroups()
-    preservesSingleObjectiveSelections()
-    checksContributorLimits()
-    checksBasicTablesWithoutAPositiveLimit()
-    checksEmptyBasicUpdates()
-    println("Grouped solution selection checks passed")
-  }
-
-  private def selectsOrderedGroups(): Unit = {
+  test("existing strategies return one group and ParetoFronts returns ordered learning fronts") {
     val old = solution(1, 1, 1)
     val tradeoff = solution(2, 0, 4)
     val dominated = solution(3, 2, 2)
@@ -41,7 +31,7 @@ object GroupedSolutionsSelectionCheck {
       Vector(Vector(old, tradeoff), Vector(dominated), Vector(furtherDominated)))
   }
 
-  private def preservesSingleObjectiveSelections(): Unit = {
+  test("preserve existing single-objective selections and reject learning Pareto fronts") {
     val best = BaseSolution(Vector(Node(0), Node(1)), Vector(1.0))
     val worse = BaseSolution(Vector(Node(0), Node(2)), Vector(2.0))
     val repo: BaseSolutionRepo = new SingleObjectiveSolutionRepo
@@ -59,7 +49,7 @@ object GroupedSolutionsSelectionCheck {
     assert(unsupported)
   }
 
-  private def checksContributorLimits(): Unit = {
+  test("all pheromone tables apply contributor limits within each group") {
     val a = solution(1, 1, 3)
     val b = solution(2, 2, 4)
     val c = solution(3, 3, 1)
@@ -116,7 +106,7 @@ object GroupedSolutionsSelectionCheck {
     }
   }
 
-  private def checksBasicTablesWithoutAPositiveLimit(): Unit = {
+  test("basic tables use all contributors when the limit is absent or nonpositive") {
     val edges = (1 to 3).map(id => Edge(Node(0), Node(id))).toVector
     val repo = new ParetoSolutionRepo(sameNodes, paretoFrontsCount = 2)
     repo.addSolutions(0, Vector(solution(1, 1, 3), solution(2, 2, 4), solution(3, 3, 1)))
@@ -135,7 +125,7 @@ object GroupedSolutionsSelectionCheck {
     }
   }
 
-  private def checksEmptyBasicUpdates(): Unit = {
+  test("empty selections leave basic pheromone values unchanged") {
     val edge = Edge(Node(0), Node(1))
     val repo = new ParetoSolutionRepo(sameNodes)
     repo.addSolutions(0, Vector.empty)

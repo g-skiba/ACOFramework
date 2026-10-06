@@ -34,6 +34,9 @@ libraryDependencies += "org.yaml" % "snakeyaml" % "1.30"
 libraryDependencies += "com.lihaoyi" %% "requests" % "0.7.0"
 libraryDependencies += "org.rogach" %% "scallop" % "5.0.0"
 
+// Use a release built for Scala 3.0.x so it works with the project's Scala 3.1.0 compiler.
+libraryDependencies += "org.scalameta" %% "munit" % "0.7.29" % Test
+
 // jMetal 6.7 dependencies
 libraryDependencies += "org.uma.jmetal" % "jmetal-core" % "6.7"
 libraryDependencies += "org.uma.jmetal" % "jmetal-algorithm" % "6.7"

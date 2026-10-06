@@ -3,24 +3,13 @@ package project.repo
 import project.graph.Node
 import project.solution.BaseSolution
 
-/** Run with `sbt "Test/runMain project.repo.LearningParetoFrontsCheck"`. */
-object LearningParetoFrontsCheck {
+class LearningParetoFrontsSuite extends munit.FunSuite {
   private val sameNodes: (Seq[Node], Seq[Node]) => Boolean = (first, second) => first == second
 
   private def solution(id: Int, first: Double, second: Double): BaseSolution =
     BaseSolution(Vector(Node(id)), Vector(first, second))
 
-  def main(args: Array[String]): Unit = {
-    retainsAndReclassifiesFronts()
-    deduplicatesEquivalentSolutions()
-    expiresWithoutRefreshingAdmission()
-    handlesOneIterationAndUnlimitedLifetimes()
-    doesNotRecoverDiscardedCandidates()
-    validatesArchiveLimits()
-    println("Learning Pareto front checks passed")
-  }
-
-  private def retainsAndReclassifiesFronts(): Unit = {
+  test("retain the configured fronts and reclassify survivors when better solutions arrive") {
     val a = solution(0, 0, 4)
     val b = solution(1, 4, 0)
     val c = solution(2, 2, 2)
@@ -48,7 +37,7 @@ object LearningParetoFrontsCheck {
     assert(repo.learningParetoFronts == Vector(Vector(better), Vector(a, b, c), Vector(d, e)))
   }
 
-  private def deduplicatesEquivalentSolutions(): Unit = {
+  test("deduplicate equivalent solutions without refreshing their admission age") {
     val sameItems: (Seq[Node], Seq[Node]) => Boolean = (first, second) => first.toSet == second.toSet
     val original = BaseSolution(Vector(Node(0), Node(1)), Vector(1.0, 1.0))
     val reordered = original.copy(solution = original.solution.reverse)
@@ -75,7 +64,7 @@ object LearningParetoFrontsCheck {
     assert(repo.learningParetoFronts.isEmpty)
   }
 
-  private def expiresWithoutRefreshingAdmission(): Unit = {
+  test("front changes preserve admission age and expiration preserves the reporting archive") {
     val old = solution(0, 1, 1)
     val better = solution(1, 0, 0)
     val repo = new ParetoSolutionRepo(sameNodes, paretoFrontsCount = 2, paretoHistoryLength = 2)
@@ -91,7 +80,7 @@ object LearningParetoFrontsCheck {
     assert(repo.globalParetoSolutions == Vector(better))
   }
 
-  private def handlesOneIterationAndUnlimitedLifetimes(): Unit = {
+  test("support one-iteration and unlimited admission lifetimes") {
     val best = solution(0, 0, 0)
     val worse = solution(1, 1, 1)
     val oneIteration = new ParetoSolutionRepo(sameNodes, paretoFrontsCount = 2, paretoHistoryLength = 1)
@@ -109,7 +98,7 @@ object LearningParetoFrontsCheck {
     assert(unlimited.globalParetoSolutions == Vector(best))
   }
 
-  private def doesNotRecoverDiscardedCandidates(): Unit = {
+  test("expiration does not recover candidates discarded by the front limit") {
     val best = solution(0, 0, 0)
     val discarded = solution(1, 1, 1)
     val repo = new ParetoSolutionRepo(sameNodes, paretoHistoryLength = 2)
@@ -121,7 +110,7 @@ object LearningParetoFrontsCheck {
     assert(repo.globalParetoSolutions == Vector(best))
   }
 
-  private def validatesArchiveLimits(): Unit = {
+  test("reject invalid front counts and history lengths") {
     def expectInvalid(create: => ParetoSolutionRepo): Unit = {
       val rejected = try {
         create

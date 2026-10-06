@@ -9,8 +9,7 @@ import project.solution.BaseSolution
 
 import scala.util.Random
 
-/** Run with `sbt "Test/runMain project.pheromone.ItemTwoDimParetoFrontUpdateCheck"`. */
-object ItemTwoDimParetoFrontUpdateCheck {
+class ItemTwoDimParetoFrontUpdateSuite extends munit.FunSuite {
   private val sameNodes: (Seq[Node], Seq[Node]) => Boolean = (first, second) => first == second
   // The starting node is outside the allocated item table, so depositing on it would fail.
   private val start = Node(6)
@@ -51,18 +50,7 @@ object ItemTwoDimParetoFrontUpdateCheck {
     }
   }
 
-  def main(args: Array[String]): Unit = {
-    selectsPerObjectiveWithinEveryFront()
-    depositsOnEverySelectedItem()
-    selectsAllWithoutAPositiveLimit()
-    acceptsExistingParetoStrategies()
-    handlesEmptyArchivesAndEqualValues()
-    validatesFrontMapping()
-    createsItemTableFromConfiguration()
-    println("ItemTwoDim Pareto front update checks passed")
-  }
-
-  private def selectsPerObjectiveWithinEveryFront(): Unit = {
+  test("select per objective within every front and use the same contributors for all bucket modes") {
     val repo = repository()
     val frontTable = table(UpdateType.PartFromParetoFront)
     frontTable.pheromoneUpdate(repo)
@@ -84,7 +72,7 @@ object ItemTwoDimParetoFrontUpdateCheck {
     } assert(math.abs(frontTable.pheromone(dim)(item)(bucket) - 0.9) < 1e-12)
   }
 
-  private def depositsOnEverySelectedItem(): Unit = {
+  test("deposit on every selected item and skip the starting node") {
     val a = BaseSolution(Vector(start, Node(0), Node(2)), Vector(1.0, 4.0))
     val b = BaseSolution(Vector(start, Node(1), Node(2)), Vector(4.0, 1.0))
     val dominated = BaseSolution(Vector(start, Node(3), Node(4)), Vector(2.0, 5.0))
@@ -98,7 +86,7 @@ object ItemTwoDimParetoFrontUpdateCheck {
     ))
   }
 
-  private def selectsAllWithoutAPositiveLimit(): Unit = {
+  test("use all retained solutions when the limit is absent or nonpositive") {
     val deposits = (for {
       dim <- 0 until 2
       item <- 0 until 4
@@ -110,7 +98,7 @@ object ItemTwoDimParetoFrontUpdateCheck {
     }
   }
 
-  private def acceptsExistingParetoStrategies(): Unit = {
+  test("accept existing Pareto strategies as a single front") {
     for (selection <- Vector(SolutionsSelectionStrategy.GlobalPareto, SolutionsSelectionStrategy.LastIterationPareto)) {
       val pheromone = table(UpdateType.PartFromParetoFront, selection = selection)
       pheromone.pheromoneUpdate(repository())
@@ -118,7 +106,7 @@ object ItemTwoDimParetoFrontUpdateCheck {
     }
   }
 
-  private def handlesEmptyArchivesAndEqualValues(): Unit = {
+  test("handle empty archives and put equal objective values in evaluation bucket zero") {
     for (mode <- UpdateType.values) {
       val pheromone = table(mode)
       pheromone.pheromoneUpdate(new ParetoSolutionRepo(sameNodes))
@@ -142,7 +130,7 @@ object ItemTwoDimParetoFrontUpdateCheck {
     assert(rejected)
   }
 
-  private def validatesFrontMapping(): Unit = {
+  test("reject invalid bucket configurations before depositing pheromone") {
     expectInvalid(table(UpdateType.PartFromParetoFront, selection = SolutionsSelectionStrategy.LastIterationAll))
     expectInvalid(table(UpdateType.PartFromIndex, buckets = 0))
     val tooSmall = table(UpdateType.PartFromParetoFront, buckets = 2)
@@ -150,7 +138,7 @@ object ItemTwoDimParetoFrontUpdateCheck {
     assertDeposits(tooSmall, Set.empty, buckets = 2)
   }
 
-  private def createsItemTableFromConfiguration(): Unit = {
+  test("create the item table with Pareto front updates through the pheromone factory") {
     val config = PheromoneConfig(
       PheromoneType.ItemTwoDim.toString, 2, 0.25, 0.1, 0.0, 1.0, SolutionsSelectionStrategy.ParetoFronts.toString, 1,
       TwoDimPheromoneConfig(4, GetType.ExpectedCombination.toString, UpdateType.PartFromParetoFront.toString)
