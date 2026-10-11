@@ -9,6 +9,37 @@ class LearningParetoFrontsSuite extends munit.FunSuite {
   private def solution(id: Int, first: Double, second: Double): BaseSolution =
     BaseSolution(Vector(Node(id)), Vector(first, second))
 
+  test("disable learning archives by default without candidate processing or changes to reporting fronts") {
+    for (history <- Vector(0, 2)) {
+      var equivalenceChecks = 0
+      val countedEquivalence: (Seq[Node], Seq[Node]) => Boolean = (first, second) => {
+        equivalenceChecks += 1
+        first == second
+      }
+      val repo = new ParetoSolutionRepo(countedEquivalence, paretoHistoryLength = history)
+      val first = solution(0, 1, 4)
+      val second = solution(1, 4, 1)
+      val dominated = solution(2, 5, 5)
+      val better = solution(3, 0, 0)
+
+      repo.addSolutions(0, Vector(first, second, dominated))
+      assertEquals(repo.solutionsForLastIteration, Vector(first, second, dominated))
+      assertEquals(repo.paretoSolutionsForLastIteration, Vector(first, second))
+      assertEquals(repo.globalParetoSolutions, Vector(first, second))
+      repo.addSolutions(1, Vector(better))
+      repo.addSolutions(10, Vector.empty)
+      assert(repo.solutionsForLastIteration.isEmpty)
+      assert(repo.paretoSolutionsForLastIteration.isEmpty)
+      assertEquals(repo.globalParetoSolutions, Vector(better))
+
+      // These distinct evaluations need no equivalence checks for reporting.
+      // Learning candidate deduplication would perform checks even with a zero front limit.
+      assertEquals(equivalenceChecks, 0)
+      val error = intercept[IllegalArgumentException](repo.learningParetoFronts)
+      assert(error.getMessage.contains("paretoFrontsCount > 0"))
+    }
+  }
+
   test("retain the configured fronts and reclassify survivors when better solutions arrive") {
     val a = solution(0, 0, 4)
     val b = solution(1, 4, 0)
@@ -91,7 +122,7 @@ class LearningParetoFrontsSuite extends munit.FunSuite {
     assert(oneIteration.learningParetoFronts.isEmpty)
     assert(oneIteration.globalParetoSolutions == Vector(best))
 
-    val unlimited = new ParetoSolutionRepo(sameNodes)
+    val unlimited = new ParetoSolutionRepo(sameNodes, paretoFrontsCount = 1)
     unlimited.addSolutions(0, Vector(best, worse))
     unlimited.addSolutions(100, Vector.empty)
     assert(unlimited.learningParetoFronts == Vector(Vector(best)))
@@ -101,7 +132,7 @@ class LearningParetoFrontsSuite extends munit.FunSuite {
   test("expiration does not recover candidates discarded by the front limit") {
     val best = solution(0, 0, 0)
     val discarded = solution(1, 1, 1)
-    val repo = new ParetoSolutionRepo(sameNodes, paretoHistoryLength = 2)
+    val repo = new ParetoSolutionRepo(sameNodes, paretoFrontsCount = 1, paretoHistoryLength = 2)
     repo.addSolutions(0, Vector(best))
     repo.addSolutions(1, Vector(discarded))
     assert(repo.learningParetoFronts == Vector(Vector(best)))
@@ -121,7 +152,6 @@ class LearningParetoFrontsSuite extends munit.FunSuite {
       assert(rejected)
     }
 
-    expectInvalid(new ParetoSolutionRepo(sameNodes, paretoFrontsCount = 0))
     expectInvalid(new ParetoSolutionRepo(sameNodes, paretoFrontsCount = -1))
     expectInvalid(new ParetoSolutionRepo(sameNodes, paretoHistoryLength = -1))
   }

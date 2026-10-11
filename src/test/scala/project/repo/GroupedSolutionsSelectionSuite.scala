@@ -49,6 +49,20 @@ class GroupedSolutionsSelectionSuite extends munit.FunSuite {
     assert(unsupported)
   }
 
+  test("disabled learning archives preserve existing selections and reject ParetoFronts") {
+    val repo = new ParetoSolutionRepo(sameNodes, paretoFrontsCount = 0)
+    val old = solution(1, 1, 1)
+    val tradeoff = solution(2, 0, 4)
+    val dominated = solution(3, 2, 2)
+    repo.addSolutions(0, Vector(old))
+    repo.addSolutions(1, Vector(tradeoff, dominated))
+    assertEquals(SolutionsSelectionStrategy.LastIterationAll(repo), Vector(Vector(tradeoff, dominated)))
+    assertEquals(SolutionsSelectionStrategy.LastIterationPareto(repo), Vector(Vector(tradeoff, dominated)))
+    assertEquals(SolutionsSelectionStrategy.GlobalPareto(repo), Vector(Vector(old, tradeoff)))
+    val error = intercept[IllegalArgumentException](SolutionsSelectionStrategy.ParetoFronts(repo))
+    assert(error.getMessage.contains("paretoFrontsCount > 0"))
+  }
+
   test("all pheromone tables apply contributor limits within each group") {
     val a = solution(1, 1, 3)
     val b = solution(2, 2, 4)
@@ -127,7 +141,7 @@ class GroupedSolutionsSelectionSuite extends munit.FunSuite {
 
   test("empty selections leave basic pheromone values unchanged") {
     val edge = Edge(Node(0), Node(1))
-    val repo = new ParetoSolutionRepo(sameNodes)
+    val repo = new ParetoSolutionRepo(sameNodes, paretoFrontsCount = 1)
     repo.addSolutions(0, Vector.empty)
     for (selection <- SolutionsSelectionStrategy.values) {
       val basic = new BasicPheromoneTable(Vector(edge), 0.25, 0.1, 2, 0.0, 1.0, selection, Some(1))

@@ -1,20 +1,24 @@
 package project.pheromone
 
-import project.config.PheromoneConfig
+import project.config.{PheromoneConfig, SolutionsSelectionStrategy}
 import project.config.PheromoneConfig.PheromoneType
 import project.graph.Edge
 
 import scala.util.Random
 
 object Pheromone {
-  /** For direct front mapping, pass the same front limit as the learning repository. */
+  /** For ParetoFronts selection, pass the same positive front limit as the learning repository. */
   def create(
     config: PheromoneConfig,
     edges: Seq[Edge],
     optimizationTargetsCount: Int,
     rnd: Random,
-    paretoFrontsCount: Int = 1
+    paretoFrontsCount: Int = 0
   ): BasePheromoneTable = {
+    require(
+      config.resolveSolutionsSelectionStrategy != SolutionsSelectionStrategy.ParetoFronts || paretoFrontsCount > 0,
+      "ParetoFronts requires paretoFrontsCount > 0"
+    )
     config.resolvePheromoneType match {
       case PheromoneType.Basic =>
         BasicPheromoneTable(

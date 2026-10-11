@@ -107,11 +107,11 @@ class ItemTwoDimParetoFrontUpdateSuite extends munit.FunSuite {
   test("handle empty archives and put equal objective values in evaluation bucket zero") {
     for (mode <- UpdateType.values) {
       val pheromone = table(mode)
-      pheromone.pheromoneUpdate(new ParetoSolutionRepo(sameNodes))
+      pheromone.pheromoneUpdate(new ParetoSolutionRepo(sameNodes, paretoFrontsCount = 1))
       assertDeposits(pheromone, Set.empty)
     }
 
-    val repo = new ParetoSolutionRepo(sameNodes)
+    val repo = new ParetoSolutionRepo(sameNodes, paretoFrontsCount = 1)
     repo.addSolutions(0, Vector(solution(0, 2, 2), solution(1, 2, 2)))
     val pheromone = table(UpdateType.PartFromEvaluation, None)
     pheromone.pheromoneUpdate(repo)

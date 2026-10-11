@@ -10,10 +10,10 @@ import scala.collection.mutable.SortedMap as MSortedMap
 
 class ParetoSolutionRepo(
     areSolutionsEquivalent: (Seq[Node], Seq[Node]) => Boolean,
-    paretoFrontsCount: Int = 1,
+    paretoFrontsCount: Int = 0,
     paretoHistoryLength: Int = 0
 ) extends BaseSolutionRepo {
-  require(paretoFrontsCount > 0, "The learning archive must retain at least one Pareto front")
+  require(paretoFrontsCount >= 0, "The learning archive front count must be nonnegative; zero disables the archive")
   require(paretoHistoryLength >= 0, "Pareto history length must be nonnegative; zero means unlimited")
 
   private case class ArchiveEntry(value: BaseSolution, admittedAt: Int)
@@ -23,8 +23,10 @@ class ParetoSolutionRepo(
   private var learningArchive: IndexedSeq[IndexedSeq[ArchiveEntry]] = IndexedSeq.empty
 
   /** Ordered fronts of retained learning candidates, separate from the best-ever reporting front. */
-  override def learningParetoFronts: IndexedSeq[IndexedSeq[BaseSolution]] =
+  override def learningParetoFronts: IndexedSeq[IndexedSeq[BaseSolution]] = {
+    require(paretoFrontsCount > 0, "Learning Pareto fronts are disabled; ParetoFronts requires paretoFrontsCount > 0")
     learningArchive.map(_.map(_.value))
+  }
 
   override def addSolutions(iteration: Int, newSolutions: IndexedSeq[BaseSolution]): Unit = {
     super.addSolutions(iteration, newSolutions)
@@ -35,7 +37,7 @@ class ParetoSolutionRepo(
     val globalWithNew = globalPareto ++ selectedFromNew
     globalPareto = selectParetoFront(globalWithNew)
 
-    updateLearningArchive(iteration, newSolutions)
+    if (paretoFrontsCount > 0) updateLearningArchive(iteration, newSolutions)
   }
 
   override def globalParetoSolutions: IndexedSeq[BaseSolution] = globalPareto
