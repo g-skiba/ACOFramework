@@ -1,25 +1,87 @@
 problemType: mokp
 problemFiles:
-  - mokpInstances/1A/2KP50-11.dat
+#  - mokpInstances/1A/2KP50-11.dat
+#  - mokpInstances/1A/2KP50-50.dat
+#  - mokpInstances/1A/2KP50-92.dat
+#  - mokpInstances/1B-A/2KP100-1A.dat
+#  - mokpInstances/1B-A/2KP250-1A.dat
+#  - mokpInstances/1B-A/2KP400-1A.dat
+#  - mokpInstances/1B-A/2KP500-1A.dat
+
+#  - mokpInstances/1B-B/2KP150-1B.dat
+  - mokpInstances/1B-A/2KP450-1A.dat
+#  - mokpInstances/2-UNCOR/F5050W01.dat
 
 # algorithm
 repeats: 1
 algorithmConfig:
   antsNum: 100
   iterations: 300
-  alpha: 2.0
-  beta: 3.0
+#  alpha: 2.0
+#  beta: 3.0
+#  pheromoneConfig:
+##    pheromoneTpe: Basic
+##    pheromoneTpe: ItemBasic
+##    pheromoneTpe: TwoDim
+#    pheromoneTpe: ItemTwoDim
+#    increment: 0.001
+#    extinction: 0.01
+#    minValue: 0.001
+#    maxValue: 0.999
+#    pheromoneDimension: -1 # 0 or below means optimization targets count
+#    takenAntsToPheromoneUpdate: 10 # 0 or below means all ants
+#    solutionsSelectionStrategy: GlobalPareto # LastIterationAll, LastIterationPareto, GlobalPareto
+#    twoDimConfig: # applicable only for TwoDim type
+#      twoDimSize: 6
+#      twoDimGetType: PairingCombination # options: ExponentialRandom, ExponentialRandomMax, WeightedCombination, PairingCombination, ExpectedCombination
+#      twoDimUpdateType: PartFromEvaluation # options: PartFromEvaluation, PartFromIndex
+
+
+# Basic
+  alpha: 4.3466
+  beta: 1.3475
   pheromoneConfig:
-    pheromoneTpe: Basic
-#    pheromoneTpe: TwoDim
-    increment: 0.01
-    extinction: 0.01
+    pheromoneTpe: ItemBasic
+    increment: 4e-04
+    extinction: 0.0571
     minValue: 0.001
     maxValue: 0.999
     pheromoneDimension: -1 # 0 or below means optimization targets count
-    takenAntsToPheromoneUpdate: 10 # 0 or below means all ants
-    solutionsSelectionStrategy: LastIterationPareto # LastIterationAll, LastIterationPareto, GlobalPareto
+    takenAntsToPheromoneUpdate: 3 # 0 or below means all ants
+    solutionsSelectionStrategy: GlobalPareto # LastIterationAll, LastIterationPareto, GlobalPareto, ParetoFronts
     twoDimConfig: # applicable only for TwoDim type
-      twoDimSize: 10
+      twoDimSize: 6
       twoDimGetType: PairingCombination # options: ExponentialRandom, ExponentialRandomMax, WeightedCombination, PairingCombination, ExpectedCombination
-      twoDimUpdateType: PartFromIndex # options: PartFromEvaluation, PartFromIndex
+      twoDimUpdateType: PartFromEvaluation # options: PartFromEvaluation, PartFromIndex, PartFromParetoFront
+# TwoDimAll
+#  alpha: 1.2467
+#  beta: 1.2211
+#  pheromoneConfig:
+#    pheromoneTpe: ItemTwoDim
+#    increment: 0.089
+#    extinction: 0.0857
+#    minValue: 0.001
+#    maxValue: 0.999
+#    pheromoneDimension: -1 # 0 or below means optimization targets count
+#    takenAntsToPheromoneUpdate: 17 # 0 or below means all ants
+#    solutionsSelectionStrategy: GlobalPareto # LastIterationAll, LastIterationPareto, GlobalPareto
+#    twoDimConfig: # applicable only for TwoDim type
+#      twoDimSize: 18
+#      twoDimGetType: ExponentialRandomMax # options: ExponentialRandom, ExponentialRandomMax, WeightedCombination, PairingCombination, ExpectedCombination
+#      twoDimUpdateType: PartFromIndex # options: PartFromEvaluation, PartFromIndex
+# ExponentialRandom
+#  alpha: 4.4887
+#  beta: 6.3068
+#  pheromoneConfig:
+#    pheromoneTpe: ItemTwoDim
+#    increment: 0.0204
+#    extinction: 0.096
+#    minValue: 0.001
+#    maxValue: 0.999
+#    pheromoneDimension: -1 # 0 or below means optimization targets count
+#    takenAntsToPheromoneUpdate: 11 # 0 or below means all ants
+#    solutionsSelectionStrategy: GlobalPareto # LastIterationAll, LastIterationPareto, GlobalPareto
+#    twoDimConfig: # applicable only for TwoDim type
+#      twoDimSize: 18
+#      twoDimGetType: ExponentialRandom # options: ExponentialRandom, ExponentialRandomMax, WeightedCombination, PairingCombination, ExpectedCombination
+#      twoDimUpdateType: PartFromEvaluation # options: PartFromEvaluation, PartFromIndex

@@ -35,8 +35,10 @@ problemFiles:
 #  - mtsp//kroB100.tsp
 #  - mtsp//kroC100.tsp
 #  - mtsp//kroD100.tsp
-  - mtsp//euclidA500.tsp
-  - mtsp//euclidB500.tsp
+#  - mtsp//kroE100.tsp
+#  - mtsp//kroF100.tsp
+#  - mtsp//euclidA500.tsp
+#  - mtsp//euclidB500.tsp
   # - mtsp//lust_euclidA100.tsp
   # - mtsp//lust_euclidB100.tsp
 #    - mtsp/berlin52.tsp
@@ -49,6 +51,17 @@ problemFiles:
   # - mtsp//dimacs_15_b.tsp
   # - mtsp//dimacs_15_c.tsp
 
+  - mtsp//kroE100.tsp
+  - mtsp//kroF100.tsp
+#  - mtsp//kroA150.tsp
+#  - mtsp//kroB150.tsp
+#  - mtsp//kroA200.tsp
+#  - mtsp//kroB200.tsp
+#  - mtsp//euclidA300.tsp
+#  - mtsp//euclidB300.tsp
+#  - mtsp//euclidA500.tsp
+#  - mtsp//euclidB500.tsp
+
 # cvrp
 #problemType: cvrp
 #problemFiles:
@@ -59,19 +72,89 @@ repeats: 1
 algorithmConfig:
   antsNum: 100
   iterations: 300
-  alpha: 2.0
-  beta: 3.0
-  pheromoneConfig:
-    pheromoneTpe: Basic
+#  alpha: 2.0
+#  beta: 3.0
+#  pheromoneConfig:
+#    pheromoneTpe: Basic
+##    pheromoneTpe: TwoDim
+#    increment: 0.1
+#    extinction: 0.1
+#    minValue: 0.001
+#    maxValue: 0.999
+#    pheromoneDimension: -1 # 0 or below means optimization targets count
+#    takenAntsToPheromoneUpdate: 10 # 0 or below means all ants
+#    solutionsSelectionStrategy: LastIterationPareto # LastIterationAll, LastIterationPareto, GlobalPareto
+#    twoDimConfig: # applicable only for TwoDim type
+#      twoDimSize: 10
+#      twoDimGetType: PairingCombination # options: ExponentialRandom, ExponentialRandomMax, WeightedCombination, PairingCombination, ExpectedCombination
+#      twoDimUpdateType: PartFromIndex # options: PartFromEvaluation, PartFromIndex
+
+#Basic
+#  alpha: 2.691
+#  beta: 4.8517
+#  pheromoneConfig:
+#    pheromoneTpe: Basic
+#    #    pheromoneTpe: TwoDim
+#    increment: 0.0891
+#    extinction: 0.0891
+#    minValue: 0.001
+#    maxValue: 0.999
+#    pheromoneDimension: -1 # 0 or below means optimization targets count
+#    takenAntsToPheromoneUpdate: 10 # 0 or below means all ants
+#    solutionsSelectionStrategy: LastIterationPareto # LastIterationAll, LastIterationPareto, GlobalPareto
+#    twoDimConfig: # applicable only for TwoDim type
+#      twoDimSize: 10
+#      twoDimGetType: PairingCombination # options: ExponentialRandom, ExponentialRandomMax, WeightedCombination, PairingCombination, ExpectedCombination
+#      twoDimUpdateType: PartFromIndex # options: PartFromEvaluation, PartFromIndex
+
+#PairingCombination
+#  alpha: 1.7993
+#  beta: 4.9801
+#  pheromoneConfig:
 #    pheromoneTpe: TwoDim
-    increment: 0.1
-    extinction: 0.1
+#    increment: 0.0573
+#    extinction: 0.0573
+#    minValue: 0.001
+#    maxValue: 0.999
+#    pheromoneDimension: -1 # 0 or below means optimization targets count
+#    takenAntsToPheromoneUpdate: 75 # 0 or below means all ants
+#    solutionsSelectionStrategy: LastIterationPareto # LastIterationAll, LastIterationPareto, GlobalPareto
+#    twoDimConfig: # applicable only for TwoDim type
+#      twoDimSize: 14
+#      twoDimGetType: PairingCombination # options: ExponentialRandom, ExponentialRandomMax, WeightedCombination, PairingCombination, ExpectedCombination
+#      twoDimUpdateType: PartFromEvaluation # options: PartFromEvaluation, PartFromIndex
+
+#ExpectedCombination
+#  alpha: 3.1165
+#  beta: 4.9069
+#  pheromoneConfig:
+#    pheromoneTpe: TwoDim
+#    increment: 0.0805
+#    extinction: 0.0805
+#    minValue: 0.001
+#    maxValue: 0.999
+#    pheromoneDimension: -1 # 0 or below means optimization targets count
+#    takenAntsToPheromoneUpdate: 35 # 0 or below means all ants
+#    solutionsSelectionStrategy: GlobalPareto # LastIterationAll, LastIterationPareto, GlobalPareto, ParetoFronts
+#    twoDimConfig: # applicable only for TwoDim type
+#      twoDimSize: 12
+#      twoDimGetType: ExpectedCombination # options: ExponentialRandom, ExponentialRandomMax, WeightedCombination, PairingCombination, ExpectedCombination
+#      twoDimUpdateType: PartFromIndex # options: PartFromEvaluation, PartFromIndex, PartFromParetoFront
+
+#ParetoFronts testing
+  alpha: 1
+  beta: 4
+  pheromoneConfig:
+    pheromoneTpe: TwoDim
+    increment: 0.0805
+    extinction: 0.0805
     minValue: 0.001
     maxValue: 0.999
     pheromoneDimension: -1 # 0 or below means optimization targets count
     takenAntsToPheromoneUpdate: 10 # 0 or below means all ants
-    solutionsSelectionStrategy: LastIterationPareto # LastIterationAll, LastIterationPareto, GlobalPareto
+    solutionsSelectionStrategy: ParetoFronts # LastIterationAll, LastIterationPareto, GlobalPareto, ParetoFronts
     twoDimConfig: # applicable only for TwoDim type
       twoDimSize: 10
       twoDimGetType: PairingCombination # options: ExponentialRandom, ExponentialRandomMax, WeightedCombination, PairingCombination, ExpectedCombination
-      twoDimUpdateType: PartFromIndex # options: PartFromEvaluation, PartFromIndex
+      twoDimUpdateType: PartFromParetoFront # options: PartFromEvaluation, PartFromIndex, PartFromParetoFront
+
