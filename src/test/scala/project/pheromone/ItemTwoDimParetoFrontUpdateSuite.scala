@@ -98,11 +98,9 @@ class ItemTwoDimParetoFrontUpdateSuite extends munit.FunSuite {
     }
   }
 
-  test("accept existing Pareto strategies as a single front") {
+  test("reject single-front Pareto selection strategies for direct front mapping") {
     for (selection <- Vector(SolutionsSelectionStrategy.GlobalPareto, SolutionsSelectionStrategy.LastIterationPareto)) {
-      val pheromone = table(UpdateType.PartFromParetoFront, selection = selection)
-      pheromone.pheromoneUpdate(repository())
-      assertDeposits(pheromone, Set((0, 0, 0), (1, 1, 0)))
+      intercept[IllegalArgumentException](table(UpdateType.PartFromParetoFront, selection = selection))
     }
   }
 
@@ -141,12 +139,13 @@ class ItemTwoDimParetoFrontUpdateSuite extends munit.FunSuite {
   test("create the item table with Pareto front updates through the pheromone factory") {
     val config = PheromoneConfig(
       PheromoneType.ItemTwoDim.toString, 2, 0.25, 0.1, 0.0, 1.0, SolutionsSelectionStrategy.ParetoFronts.toString, 1,
-      TwoDimPheromoneConfig(4, GetType.ExpectedCombination.toString, UpdateType.PartFromParetoFront.toString)
+      TwoDimPheromoneConfig(0, GetType.ExpectedCombination.toString, UpdateType.PartFromParetoFront.toString)
     )
-    val pheromone = Pheromone.create(config, edges, 2, new Random(0)) match {
+    val pheromone = Pheromone.create(config, edges, 2, new Random(0), paretoFrontsCount = 4) match {
       case itemTable: ItemTwoDimPheromone => itemTable
       case _ => throw new AssertionError("Expected an item pheromone table")
     }
+    assertEquals(pheromone.pheromone(0)(0).length, 4)
     pheromone.pheromoneUpdate(repository())
     assertDeposits(pheromone, Set((0, 0, 0), (0, 2, 1), (1, 1, 0), (1, 3, 1)))
   }

@@ -18,19 +18,32 @@ private[pheromone] object PheromoneUpdateSelection {
     }
   }
 
+  /** Resolve the zero-size marker before allocating a table; front mapping uses the archive's configured limit. */
+  def resolveBucketCount(
+      configuredSize: Int,
+      paretoFrontsCount: Int,
+      selectionStrategy: SolutionsSelectionStrategy,
+      updateType: UpdateType
+  ): Int = {
+    val size = if (updateType == UpdateType.PartFromParetoFront) {
+      require(configuredSize == 0,
+        "twoDimSize must be zero for PartFromParetoFront; the bucket count is derived from paretoFrontsCount")
+      paretoFrontsCount
+    } else configuredSize
+    validateBucketConfiguration(selectionStrategy, updateType, size)
+    size
+  }
+
   def validateBucketConfiguration(
       selectionStrategy: SolutionsSelectionStrategy,
       updateType: UpdateType,
       bucketCount: Int
   ): Unit = {
     require(bucketCount > 0, "The pheromone table must contain at least one bucket")
+    require(bucketCount % 2 == 0, "The pheromone bucket count must be even")
     require(
-      updateType != UpdateType.PartFromParetoFront || Set(
-        SolutionsSelectionStrategy.ParetoFronts,
-        SolutionsSelectionStrategy.GlobalPareto,
-        SolutionsSelectionStrategy.LastIterationPareto
-      ).contains(selectionStrategy),
-      "PartFromParetoFront requires a Pareto solution selection strategy"
+      updateType != UpdateType.PartFromParetoFront || selectionStrategy == SolutionsSelectionStrategy.ParetoFronts,
+      "PartFromParetoFront requires the ParetoFronts solution selection strategy"
     )
   }
 

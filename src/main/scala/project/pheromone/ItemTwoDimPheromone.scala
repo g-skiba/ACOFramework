@@ -26,10 +26,6 @@ class ItemTwoDimPheromone(
 ) extends BasePheromoneTable {
   debug(s"Creating item two dim pheromone table with $pheromoneDimension dimensions, $twoDimPheromoneSize pheromone size and $updateAnts update ants")
   PheromoneUpdateSelection.validateBucketConfiguration(solutionsSelectionStrategy, updateType, twoDimPheromoneSize)
-  require(
-    twoDimPheromoneSize % 2 == 0,
-    "Temporary assumption for `getPheromone` based on pairing values starting from items"
-  )
 
   private val maxItemNumber = edges.iterator.map(_.node2.number).max
   private val cache: ArrayCache[Array[Double]] = new ArrayCache[Array[Double]](maxItemNumber, null)

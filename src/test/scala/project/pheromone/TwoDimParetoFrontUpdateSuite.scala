@@ -1,6 +1,7 @@
 package project.pheromone
 
-import project.config.SolutionsSelectionStrategy
+import project.config.{PheromoneConfig, SolutionsSelectionStrategy, TwoDimPheromoneConfig}
+import project.config.PheromoneConfig.PheromoneType
 import project.config.TwoDimPheromoneConfig.{GetType, UpdateType}
 import project.graph.{Edge, Node}
 import project.repo.ParetoSolutionRepo
@@ -84,11 +85,9 @@ class TwoDimParetoFrontUpdateSuite extends munit.FunSuite {
     }
   }
 
-  test("accept existing Pareto strategies as a single front") {
+  test("reject single-front Pareto selection strategies for direct front mapping") {
     for (selection <- Vector(SolutionsSelectionStrategy.GlobalPareto, SolutionsSelectionStrategy.LastIterationPareto)) {
-      val pheromone = table(UpdateType.PartFromParetoFront, selection = selection)
-      pheromone.pheromoneUpdate(repository())
-      assertDeposits(pheromone, Set((0, 0, 0), (1, 1, 0)))
+      intercept[IllegalArgumentException](table(UpdateType.PartFromParetoFront, selection = selection))
     }
   }
 
@@ -132,4 +131,17 @@ class TwoDimParetoFrontUpdateSuite extends munit.FunSuite {
     assertDeposits(tooSmall, Set.empty, buckets = 2)
   }
 
+  test("resolve the front limit to an actual edge table size through the pheromone factory") {
+    val config = PheromoneConfig(
+      PheromoneType.TwoDim.toString, 2, 0.25, 0.1, 0.0, 1.0, SolutionsSelectionStrategy.ParetoFronts.toString, 1,
+      TwoDimPheromoneConfig(0, GetType.ExpectedCombination.toString, UpdateType.PartFromParetoFront.toString)
+    )
+    val pheromone = Pheromone.create(config, edges, 2, new Random(0), paretoFrontsCount = 4) match {
+      case edgeTable: TwoDimPheromone => edgeTable
+      case _ => throw new AssertionError("Expected an edge pheromone table")
+    }
+    assertEquals(pheromone.pheromone(0)(edges.head.cantorValue).length, 4)
+    pheromone.pheromoneUpdate(repository(fronts = 3))
+    assertDeposits(pheromone, Set((0, 0, 0), (0, 2, 1), (0, 4, 2), (1, 1, 0), (1, 3, 1), (1, 5, 2)))
+  }
 }

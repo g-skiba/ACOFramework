@@ -7,11 +7,13 @@ import project.graph.Edge
 import scala.util.Random
 
 object Pheromone {
+  /** For direct front mapping, pass the same front limit as the learning repository. */
   def create(
     config: PheromoneConfig,
     edges: Seq[Edge],
     optimizationTargetsCount: Int,
-    rnd: Random  
+    rnd: Random,
+    paretoFrontsCount: Int = 1
   ): BasePheromoneTable = {
     config.resolvePheromoneType match {
       case PheromoneType.Basic =>
@@ -46,7 +48,10 @@ object Pheromone {
           config.maxValue,
           config.resolveSolutionsSelectionStrategy,
           config.resolveTakenAntsToPheromoneUpdate,
-          config.twoDimConfig.twoDimSize,
+          PheromoneUpdateSelection.resolveBucketCount(
+            config.twoDimConfig.twoDimSize, paretoFrontsCount,
+            config.resolveSolutionsSelectionStrategy, config.twoDimConfig.resolveUpdateType
+          ),
           config.twoDimConfig.resolveGetType,
           config.twoDimConfig.resolveUpdateType,
           rnd
@@ -61,7 +66,10 @@ object Pheromone {
           config.maxValue,
           config.resolveSolutionsSelectionStrategy,
           config.resolveTakenAntsToPheromoneUpdate,
-          config.twoDimConfig.twoDimSize,
+          PheromoneUpdateSelection.resolveBucketCount(
+            config.twoDimConfig.twoDimSize, paretoFrontsCount,
+            config.resolveSolutionsSelectionStrategy, config.twoDimConfig.resolveUpdateType
+          ),
           config.twoDimConfig.resolveGetType,
           config.twoDimConfig.resolveUpdateType,
           rnd

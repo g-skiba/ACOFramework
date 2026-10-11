@@ -32,10 +32,6 @@ class TwoDimPheromone(
 ) extends BasePheromoneTable {
   debug(s"Creating two dim pheromone table with $pheromoneDimension dimensions, $twoDimPheromoneSize pheromone size and $updateAnts update ants")
   PheromoneUpdateSelection.validateBucketConfiguration(solutionsSelectionStrategy, updateType, twoDimPheromoneSize)
-  require(
-    twoDimPheromoneSize % 2 == 0,
-    "Temporary assumption for `getPheromone` based on pairing values starting from edges"
-  )
   private val maxCantorValue = edges.iterator.map(e => e.cantorValue).max
   // indexed by edges' cantor value
   private val cache: ArrayCache[Array[Double]] = new ArrayCache[Array[Double]](maxCantorValue, null)
