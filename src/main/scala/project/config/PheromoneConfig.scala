@@ -15,7 +15,9 @@ case class PheromoneConfig(
   @BeanProperty var maxValue: Double,
   @BeanProperty var solutionsSelectionStrategy: String,
   @BeanProperty var takenAntsToPheromoneUpdate: Int,
-  @BeanProperty var twoDimConfig: TwoDimPheromoneConfig
+  @BeanProperty var twoDimConfig: TwoDimPheromoneConfig,
+  @BeanProperty var paretoFrontsCount: Int = 0,
+  @BeanProperty var paretoHistoryLength: Int = 0
 ) {
   def this() = {
     this(
@@ -37,15 +39,35 @@ case class PheromoneConfig(
     SolutionsSelectionStrategy.valueOf(solutionsSelectionStrategy)
   }
 
+  def validateLearningArchive(): Unit = {
+    require(paretoFrontsCount >= 0, "paretoFrontsCount must be nonnegative; zero disables the learning archive")
+    require(paretoHistoryLength >= 0, "paretoHistoryLength must be nonnegative; zero means unlimited")
+    require(
+      resolveSolutionsSelectionStrategy != SolutionsSelectionStrategy.ParetoFronts || paretoFrontsCount > 0,
+      "ParetoFronts requires paretoFrontsCount > 0"
+    )
+    require(
+      resolveSolutionsSelectionStrategy == SolutionsSelectionStrategy.ParetoFronts || paretoFrontsCount == 0,
+      "paretoFrontsCount must be 0 unless solutionsSelectionStrategy is ParetoFronts"
+    )
+  }
+
+  /** Resolve after validating that the front limit is applicable to the selection strategy. */
+  def resolveParetoFrontsCount: Int = {
+    validateLearningArchive()
+    paretoFrontsCount
+  }
+
   override def toString: String = {
     s"pheromoneTpe: $pheromoneTpe; pheromoneDimension: $pheromoneDimension; increment: $increment; extinction: $extinction; " +
       s"minValue: $minValue; maxValue: $maxValue; solutionsSelectionStrategy: $solutionsSelectionStrategy, " +
-      s"takenAntsToPheromoneUpdate: $takenAntsToPheromoneUpdate; $twoDimConfig"
+      s"takenAntsToPheromoneUpdate: $takenAntsToPheromoneUpdate; " +
+      s"paretoFrontsCount: $paretoFrontsCount; paretoHistoryLength: $paretoHistoryLength; $twoDimConfig"
   }
 
   def toCsv: String = {
     Seq(pheromoneTpe, pheromoneDimension, increment, extinction, minValue, maxValue, solutionsSelectionStrategy, takenAntsToPheromoneUpdate).mkString("", ";", ";") +
-      twoDimConfig.toCsv
+      twoDimConfig.toCsv + Seq(paretoFrontsCount, paretoHistoryLength).mkString(";", ";", "")
   }
 
   def toMap: Map[String, String] = {
@@ -58,6 +80,8 @@ case class PheromoneConfig(
       "maxValue" -> maxValue.toString,
       "solutionsSelectionStrategy" -> solutionsSelectionStrategy,
       "takenAntsToPheromoneUpdate" -> takenAntsToPheromoneUpdate.toString,
+      "paretoFrontsCount" -> paretoFrontsCount.toString,
+      "paretoHistoryLength" -> paretoHistoryLength.toString,
     ) ++ twoDimConfig.toMap
   }
 }

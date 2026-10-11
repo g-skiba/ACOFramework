@@ -134,9 +134,10 @@ class TwoDimParetoFrontUpdateSuite extends munit.FunSuite {
   test("resolve the front limit to an actual edge table size through the pheromone factory") {
     val config = PheromoneConfig(
       PheromoneType.TwoDim.toString, 2, 0.25, 0.1, 0.0, 1.0, SolutionsSelectionStrategy.ParetoFronts.toString, 1,
-      TwoDimPheromoneConfig(0, GetType.ExpectedCombination.toString, UpdateType.PartFromParetoFront.toString)
+      TwoDimPheromoneConfig(0, GetType.ExpectedCombination.toString, UpdateType.PartFromParetoFront.toString),
+      paretoFrontsCount = 4
     )
-    val pheromone = Pheromone.create(config, edges, 2, new Random(0), paretoFrontsCount = 4) match {
+    val pheromone = Pheromone.create(config, edges, 2, new Random(0)) match {
       case edgeTable: TwoDimPheromone => edgeTable
       case _ => throw new AssertionError("Expected an edge pheromone table")
     }

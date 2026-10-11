@@ -1,7 +1,7 @@
 package project.algorithm
 
 import project.colony.{BaseColony, BasicColony}
-import project.config.AlgorithmConfig
+import project.config.{AlgorithmConfig, SolutionsSelectionStrategy}
 import project.logging.AcoLogger
 import project.logging.DebugLogger.debug
 import project.pheromone.{BasicPheromoneTable, Pheromone}
@@ -24,14 +24,22 @@ class BasicAlgorithm(
   }
 
   override def run(logger: AcoLogger): BaseSolutionRepo = {
+    val pheromoneConfig = algorithmConfig.pheromoneConfig
+    val paretoFrontsCount = pheromoneConfig.resolveParetoFrontsCount
+    require(
+      problem.dimensions > 1 || pheromoneConfig.resolveSolutionsSelectionStrategy != SolutionsSelectionStrategy.ParetoFronts,
+      "ParetoFronts is not supported for single-objective problems"
+    )
     val solutionRepo = problem.dimensions match {
       case 1 => new SingleObjectiveSolutionRepo
-      case _ => new ParetoSolutionRepo(problem.areSolutionsEquivalent)
+      case _ => new ParetoSolutionRepo(
+        problem.areSolutionsEquivalent, paretoFrontsCount, pheromoneConfig.paretoHistoryLength
+      )
     }
     val rnd = random(seed)
 
     val pheromoneTable = Pheromone.create(
-      algorithmConfig.pheromoneConfig,
+      pheromoneConfig,
       problem.edges,
       problem.dimensions,
       rnd

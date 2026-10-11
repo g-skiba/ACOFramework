@@ -139,9 +139,10 @@ class ItemTwoDimParetoFrontUpdateSuite extends munit.FunSuite {
   test("create the item table with Pareto front updates through the pheromone factory") {
     val config = PheromoneConfig(
       PheromoneType.ItemTwoDim.toString, 2, 0.25, 0.1, 0.0, 1.0, SolutionsSelectionStrategy.ParetoFronts.toString, 1,
-      TwoDimPheromoneConfig(0, GetType.ExpectedCombination.toString, UpdateType.PartFromParetoFront.toString)
+      TwoDimPheromoneConfig(0, GetType.ExpectedCombination.toString, UpdateType.PartFromParetoFront.toString),
+      paretoFrontsCount = 4
     )
-    val pheromone = Pheromone.create(config, edges, 2, new Random(0), paretoFrontsCount = 4) match {
+    val pheromone = Pheromone.create(config, edges, 2, new Random(0)) match {
       case itemTable: ItemTwoDimPheromone => itemTable
       case _ => throw new AssertionError("Expected an item pheromone table")
     }

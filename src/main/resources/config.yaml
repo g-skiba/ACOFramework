@@ -153,8 +153,10 @@ algorithmConfig:
     pheromoneDimension: -1 # 0 or below means optimization targets count
     takenAntsToPheromoneUpdate: 10 # 0 or below means all ants
     solutionsSelectionStrategy: ParetoFronts # LastIterationAll, LastIterationPareto, GlobalPareto, ParetoFronts
+    paretoFrontsCount: 10 # defaults to 0 (disabled); direct mapping requires a positive even count
+    paretoHistoryLength: 5 # 0 means unlimited learning history
     twoDimConfig: # applicable only for TwoDim type
-      twoDimSize: 10
+      twoDimSize: 0 # derived from paretoFrontsCount for PartFromParetoFront
       twoDimGetType: PairingCombination # options: ExponentialRandom, ExponentialRandomMax, WeightedCombination, PairingCombination, ExpectedCombination
       twoDimUpdateType: PartFromParetoFront # options: PartFromEvaluation, PartFromIndex, PartFromParetoFront
 

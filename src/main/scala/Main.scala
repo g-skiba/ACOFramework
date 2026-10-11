@@ -495,13 +495,13 @@ object CmdMain {
     val pheromoneIncrement: ScallopOption[Double] = opt[Double]()
     val pheromoneExtinction: ScallopOption[Double] = opt[Double]()
     val updateAnts: ScallopOption[Int] = opt[Int]()
+    val paretoFrontsCount: ScallopOption[Int] = opt[Int](default = Some(0))
+    val paretoHistoryLength: ScallopOption[Int] = opt[Int](default = Some(0))
 
     verify()
   }
 
-  def main(args: Array[String]): Unit = {
-    val conf = new Config(args)
-
+  def buildPheromoneConfig(conf: Config): PheromoneConfig = {
     val phDimension = -1 // mapped to number of objectives
     val phDelta = conf.pheromoneDelta.toOption
     val phIncrement = conf.pheromoneIncrement.toOption
@@ -520,22 +520,35 @@ object CmdMain {
 
     val pheromoneConfig = PheromoneType.valueOf(conf.pheromoneType()) match
       case PheromoneType.Basic | PheromoneType.ItemBasic =>
-        assert(conf.twoDimPhSize.isEmpty)
-        assert(conf.getType.isEmpty)
-        assert(conf.updateType.isEmpty)
+        require(conf.twoDimPhSize.isEmpty, "--two-dim-ph-size is only applicable to 2D pheromone tables")
+        require(conf.getType.isEmpty, "--get-type is only applicable to 2D pheromone tables")
+        require(conf.updateType.isEmpty, "--update-type is only applicable to 2D pheromone tables")
         PheromoneConfig(
           conf.pheromoneType(), phDimension, phIncrement, phExtinction, phMinValue, phMaxValue,
-          conf.solutionsSelectionStrategy(), takenAntsToPheromoneUpdate, new TwoDimPheromoneConfig()
+          conf.solutionsSelectionStrategy(), takenAntsToPheromoneUpdate, new TwoDimPheromoneConfig(),
+          conf.paretoFrontsCount(), conf.paretoHistoryLength()
         )
       case PheromoneType.TwoDim | PheromoneType.ItemTwoDim =>
-        val twoDimSize = conf.twoDimPhSize()
         val getType = conf.getType()
         val updateType = conf.updateType()
+        val twoDimSize = conf.twoDimPhSize.toOption.getOrElse {
+          if (TwoDimPheromoneConfig.UpdateType.valueOf(updateType) == TwoDimPheromoneConfig.UpdateType.PartFromParetoFront) 0
+          else throw new IllegalArgumentException("Missing --two-dim-ph-size for Index/Evaluation updates")
+        }
         val twoDimConfig = TwoDimPheromoneConfig(twoDimSize, getType, updateType)
         PheromoneConfig(
           conf.pheromoneType(), phDimension, phIncrement, phExtinction, phMinValue, phMaxValue,
-          conf.solutionsSelectionStrategy(), takenAntsToPheromoneUpdate, twoDimConfig
+          conf.solutionsSelectionStrategy(), takenAntsToPheromoneUpdate, twoDimConfig,
+          conf.paretoFrontsCount(), conf.paretoHistoryLength()
         )
+
+    pheromoneConfig.validateLearningArchive()
+    pheromoneConfig
+  }
+
+  def main(args: Array[String]): Unit = {
+    val conf = new Config(args)
+    val pheromoneConfig = buildPheromoneConfig(conf)
 
     val problemType = "mokp"
     val instanceFilenames = conf.instance()
