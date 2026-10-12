@@ -7,7 +7,7 @@ class PheromoneArchiveConfigSuite extends munit.FunSuite {
   private def load(input: String): PheromoneConfig =
     new Yaml(new Constructor(classOf[ProblemConfig])).load[ProblemConfig](input).algorithmConfig.pheromoneConfig
 
-  test("legacy YAML and constructor calls default to a disabled learning archive") {
+  test("YAML and constructor calls without archive settings default to a disabled learning archive") {
     val fromYaml = load("""algorithmConfig:
       |  pheromoneConfig:
       |    solutionsSelectionStrategy: GlobalPareto

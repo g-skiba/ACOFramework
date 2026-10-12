@@ -15,7 +15,7 @@ class CmdMainConfigSuite extends munit.FunSuite {
       common ++ Vector("--pheromone-type", tableType.toString, "--solutions-selection-strategy", selection.toString) ++ extra
     ))
 
-  test("legacy CLI arguments retain defaults and pheromone-delta compatibility") {
+  test("CLI arguments without archive options retain defaults and pheromone-delta compatibility") {
     val basic = parse(PheromoneType.Basic, SolutionsSelectionStrategy.GlobalPareto)
     assertEquals(basic.paretoFrontsCount, 0)
     assertEquals(basic.paretoHistoryLength, 0)
