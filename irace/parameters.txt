@@ -40,7 +40,11 @@ pheromoneIncrement	"--pheromone-increment "	r	(0.0, 0.1)
 pheromoneExtinction	"--pheromone-extinction "	r	(0.0, 0.1)
 updateAnts	"--update-ants "	i	(1, 100)
 # updateAnts	"--update-ants "	c	(1)
-solutionsSelectionStrategy "--solutions-selection-strategy " c	("LastIterationPareto", "LastIterationAll", "GlobalPareto")
+solutionsSelectionStrategy "--solutions-selection-strategy " c	("LastIterationPareto", "LastIterationAll", "GlobalPareto", "ParetoFronts")
+# Inactive archive options are omitted; the CLI defaults their values to 0.
+paretoFrontsCount "--pareto-fronts-count " i (1, 20) | solutionsSelectionStrategy == "ParetoFronts"
+# 0 keeps unlimited history; positive values expire archive entries after that many iterations.
+paretoHistoryLength "--pareto-history-length " i (0, 100) | solutionsSelectionStrategy == "ParetoFronts"
 
 
 #pheromoneType	"--pheromone-type "	c	("Basic")
@@ -49,9 +53,12 @@ solutionsSelectionStrategy "--solutions-selection-strategy " c	("LastIterationPa
 
 #pheromoneType   "--pheromone-type "     c       ("TwoDim")
 pheromoneType   "--pheromone-type "     c       ("ItemTwoDim")
-twoDimPhSize	"--two-dim-ph-size "	i	(2, 20)
-updateType	"--update-type "	c	("PartFromEvaluation", "PartFromIndex")
-getType		"--get-type "		c	("ExponentialRandom", "ExponentialRandomMax", "WeightedCombination", "PairingCombination", "ExpectedCombination")
+# To tune all table types together, replace the active pheromoneType line with:
+#pheromoneType "--pheromone-type " c ("Basic", "ItemBasic", "TwoDim", "ItemTwoDim")
+updateType "--update-type " c ("PartFromEvaluation", "PartFromIndex", "PartFromParetoFront") | pheromoneType %in% c("TwoDim", "ItemTwoDim")
+getType "--get-type " c ("ExponentialRandom", "ExponentialRandomMax", "WeightedCombination", "PairingCombination", "ExpectedCombination") | pheromoneType %in% c("TwoDim", "ItemTwoDim")
+# Direct front mapping omits this flag: the CLI supplies the 0 marker and uses paretoFrontsCount.
+twoDimPhSize "--two-dim-ph-size " o (2, 4, 6, 8, 10, 12, 14, 16, 18, 20) | pheromoneType %in% c("TwoDim", "ItemTwoDim") & updateType != "PartFromParetoFront"
 #getType         "--get-type "           c       ("ExponentialRandom")
 #getType         "--get-type "           c       ("ExponentialRandomMax")
 #getType         "--get-type "           c       ("WeightedCombination")

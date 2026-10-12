@@ -13,5 +13,9 @@
 ## (param2 > 6 & mode == "x1") | (param2 <= 6 & mode == "x2")
 ## real < 4 & mode %in% c("x2", "x3")
 
-# twoDimPhSize %% 2 == 1
-# updateAnts < twDimPhSize ?
+# Direct front mapping requires the ParetoFronts selector.
+pheromoneType %in% c("TwoDim", "ItemTwoDim") & updateType == "PartFromParetoFront" & solutionsSelectionStrategy != "ParetoFronts"
+
+# Direct front mapping derives the bucket count from the fronts; 2D tables require an even count.
+# The selector and table guards keep inactive parameters from rejecting Basic or legacy configurations.
+pheromoneType %in% c("TwoDim", "ItemTwoDim") & solutionsSelectionStrategy == "ParetoFronts" & updateType == "PartFromParetoFront" & paretoFrontsCount %% 2 == 1
