@@ -50,7 +50,7 @@ object Pheromone {
           config.resolveTakenAntsToPheromoneUpdate,
           PheromoneUpdateSelection.resolveBucketCount(
             config.twoDimConfig.twoDimSize, paretoFrontsCount,
-            config.resolveSolutionsSelectionStrategy, config.twoDimConfig.resolveUpdateType
+            config.resolveSolutionsSelectionStrategy, config.twoDimConfig.resolveUpdateType, config.twoDimConfig.resolveGetType
           ),
           config.twoDimConfig.resolveGetType,
           config.twoDimConfig.resolveUpdateType,
@@ -68,7 +68,7 @@ object Pheromone {
           config.resolveTakenAntsToPheromoneUpdate,
           PheromoneUpdateSelection.resolveBucketCount(
             config.twoDimConfig.twoDimSize, paretoFrontsCount,
-            config.resolveSolutionsSelectionStrategy, config.twoDimConfig.resolveUpdateType
+            config.resolveSolutionsSelectionStrategy, config.twoDimConfig.resolveUpdateType, config.twoDimConfig.resolveGetType
           ),
           config.twoDimConfig.resolveGetType,
           config.twoDimConfig.resolveUpdateType,

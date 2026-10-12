@@ -1,7 +1,7 @@
 package project.pheromone
 
 import project.config.SolutionsSelectionStrategy
-import project.config.TwoDimPheromoneConfig.UpdateType
+import project.config.TwoDimPheromoneConfig.{GetType, UpdateType}
 import project.solution.BaseSolution
 
 /** Prepares update contributors independently of edge/item pheromone storage. */
@@ -23,24 +23,29 @@ private[pheromone] object PheromoneUpdateSelection {
       configuredSize: Int,
       paretoFrontsCount: Int,
       selectionStrategy: SolutionsSelectionStrategy,
-      updateType: UpdateType
+      updateType: UpdateType,
+      getType: GetType
   ): Int = {
     val size = if (updateType == UpdateType.PartFromParetoFront) {
       require(configuredSize == 0,
         "twoDimSize must be zero for PartFromParetoFront; the bucket count is derived from paretoFrontsCount")
       paretoFrontsCount
     } else configuredSize
-    validateBucketConfiguration(selectionStrategy, updateType, size)
+    validateBucketConfiguration(selectionStrategy, updateType, size, getType)
     size
   }
 
   def validateBucketConfiguration(
       selectionStrategy: SolutionsSelectionStrategy,
       updateType: UpdateType,
-      bucketCount: Int
+      bucketCount: Int,
+      getType: GetType
   ): Unit = {
     require(bucketCount > 0, "The pheromone table must contain at least one bucket")
-    require(bucketCount % 2 == 0, "The pheromone bucket count must be even")
+    require(
+      getType != GetType.PairingCombination || bucketCount % 2 == 0,
+      "PairingCombination requires an even pheromone bucket count"
+    )
     require(
       updateType != UpdateType.PartFromParetoFront || selectionStrategy == SolutionsSelectionStrategy.ParetoFronts,
       "PartFromParetoFront requires the ParetoFronts solution selection strategy"

@@ -16,6 +16,9 @@
 # Direct front mapping requires the ParetoFronts selector.
 pheromoneType %in% c("TwoDim", "ItemTwoDim") & updateType == "PartFromParetoFront" & solutionsSelectionStrategy != "ParetoFronts"
 
-# Direct front mapping derives the bucket count from the fronts; 2D tables require an even count.
+# PairingCombination requires an even bucket count; direct front mapping derives it from the fronts.
 # The selector and table guards keep inactive parameters from rejecting Basic or legacy configurations.
-pheromoneType %in% c("TwoDim", "ItemTwoDim") & solutionsSelectionStrategy == "ParetoFronts" & updateType == "PartFromParetoFront" & paretoFrontsCount %% 2 == 1
+pheromoneType %in% c("TwoDim", "ItemTwoDim") & getType == "PairingCombination" & solutionsSelectionStrategy == "ParetoFronts" & updateType == "PartFromParetoFront" & paretoFrontsCount %% 2 == 1
+
+# For Index/Evaluation, parity applies to the independent size, not to the archive's front count.
+pheromoneType %in% c("TwoDim", "ItemTwoDim") & getType == "PairingCombination" & updateType %in% c("PartFromIndex", "PartFromEvaluation") & twoDimPhSize %% 2 == 1

@@ -58,7 +58,8 @@ pheromoneType   "--pheromone-type "     c       ("ItemTwoDim")
 updateType "--update-type " c ("PartFromEvaluation", "PartFromIndex", "PartFromParetoFront") | pheromoneType %in% c("TwoDim", "ItemTwoDim")
 getType "--get-type " c ("ExponentialRandom", "ExponentialRandomMax", "WeightedCombination", "PairingCombination", "ExpectedCombination") | pheromoneType %in% c("TwoDim", "ItemTwoDim")
 # Direct front mapping omits this flag: the CLI supplies the 0 marker and uses paretoFrontsCount.
-twoDimPhSize "--two-dim-ph-size " o (2, 4, 6, 8, 10, 12, 14, 16, 18, 20) | pheromoneType %in% c("TwoDim", "ItemTwoDim") & updateType != "PartFromParetoFront"
+# Only PairingCombination requires even sizes; forbidden.txt filters its odd sizes.
+twoDimPhSize "--two-dim-ph-size " i (2, 20) | pheromoneType %in% c("TwoDim", "ItemTwoDim") & updateType != "PartFromParetoFront"
 #getType         "--get-type "           c       ("ExponentialRandom")
 #getType         "--get-type "           c       ("ExponentialRandomMax")
 #getType         "--get-type "           c       ("WeightedCombination")
