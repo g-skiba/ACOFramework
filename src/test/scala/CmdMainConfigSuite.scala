@@ -1,10 +1,11 @@
-import project.config.{PheromoneConfig, SolutionsSelectionStrategy}
+import project.config.{PheromoneConfig, ProblemConfig, SolutionsSelectionStrategy}
 import project.config.PheromoneConfig.PheromoneType
 import project.config.TwoDimPheromoneConfig.UpdateType
 import project.graph.{Edge, Node}
 import project.pheromone.{ItemTwoDimPheromone, Pheromone, TwoDimPheromone}
 
 import scala.util.Random
+import scala.jdk.CollectionConverters._
 
 class CmdMainConfigSuite extends munit.FunSuite {
   private val common = Vector("--pheromone-delta", "0.02", "--update-ants", "2")
@@ -12,8 +13,31 @@ class CmdMainConfigSuite extends munit.FunSuite {
 
   private def parse(tableType: PheromoneType, selection: SolutionsSelectionStrategy, extra: String*): PheromoneConfig =
     CmdMain.buildPheromoneConfig(new CmdMain.Config(
-      common ++ Vector("--pheromone-type", tableType.toString, "--solutions-selection-strategy", selection.toString) ++ extra
+      common ++ Vector("--problem-type", "mokp", "--pheromone-type", tableType.toString,
+        "--solutions-selection-strategy", selection.toString) ++ extra
     ))
+
+  private def problemConfig(instance: String, extra: String*): ProblemConfig =
+    CmdMain.buildProblemConfig(new CmdMain.Config(
+      common ++ Vector("--instance", instance, "--alpha", "2.0", "--beta", "3.0",
+        "--pheromone-type", "Basic", "--solutions-selection-strategy", "GlobalPareto") ++ extra
+    ))
+
+  test("problem-type selects the problem and routes instance names to the matching resources") {
+    val cases = Vector(
+      ("mokp", "1B-A/2KP50-1A", Vector("mokpInstances/1B-A/2KP50-1A.dat")),
+      ("mtsp", "kroA100,kroB100", Vector("mtsp/kroA100.tsp", "mtsp/kroB100.tsp")),
+      ("tsp", "berlin52", Vector("mtsp/berlin52.tsp")),
+      ("cvrp", "A-n32-k5", Vector("cvrp/A/A-n32-k5.vrp")),
+      ("cvrp", "B-n31-k5", Vector("cvrp/B/B-n31-k5.vrp")),
+      ("cvrp", "X-n101-k25", Vector("cvrp/dim100plus/X-n101-k25.vrp"))
+    )
+    for ((problemType, instance, files) <- cases) {
+      val config = problemConfig(instance, "--problem-type", problemType)
+      assertEquals(config.problemType, problemType)
+      assertEquals(config.problemFiles.asScala.toVector, files)
+    }
+  }
 
   test("CLI arguments without archive options retain defaults and pheromone-delta compatibility") {
     val basic = parse(PheromoneType.Basic, SolutionsSelectionStrategy.GlobalPareto)

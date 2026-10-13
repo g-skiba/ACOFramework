@@ -480,6 +480,7 @@ object TestConfigsOnInstances {
 object CmdMain {
   import org.rogach.scallop._
   class Config(arguments: Seq[String]) extends ScallopConf(arguments) {
+    val problemType: ScallopOption[String] = choice(Seq("tsp", "mtsp", "cvrp", "mokp"), required = true)
     val instance: ScallopOption[String] = opt[String]()
     val seed: ScallopOption[Long] = opt[Long]()
     val alpha: ScallopOption[Double] = opt[Double]()
@@ -546,11 +547,10 @@ object CmdMain {
     pheromoneConfig
   }
 
-  def main(args: Array[String]): Unit = {
-    val conf = new Config(args)
+  def buildProblemConfig(conf: Config): ProblemConfig = {
     val pheromoneConfig = buildPheromoneConfig(conf)
 
-    val problemType = "mokp"
+    val problemType = conf.problemType()
     val instanceFilenames = conf.instance()
     val folder = problemType match {
       case "tsp" | "mtsp" => "mtsp"
@@ -576,9 +576,11 @@ object CmdMain {
     val alpha = conf.alpha()
     val beta = conf.beta()
     val algorithmConfig = AlgorithmConfig(antsNum, iterations, alpha, beta, pheromoneConfig)
-    val problemConfig = ProblemConfig(problemType, problemFiles, repeat, algorithmConfig)
+    ProblemConfig(problemType, problemFiles, repeat, algorithmConfig)
+  }
 
-    val seed = conf.seed.toOption
-    Main.runConfiguration(problemConfig, seed)
+  def main(args: Array[String]): Unit = {
+    val conf = new Config(args)
+    Main.runConfiguration(buildProblemConfig(conf), conf.seed.toOption)
   }
 }
