@@ -33,6 +33,10 @@
 # mutation        "--mutation="        o  ("none", "very low", "low", "medium", "high", "very high", "all")
 # unused         "-u "                c  (1, 2, 10, 20)
 
+#problemType "--problem-type " c ("tsp")
+#problemType "--problem-type " c ("cvrp")
+problemType "--problem-type " c ("mtsp")
+#problemType "--problem-type " c ("mokp")
 
 alpha		"--alpha "		r	(0.5, 7)
 beta		"--beta "		r	(0.5, 7)
