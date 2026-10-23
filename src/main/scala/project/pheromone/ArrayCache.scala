@@ -2,17 +2,20 @@ package project.pheromone
 
 import scala.reflect.ClassTag
 
-class ArrayCache[V: ClassTag](maxKey: Int, emptyValue: V) {
-  private val array: Array[V] = Array.fill(maxKey + 1)(emptyValue)
-  
-  def getOrElseUpdate(key: Int, value: => V): V = {
-    if (array(key) == emptyValue) {
-      array(key) = value
+class ArrayCache[V <: AnyRef](maxKey: Int) {
+  private val entries = new Array[AnyRef](maxKey + 1)
+
+  inline def getOrElseUpdate(key: Int, inline value: V): V = {
+    val cached = entries(key)
+    if (cached ne null) cached.asInstanceOf[V]
+    else {
+      val computed = value
+      entries(key) = computed
+      computed
     }
-    array(key)
   }
 
   def clear(): Unit = {
-    array.mapInPlace(_ => emptyValue)
+    java.util.Arrays.fill(entries, null)
   }
 }

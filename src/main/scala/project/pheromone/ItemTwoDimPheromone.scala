@@ -28,7 +28,7 @@ class ItemTwoDimPheromone(
   PheromoneUpdateSelection.validateBucketConfiguration(solutionsSelectionStrategy, updateType, twoDimPheromoneSize, getType)
 
   private val maxItemNumber = edges.iterator.map(_.node2.number).max
-  private val cache: ArrayCache[Array[Double]] = new ArrayCache[Array[Double]](maxItemNumber, null)
+  private val cache: ArrayCache[Array[Double]] = new ArrayCache[Array[Double]](maxItemNumber)
 
   val pheromone: Array[Array[Array[Double]]] =
     Array.fill(pheromoneDimension)(Array.fill(maxItemNumber + 1)(Array.fill(twoDimPheromoneSize)(maxValue)))

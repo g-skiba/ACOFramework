@@ -34,7 +34,7 @@ class TwoDimPheromone(
   PheromoneUpdateSelection.validateBucketConfiguration(solutionsSelectionStrategy, updateType, twoDimPheromoneSize, getType)
   private val maxCantorValue = edges.iterator.map(e => e.cantorValue).max
   // indexed by edges' cantor value
-  private val cache: ArrayCache[Array[Double]] = new ArrayCache[Array[Double]](maxCantorValue, null)
+  private val cache: ArrayCache[Array[Double]] = new ArrayCache[Array[Double]](maxCantorValue)
 
   // indexed by dim and edges' cantor value
   val pheromone: Array[Array[Array[Double]]] =
