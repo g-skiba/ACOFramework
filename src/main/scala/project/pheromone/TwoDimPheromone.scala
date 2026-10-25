@@ -35,6 +35,21 @@ class TwoDimPheromone(
   private val maxCantorValue = edges.iterator.map(e => e.cantorValue).max
   // indexed by edges' cantor value
   private val cache: ArrayCache[Array[Double]] = new ArrayCache[Array[Double]](maxCantorValue)
+  private val exponentialWeights: Array[Double] = {
+    val weights = new Array[Double](twoDimPheromoneSize)
+
+    var i = 0
+    while (i < weights.length) {
+      val exponent =
+        if (i == weights.length - 1) i - 1
+        else i
+
+      weights(i) = 1.0 / math.pow(2.0, exponent)
+      i += 1
+    }
+
+    weights
+  }
 
   // indexed by dim and edges' cantor value
   val pheromone: Array[Array[Array[Double]]] =
@@ -42,23 +57,32 @@ class TwoDimPheromone(
   private var currentMin = maxValue
 
   override def getPheromone(edge: Edge): Array[Double] = {
-    def calculate = {
-      Array.tabulate[Double](pheromoneDimension) { dim =>
-        val phValues = pheromone(dim)(edge.cantorValue)
+    val edgeId = edge.cantorValue
 
-        getType match {
+    def calculate: Array[Double] = {
+      val result = new Array[Double](pheromoneDimension)
+
+      var dim = 0
+      while (dim < result.length) {
+        val phValues = pheromone(dim)(edgeId)
+
+        result(dim) = getType match {
           case GetType.ExponentialRandom => exponentialRandom(phValues, maxUpTo = false)
           case GetType.ExponentialRandomMax => exponentialRandom(phValues, maxUpTo = true)
           case GetType.WeightedCombination => weightedCombination(phValues)
           case GetType.PairingCombination => pairingCombination(phValues)
           case GetType.ExpectedCombination => expectedCombination(phValues)
         }
+
+        dim += 1
       }
+
+      result
     }
 
 //    if (getType.isRandomized) calculate
 //    else cache.getOrElseUpdate(edge.cantorValue, calculate)
-    cache.getOrElseUpdate(edge.cantorValue, calculate)
+    cache.getOrElseUpdate(edgeId, calculate)
   }
 
   private def exponentialRandom(values: Array[Double], maxUpTo: Boolean): Double = {
@@ -84,15 +108,17 @@ class TwoDimPheromone(
 
   private def weightedCombination(values: Array[Double]): Double = {
     val weightedSum = false
-    //these values could be precalculated / cached (per iteration)
-    val weightedValues = (0 until twoDimPheromoneSize).iterator.map { i =>
-      val weight =
-        if (i == twoDimPheromoneSize - 1) 1 / math.pow(2, i - 1)
-        else 1 / math.pow(2, i)
-      if (weightedSum) values(i) * weight else math.pow(values(i), weight)
+    var value = if (weightedSum) 0.0 else 1.0
+    var i = 0
+
+    while (i < twoDimPheromoneSize) {
+      if (weightedSum) value += values(i) * exponentialWeights(i)
+      else value *= math.pow(values(i), exponentialWeights(i))
+      i += 1
     }
-    val value = if (weightedSum) weightedValues.sum else weightedValues.product
+
     if (detailedDebug) println((value, values.mkString("[", ",", "]")))
+
     value
   }
 
@@ -101,17 +127,27 @@ class TwoDimPheromone(
     //pairing from outside to the center; within pairs calculate "final value" based on avg and diff
     // then the contrast between "positive" and "negative" values should be reinforced
     // finally calculate average of values got from pairs
-    val value = (0 until twoDimPheromoneSize / 2).iterator.map { i =>
+    val half = twoDimPheromoneSize / 2
+    var total = 0.0
+    var i = 0
+
+    while (i < half) {
       val pos = values(i)
       val neg = values(twoDimPheromoneSize - i - 1)
-      val v = ((pos + neg) / 2) + (pos - neg) * (twoDimPheromoneSize / 2 - i)
+      val v =
+        ((pos + neg) / 2.0) +
+          (pos - neg) * (half - i)
+
       if (detailedDebug) debug(v)
 
-      //alternatives
+      //alternatives: total += ...
 //      ensureMinMax(v) //seems worse?
 //      if (pos >= neg) 1.0 else 0.0 //too simple? ;)
-      v
-    }.sum / (twoDimPheromoneSize / 2)
+      total += v
+      i += 1
+    }
+
+    val value = total / half
 
     if (detailedDebug) debug((value, values.mkString("[", ",", "]")))
 
@@ -121,18 +157,36 @@ class TwoDimPheromone(
   }
 
   private def expectedCombination(values: Array[Double]): Double = {
-    val sum = values.sum
-    // calculate "expected score" of the edge (between 0 and 1)
-    val expectedValue = values.reverseIterator.zipWithIndex.map { case (v, ind) =>
-      val partScore = (ind + 0.5) / twoDimPheromoneSize 
-      v / sum * partScore // normalize v by sum and multiply by score 
-    }.sum
-    // adjust expected score between min and max
-    val min = values.min
-    val max = values.max
-    val v = min + (max - min) * expectedValue
-    if (detailedDebug) debug((expectedValue, v, values.mkString("[", ",", "]")))
-    v
+    var sum = 0.0
+    var min = values(0)
+    var max = values(0)
+    var i = 0
+
+    while (i < values.length) {
+      val value = values(i)
+      sum += value
+      min = java.lang.Math.min(min, value)
+      max = java.lang.Math.max(max, value)
+      i += 1
+    }
+
+    var expectedValue = 0.0
+    var reverseIndex = 0
+    i = values.length - 1
+
+    while (i >= 0) {
+      val partScore = (reverseIndex + 0.5) / twoDimPheromoneSize
+      expectedValue += (values(i) / sum) * partScore
+
+      i -= 1
+      reverseIndex += 1
+    }
+
+    val result = min + (max - min) * expectedValue
+
+    if (detailedDebug) debug((expectedValue, result, values.mkString("[", ",", "]")))
+
+    result
   }
 
   override def pheromoneUpdate(solutionsRepo: BaseSolutionRepo): Unit = {
@@ -169,7 +223,7 @@ class TwoDimPheromone(
   }
 
   private def ensureMinMax(double: Double, maxV: Double = maxValue, minV: Double = minValue): Double = {
-    double.min(maxV).max(minV)
+    java.lang.Math.max(java.lang.Math.min(double, maxV), minV)
   }
 
   override def afterUpdatesAction(): Unit = {
