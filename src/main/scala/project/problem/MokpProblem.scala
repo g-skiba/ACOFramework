@@ -92,7 +92,7 @@ class MokpProblem(
   override def getHeuristicValue(solution: SolutionUnderConstruction[MokpState], candidateNode: Node): Array[Double] = {
     heuristicMode match {
       case MokpProblem.HeuristicMode.StaticCapacityNormalized =>
-        heuristic(solution.nodes.last.number)(candidateNode.number)
+        heuristic(solution.lastNode.number)(candidateNode.number)
       case MokpProblem.HeuristicMode.DynamicRemainingCapacity =>
         dynamicRemainingCapacityHeuristic(candidateNode.number, solution.state.remainingCapacities)
     }

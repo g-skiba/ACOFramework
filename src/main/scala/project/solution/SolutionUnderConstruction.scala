@@ -6,7 +6,9 @@ import scala.collection.mutable
 import scala.collection.mutable.ArrayBuffer
 
 // using mutable structure for improved performance
-case class SolutionUnderConstruction[T](nodes: ArrayBuffer[Node], state: T)
+case class SolutionUnderConstruction[T](nodes: ArrayBuffer[Node], state: T) {
+  val lastNode: Node = nodes.last //perf optimization
+}
 
 // using mutable structures for improved performance
 case class TspState(nodesToVisit: mutable.Set[Node])

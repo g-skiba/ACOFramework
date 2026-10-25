@@ -40,7 +40,7 @@ class BasicDecisionAlgorithm[T](
       weightedProductInd(1.0, 0)
     }
 
-    val edge = Edge(solution.nodes.last, node)
+    val edge = Edge(solution.lastNode, node)
     val pheromone = weightedProduct(pheromoneTable.getPheromone(edge), pheromoneWeights)
     val heuristic = weightedProduct(problem.getHeuristicValue(solution, node), heuristicWeights)
     Math.pow(pheromone, alpha) * Math.pow(heuristic, beta)

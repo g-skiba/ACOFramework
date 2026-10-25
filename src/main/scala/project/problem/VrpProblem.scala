@@ -95,7 +95,7 @@ class VrpProblem(
   }
 
   override def getHeuristicValue(solution: SolutionUnderConstruction[VrpState], candidateNode: Node): Array[Double] = {
-    heuristic(solution.nodes.last.number)(candidateNode.number)
+    heuristic(solution.lastNode.number)(candidateNode.number)
   }
 
   override def getHypervolumeCalculator: Option[Hypervolume2DCalculator] = None

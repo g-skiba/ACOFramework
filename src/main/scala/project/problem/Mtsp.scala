@@ -62,7 +62,7 @@ class Mtsp(nodes: Seq[Node], matrices: Seq[Map[Edge, Double]])
   }
 
   override def getHeuristicValue(solution: SolutionUnderConstruction[TspState], candidateNode: Node): Array[Double] = {
-    heuristic(solution.nodes.last.number)(candidateNode.number)
+    heuristic(solution.lastNode.number)(candidateNode.number)
   }
 
   override def getHypervolumeCalculator: Option[Hypervolume2DCalculator] = {
