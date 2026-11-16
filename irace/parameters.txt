@@ -50,22 +50,23 @@ paretoFrontsCount "--pareto-fronts-count " i (1, 20) | solutionsSelectionStrateg
 # 0 keeps unlimited history; positive values expire archive entries after that many iterations.
 paretoHistoryLength "--pareto-history-length " i (0, 100) | solutionsSelectionStrategy == "ParetoFronts"
 
+pheromoneType "--pheromone-type " c ("Basic", "ItemBasic", "TwoDim", "ItemTwoDim")
 
 #pheromoneType	"--pheromone-type "	c	("Basic")
 #pheromoneType	"--pheromone-type "	c	("ItemBasic")
 
 
 #pheromoneType   "--pheromone-type "     c       ("TwoDim")
-pheromoneType   "--pheromone-type "     c       ("ItemTwoDim")
+#pheromoneType   "--pheromone-type "     c       ("ItemTwoDim")
 # To tune all table types together, replace the active pheromoneType line with:
 #pheromoneType "--pheromone-type " c ("Basic", "ItemBasic", "TwoDim", "ItemTwoDim")
-updateType "--update-type " c ("PartFromEvaluation", "PartFromIndex", "PartFromParetoFront") | pheromoneType %in% c("TwoDim", "ItemTwoDim")
+#updateType "--update-type " c ("PartFromEvaluation", "PartFromIndex", "PartFromParetoFront") | pheromoneType %in% c("TwoDim", "ItemTwoDim")
 getType "--get-type " c ("ExponentialRandom", "ExponentialRandomMax", "WeightedCombination", "PairingCombination", "ExpectedCombination") | pheromoneType %in% c("TwoDim", "ItemTwoDim")
-# Direct front mapping omits this flag: the CLI supplies the 0 marker and uses paretoFrontsCount.
-# Only PairingCombination requires even sizes; forbidden.txt filters its odd sizes.
-twoDimPhSize "--two-dim-ph-size " i (2, 20) | pheromoneType %in% c("TwoDim", "ItemTwoDim") & updateType != "PartFromParetoFront"
 #getType         "--get-type "           c       ("ExponentialRandom")
 #getType         "--get-type "           c       ("ExponentialRandomMax")
 #getType         "--get-type "           c       ("WeightedCombination")
 #getType         "--get-type "           c	("PairingCombination")
 #getType         "--get-type "           c	("ExpectedCombination")
+# Direct front mapping omits this flag: the CLI supplies the 0 marker and uses paretoFrontsCount.
+# Only PairingCombination requires even sizes; forbidden.txt filters its odd sizes.
+twoDimPhSize "--two-dim-ph-size " i (2, 20) | pheromoneType %in% c("TwoDim", "ItemTwoDim") & updateType != "PartFromParetoFront"

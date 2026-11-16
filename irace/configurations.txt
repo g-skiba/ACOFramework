@@ -181,10 +181,48 @@
 #mokp        4.3466 1.3475              4e-04              0.0571          3               GlobalPareto     ItemBasic
 
 ## TwoDim
-problemType alpha   beta pheromoneIncrement pheromoneExtinction updateAnts solutionsSelectionStrategy pheromoneType twoDimPhSize         updateType              getType
-#mokp 1.2467 1.2211              0.089              0.0857         17               GlobalPareto    ItemTwoDim           18 PartFromIndex ExponentialRandomMax # TwoDimAll <-
+#problemType alpha   beta pheromoneIncrement pheromoneExtinction updateAnts solutionsSelectionStrategy pheromoneType twoDimPhSize         updateType              getType
+#mokp 1.2467 1.2211              0.089              0.0857         17               GlobalPareto    ItemTwoDim           18 PartFromIndex ExponentialRandomMax # TwoDimAll -> ExpRndMax
 #mokp 3.2672 1.2384             0.0548              0.0692          2           LastIterationAll    ItemTwoDim            4 PartFromIndex ExpectedCombination
 #mokp 4.4847 1.0881             0.0129              0.0125          2               GlobalPareto    ItemTwoDim           14 PartFromIndex PairingCombination
 #mokp 1.7031 1.0332              0.042               0.049          7           LastIterationAll    ItemTwoDim           16 PartFromEvaluation WeightedCombination
-mokp 4.4887 6.3068             0.0204               0.096         11               GlobalPareto    ItemTwoDim           18 PartFromEvaluation ExponentialRandom #<-
-#mokp 2.5266 1.1695              0.001              0.0543         16        LastIterationPareto    ItemTwoDim           16 PartFromIndex ExponentialRandomMax
+#mokp 4.4887 6.3068             0.0204               0.096         11               GlobalPareto    ItemTwoDim           18 PartFromEvaluation ExponentialRandom #<-
+#mokp 2.5266 1.1695              0.001              0.0543         16        LastIterationPareto    ItemTwoDim           16 PartFromIndex ExponentialRandomMax # <- TwoDimAll
+
+
+#############################
+
+#### PARETO
+
+## MTSP
+# problemType alpha  beta   pheromoneIncrement pheromoneExtinction updateAnts solutionsSelectionStrategy pheromoneType getType              paretoFrontsCount paretoHistoryLength updateType          twoDimPhSize
+#        mtsp 5.3474 6.7142             0.0758              0.0144         25               ParetoFronts         Basic         NA                           1                  93      NA           NA
+#        mtsp 1.9228 6.8748             0.0302              0.0341         24               ParetoFronts        TwoDim ExponentialRandom                 6                  12 PartFromParetoFront           NA #
+#        mtsp 2.5696 6.9844             0.0231              0.0646         36               ParetoFronts        TwoDim ExponentialRandomMax                19                  59 PartFromParetoFront           NA
+#        mtsp 1.6648 6.4709             0.0868              0.0789         33               ParetoFronts        TwoDim WeightedCombination                10                  23 PartFromParetoFront           NA #
+#        mtsp 4.498 6.8132             0.0084              0.0807         56               ParetoFronts        TwoDim PairingCombination                18                  55 PartFromParetoFront           NA
+#        mtsp 2.9858 6.9451             0.0238              0.0674         33               ParetoFronts        TwoDim ExpectedCombination                 5                  77 PartFromParetoFront           NA
+#        mtsp 1.3072 6.2304             0.0148              0.0699         40               ParetoFronts        TwoDim ExponentialRandom                 4                  41 PartFromEvaluation            8    #
+#        mtsp 3.6626 6.4635             0.0307              0.0809         43               ParetoFronts        TwoDim ExponentialRandomMax                 2                  89 PartFromEvaluation            3 #
+#        mtsp 2.9356 6.8159             0.0203              0.0199         38               ParetoFronts        TwoDim WeightedCombination                 5                  62 PartFromEvaluation            5
+#        mtsp 2.4311 6.7322             0.0442              0.0786         58               ParetoFronts        TwoDim PairingCombination                 1                  78 PartFromIndex            2        #
+#        mtsp 3.298 6.5743             0.0325              0.0393         39               ParetoFronts        TwoDim ExpectedCombination                 1                  57 PartFromEvaluation            6
+## MOKP
+problemType alpha  beta   pheromoneIncrement pheromoneExtinction updateAnts solutionsSelectionStrategy pheromoneType getType              paretoFrontsCount paretoHistoryLength updateType          twoDimPhSize
+mokp        4.3466 1.3475 4e-04              0.0571              3          GlobalPareto               ItemBasic     NA                   NA                NA                  NA                  NA
+mokp 2.0641 2.5554             0.0073              0.0452          2               ParetoFronts     ItemBasic                 2                  15         NA      NA           NA
+mokp        4.4887 6.3068 0.0204             0.096               11         GlobalPareto               ItemTwoDim    ExponentialRandom    NA                NA                  PartFromEvaluation  18
+mokp        1.2467 1.2211 0.089              0.0857              17         GlobalPareto               ItemTwoDim    ExponentialRandomMax NA                NA                  PartFromIndex       18
+#mokp        3.2672 1.2384 0.0548             0.0692              2          LastIterationAll           ItemTwoDim    ExpectedCombination  NA                NA                  PartFromIndex       4 #
+#mokp        4.4847 1.0881 0.0129             0.0125              2          GlobalPareto               ItemTwoDim    PairingCombination   NA                NA                  PartFromIndex       14 #
+#mokp        1.7031 1.0332 0.042              0.049               7          LastIterationAll           ItemTwoDim    WeightedCombination  NA                NA                  PartFromEvaluation  16 #
+mokp       2.5723 2.1863 0.032               0.092              2          ParetoFronts                  ItemTwoDim ExponentialRandom    3                 87                  PartFromParetoFront NA
+#mokp        4.2221 2.9996 0.0048             0.0527              3          ParetoFronts               ItemTwoDim    ExponentialRandomMax 11                30                  PartFromParetoFront NA #
+mokp 0.8343 2.3181             0.0337              0.0882          1               ParetoFronts    ItemTwoDim WeightedCombination                 4                  95 PartFromParetoFront           NA
+#mokp        2.2472 4.8388 0.0358             0.0687              1          ParetoFronts               ItemTwoDim    PairingCombination   14                54                  PartFromParetoFront NA #
+#mokp 3.0336 2.6537             0.0284              0.0658          2               ParetoFronts    ItemTwoDim ExpectedCombination                 9                  78 PartFromParetoFront           NA #
+mokp 3.6053 2.1966              4e-04              0.0802          5               ParetoFronts    ItemTwoDim ExponentialRandom                14                  37 PartFromEvaluation           14 #
+#mokp        2.8522 1.8632 0.0152             0.0743              5          ParetoFronts               ItemTwoDim    ExponentialRandomMax 5                 50                  PartFromEvaluation  7 #
+#mokp 0.8215 1.9935             0.0238              0.0735          3               ParetoFronts    ItemTwoDim WeightedCombination                12                  66 PartFromEvaluation           14 #
+mokp        3.4073 2.0322 0.0139             0.0836              6          ParetoFronts               ItemTwoDim    PairingCombination   17                65                  PartFromEvaluation  8
+#mokp        2.6942 1.8931 0.0141             0.0869              5          ParetoFronts               ItemTwoDim    ExpectedCombination  5                 93                  PartFromEvaluation  14 #
