@@ -212,6 +212,7 @@ class TwoDimPheromone(
               .foreach { edge =>
                 val pheromones = pheromone(dim)(edge.cantorValue)
                 pheromones(part) += increment //!!! got -2! POWINNO BYC PARTINCREMENT ZGODNIE Z OPISEM ALGORYTMU W ARTYKUŁACH O SINGLE-CRITERIA OPTIMIZATION!!!
+                pheromones(part) += increment
               }
           }
         }

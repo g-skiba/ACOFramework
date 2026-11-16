@@ -34,9 +34,9 @@ class BasicPheromoneTable(
     
     def updateDim(dim: Int): Unit = {
       val solutionsForDim = PheromoneUpdateSelection.selectForObjective(solutionGroups, dim, updateAnts).flatten
-      if (!updateAnts.forall(_ == solutionsForDim.size)) {
-        warn(s"Wanted: $updateAnts update ants, got ${solutionsForDim.size} solutions")
-      }
+//      if (!updateAnts.forall(_ == solutionsForDim.size)) {
+//        warn(s"Wanted: $updateAnts update ants, got ${solutionsForDim.size} solutions")
+//      }
       debug(s"Updating pheromone for dimension $dim using ${solutionsForDim.size} solutions: ${solutionsForDim.map(_.evaluation).sortBy(e => e.applyOrElse(dim, _ => e.head))}")
       solutionsForDim.foreach { solution =>
           solution.solution
