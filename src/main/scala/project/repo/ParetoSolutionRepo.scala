@@ -1,7 +1,6 @@
 package project.repo
 
 import pareto.getParetoFrontMin
-import project.graph.Node
 import project.logging.DebugLogger.debug
 import project.solution.BaseSolution
 
@@ -9,9 +8,10 @@ import scala.collection.mutable.ArrayBuffer
 import scala.collection.mutable.SortedMap as MSortedMap
 
 class ParetoSolutionRepo(
-    areSolutionsEquivalent: (Seq[Node], Seq[Node]) => Boolean,
-    paretoFrontsCount: Int = 0,
-    paretoHistoryLength: Int = 0
+  areSolutionsEquivalent: (BaseSolution, BaseSolution) => Boolean = (first, second) => first.isEquivalentTo(second),
+  paretoFrontsCount: Int = 0,
+  paretoHistoryLength: Int = 0,
+  dimensions: Int = 2
 ) extends BaseSolutionRepo {
   require(paretoFrontsCount >= 0, "The learning archive front count must be nonnegative; zero disables the archive")
   require(paretoHistoryLength >= 0, "Pareto history length must be nonnegative; zero means unlimited")
@@ -68,20 +68,8 @@ class ParetoSolutionRepo(
       }
     }
 
-    var remaining: IndexedSeq[ArchiveEntry] = candidates.toVector
-    val fronts = Vector.newBuilder[IndexedSeq[ArchiveEntry]]
-    var frontCount = 0
-    while (remaining.nonEmpty && frontCount < paretoFrontsCount) {
-      val isFront = getParetoFrontMin(remaining)(
-        _.value.evaluation,
-        (s1, s2) => areSolutionsEquivalent(s1.value.solution, s2.value.solution)
-      )
-      val (front, rest) = remaining.zip(isFront).partition(_._2)
-      fronts += front.map(_._1)
-      remaining = rest.map(_._1)
-      frontCount += 1
-    }
-    learningArchive = fronts.result()
+    learningArchive = buildFrontsMethod(candidates.toVector)
+//    println(learningArchive.map(_.size))
   }
 
   private def buildFrontsSimple(
@@ -176,7 +164,7 @@ class ParetoSolutionRepo(
   }
 
   private def selectParetoFront(solutions: IndexedSeq[BaseSolution]): IndexedSeq[BaseSolution] = {
-    solutions.iterator.zip(getParetoFrontMin(solutions)(_.evaluation, (s1, s2) => areSolutionsEquivalent(s1.solution, s2.solution)).iterator).collect {
+    solutions.iterator.zip(getParetoFrontMin(solutions)(_.evaluation, areSolutionsEquivalent).iterator).collect {
       case (v, true) => v
     }.toVector
   }

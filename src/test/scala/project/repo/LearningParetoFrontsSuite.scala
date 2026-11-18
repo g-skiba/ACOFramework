@@ -1,10 +1,10 @@
 package project.repo
 
 import project.graph.Node
-import project.solution.BaseSolution
+import project.solution.{BaseSolution, MokpSolution}
 
 class LearningParetoFrontsSuite extends munit.FunSuite {
-  private val sameNodes: (Seq[Node], Seq[Node]) => Boolean = (first, second) => first == second
+  private val sameNodes: (BaseSolution, BaseSolution) => Boolean = (first, second) => first.isEquivalentTo(second)
 
   private def solution(id: Int, first: Double, second: Double): BaseSolution =
     BaseSolution(Vector(Node(id)), Vector(first, second))
@@ -12,9 +12,9 @@ class LearningParetoFrontsSuite extends munit.FunSuite {
   test("disable learning archives by default without candidate processing or changes to reporting fronts") {
     for (history <- Vector(0, 2)) {
       var equivalenceChecks = 0
-      val countedEquivalence: (Seq[Node], Seq[Node]) => Boolean = (first, second) => {
+      val countedEquivalence: (BaseSolution, BaseSolution) => Boolean = (first, second) => {
         equivalenceChecks += 1
-        first == second
+        first.isEquivalentTo(second)
       }
       val repo = new ParetoSolutionRepo(countedEquivalence, paretoHistoryLength = history)
       val first = solution(0, 1, 4)
@@ -69,13 +69,12 @@ class LearningParetoFrontsSuite extends munit.FunSuite {
   }
 
   test("deduplicate equivalent solutions without refreshing their admission age") {
-    val sameItems: (Seq[Node], Seq[Node]) => Boolean = (first, second) => first.toSet == second.toSet
-    val original = BaseSolution(Vector(Node(0), Node(1)), Vector(1.0, 1.0))
+    val original = MokpSolution(Vector(Node(0), Node(1)), Vector(1.0, 1.0))
     val reordered = original.copy(solution = original.solution.reverse)
     val distinct = solution(2, 1, 1)
     val dominated = solution(3, 2, 2)
-    val dominatedDuplicate = dominated.copy()
-    val repo = new ParetoSolutionRepo(sameItems, paretoFrontsCount = 3, paretoHistoryLength = 2)
+    val dominatedDuplicate = solution(3, 2, 2)
+    val repo = new ParetoSolutionRepo(paretoFrontsCount = 3, paretoHistoryLength = 2)
 
     repo.addSolutions(0, Vector(original, reordered, distinct, dominated, dominatedDuplicate))
     assert(repo.learningParetoFronts == Vector(Vector(original, distinct), Vector(dominated)))

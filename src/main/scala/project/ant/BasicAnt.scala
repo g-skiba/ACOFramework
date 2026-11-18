@@ -35,7 +35,7 @@ class BasicAnt[T](
           solution = problem.updateSolution(solution, value)
           iter()
         case None =>
-          BaseSolution(solution.nodes.toSeq, problem.evaluate(solution))
+          problem.completeSolution(solution)
     }
 
     iter()

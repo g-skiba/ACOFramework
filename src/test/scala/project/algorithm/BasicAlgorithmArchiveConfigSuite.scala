@@ -6,8 +6,9 @@ import project.config.PheromoneConfig.PheromoneType
 import project.config.TwoDimPheromoneConfig.{GetType, UpdateType}
 import project.graph.{Edge, Node}
 import project.logging.BasicAcoLogger
-import project.problem.BaseProblem
-import project.solution.SolutionUnderConstruction
+import mokp.MultiObjectiveKnapsackData
+import project.problem.{BaseProblem, MokpProblem}
+import project.solution.{MokpSolution, SolutionUnderConstruction}
 
 class BasicAlgorithmArchiveConfigSuite extends munit.FunSuite {
   private val silentLogger = new BasicAcoLogger("archive-wiring-test") {
@@ -56,6 +57,22 @@ class BasicAlgorithmArchiveConfigSuite extends munit.FunSuite {
         .run(silentLogger)
       assertEquals(repo.learningParetoFronts.map(_.head.evaluation.head), Vector(3.0, 4.0))
       assertEquals(repo.globalParetoSolutions.map(_.evaluation.head), Vector(1.0))
+    }
+  }
+
+  test("ants create the problem-specific completed solution type") {
+    val problem = new MokpProblem(MultiObjectiveKnapsackData(
+      objectives = Vector(Vector(1, 1, 1), Vector(1, 1, 1)),
+      constraints = Vector(Vector(1, 1, 1)),
+      capacities = Vector(2)
+    ))
+    val repo = new BasicAlgorithm(problem, config(PheromoneType.ItemTwoDim, UpdateType.PartFromIndex, 2, 0), Some(0L))
+      .run(silentLogger)
+
+    assertEquals(repo.solutionsForLastIteration.size, 2)
+    assert(repo.solutionsForLastIteration.forall(_.isInstanceOf[MokpSolution]))
+    repo.solutionsForLastIteration.foreach { solution =>
+      assertEquals(solution.effectiveSolution, solution.solution.toSet: Iterable[Node])
     }
   }
 

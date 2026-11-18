@@ -10,7 +10,7 @@ import project.solution.BaseSolution
 import scala.util.Random
 
 class TwoDimParetoFrontUpdateSuite extends munit.FunSuite {
-  private val sameNodes: (Seq[Node], Seq[Node]) => Boolean = (first, second) => first == second
+  private val sameNodes: (BaseSolution, BaseSolution) => Boolean = (first, second) => first.isEquivalentTo(second)
   private val edges = (1 to 6).map(id => Edge(Node(0), Node(id))).toVector
   private val solutions = Vector(
     solution(1, 1, 5), solution(2, 5, 1),

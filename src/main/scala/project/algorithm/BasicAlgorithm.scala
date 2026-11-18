@@ -32,8 +32,8 @@ class BasicAlgorithm(
     )
     val solutionRepo = problem.dimensions match {
       case 1 => new SingleObjectiveSolutionRepo
-      case _ => new ParetoSolutionRepo(
-        problem.areSolutionsEquivalent, paretoFrontsCount, pheromoneConfig.paretoHistoryLength
+      case dim => new ParetoSolutionRepo(
+        paretoFrontsCount = paretoFrontsCount, paretoHistoryLength = pheromoneConfig.paretoHistoryLength, dimensions = dim
       )
     }
     val rnd = random(seed)

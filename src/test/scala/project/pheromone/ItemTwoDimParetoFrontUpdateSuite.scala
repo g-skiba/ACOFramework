@@ -10,7 +10,7 @@ import project.solution.BaseSolution
 import scala.util.Random
 
 class ItemTwoDimParetoFrontUpdateSuite extends munit.FunSuite {
-  private val sameNodes: (Seq[Node], Seq[Node]) => Boolean = (first, second) => first == second
+  private val sameNodes: (BaseSolution, BaseSolution) => Boolean = (first, second) => first.isEquivalentTo(second)
   // The starting node is outside the allocated item table, so depositing on it would fail.
   private val start = Node(6)
   private val edges = (0 until 6).map(id => Edge(start, Node(id))).toVector

@@ -2,7 +2,7 @@ package project.problem
 
 import pareto.Hypervolume2DCalculator
 import project.graph.{Edge, Node}
-import project.solution.SolutionUnderConstruction
+import project.solution.{BaseSolution, SolutionUnderConstruction}
 
 import scala.collection.mutable
 import scala.collection.mutable.ArrayBuffer
@@ -20,9 +20,12 @@ abstract class BaseProblem[T](
     */
   def evaluate(solution: SolutionUnderConstruction[T]): IndexedSeq[Double]
 
-  /** Whether two completed node sequences represent the same solution. */
-  def areSolutionsEquivalent(first: Seq[Node], second: Seq[Node]): Boolean =
-    first == second
+  /** Override to provide a completed solution with a problem-specific representation. */
+  def createSolution(nodes: Seq[Node], evaluation: IndexedSeq[Double]): BaseSolution =
+    BaseSolution(nodes, evaluation)
+
+  def completeSolution(solution: SolutionUnderConstruction[T]): BaseSolution =
+    createSolution(solution.nodes.toVector, evaluate(solution))
 
   /** Function that return all possible moves to ant, based on visited nodes
     */

@@ -35,7 +35,7 @@ class PheromoneBucketParitySuite extends munit.FunSuite {
     } {
       val cfg = config(tableType, mode, getType, buckets)
       val table = Pheromone.create(cfg, edges, 2, new Random(0))
-      val repo = new ParetoSolutionRepo((first, second) => first == second, paretoFrontsCount = cfg.paretoFrontsCount)
+      val repo = new ParetoSolutionRepo(paretoFrontsCount = cfg.paretoFrontsCount)
       repo.addSolutions(0, edges.zipWithIndex.map { case (edge, index) =>
         BaseSolution(Vector(edge.node1, edge.node2), Vector(index + 1.0, index + 1.0))
       })
@@ -56,6 +56,43 @@ class PheromoneBucketParitySuite extends munit.FunSuite {
         assert(!value.isNaN && !value.isInfinity && value > 0.0 && value <= 1.0,
           s"Invalid read for $tableType, $mode, $getType, $buckets buckets: $value")
       }
+    }
+  }
+
+  test("combination helpers preserve reference results in both table implementations") {
+    val cases = Vector(
+      (GetType.WeightedCombination, Vector(1.0, 4.0, 9.0, 16.0), 6.928203230275509),
+      (GetType.PairingCombination, Vector(6.0, 4.0, 3.0, 2.0), 8.25),
+      (GetType.ExpectedCombination, Vector(2.0, 4.0, 6.0, 8.0), 4.25)
+    )
+
+    for {
+      tableType <- tableTypes
+      (getType, values, expected) <- cases
+    } {
+      val cfg = config(tableType, UpdateType.PartFromEvaluation, getType, 4)
+        .copy(extinction = 0.75, maxValue = 20.0)
+      val table = Pheromone.create(cfg, edges, 2, new Random(0))
+      table.afterUpdatesAction()
+      values.copyToArray(firstEdgeBuckets(table))
+
+      assertEqualsDouble(table.getPheromone(edges.head)(0), expected, 1.0e-12)
+    }
+  }
+
+  test("evaporation clamps bounds and preserves NaN and signed-zero behavior in both tables") {
+    for (tableType <- tableTypes) {
+      val cfg = config(tableType, UpdateType.PartFromEvaluation, GetType.WeightedCombination, 5)
+        .copy(extinction = 0.0, minValue = 0.0)
+      val table = Pheromone.create(cfg, edges, 2, new Random(0))
+      val buckets = firstEdgeBuckets(table)
+      Vector(Double.NegativeInfinity, -0.0, 0.5, Double.PositiveInfinity, Double.NaN).copyToArray(buckets)
+
+      table.afterUpdatesAction()
+
+      assertEquals(buckets.take(4).toVector, Vector(0.0, 0.0, 0.5, 1.0))
+      assertEquals(java.lang.Double.doubleToRawLongBits(buckets(1)), java.lang.Double.doubleToRawLongBits(0.0))
+      assert(buckets(4).isNaN)
     }
   }
 

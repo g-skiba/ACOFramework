@@ -9,7 +9,7 @@ import project.solution.BaseSolution
 import scala.util.Random
 
 class GroupedSolutionsSelectionSuite extends munit.FunSuite {
-  private val sameNodes: (Seq[Node], Seq[Node]) => Boolean = (first, second) => first == second
+  private val sameNodes: (BaseSolution, BaseSolution) => Boolean = (first, second) => first.isEquivalentTo(second)
 
   private def solution(id: Int, first: Double, second: Double): BaseSolution =
     BaseSolution(Vector(Node(0), Node(id)), Vector(first, second))
