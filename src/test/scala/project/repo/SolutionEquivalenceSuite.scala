@@ -112,11 +112,11 @@ class SolutionEquivalenceSuite extends munit.FunSuite {
             hashesComputed += 1
             0
           }
-        }
+          }
       ) {
         override val solution: Seq[Node] = nodes
         override val evaluation: IndexedSeq[Double] = Vector.fill(dimensions)(1.0)
-      }
+        }
       val first = collidingSolution(Vector(Node(0)))
       val second = collidingSolution(Vector(Node(1)))
       val duplicate = collidingSolution(Vector(Node(0)))
@@ -126,7 +126,8 @@ class SolutionEquivalenceSuite extends munit.FunSuite {
       for (iteration <- 0 until 5) {
         repo.addSolutions(iteration, Vector(first, second, duplicate))
         assertEquals(repo.globalParetoSolutions, Vector(first, second))
-        assertEquals(repo.learningParetoFronts, Vector(Vector(first, second)))
+        assertEquals(repo.learningParetoFronts.map(_.toSet), Vector(Set(first, second)))
+        assertEquals(repo.learningParetoFronts.map(_.size), Vector(2))
       }
       assertEquals(hashesComputed, 3)
     }

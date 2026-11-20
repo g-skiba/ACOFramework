@@ -59,6 +59,34 @@ class PheromoneBucketParitySuite extends munit.FunSuite {
     }
   }
 
+  test("each selected solution deposits once on a shared edge or item per update") {
+    val paths = Vector(Vector(Node(0), Node(1), Node(2)), Vector(Node(0), Node(1), Node(3)))
+    val pathEdges = paths.flatMap(_.sliding(2).map(pair => Edge(pair.head, pair.last))).distinct
+    val repo = new ParetoSolutionRepo(paretoFrontsCount = 1)
+    repo.addSolutions(0, Vector(
+      BaseSolution(paths(0), Vector(1.0, 3.0)),
+      BaseSolution(paths(1), Vector(3.0, 1.0))
+    ))
+
+    for (tableType <- tableTypes; mode <- UpdateType.values) {
+      val cfg = config(tableType, mode, GetType.ExpectedCombination, 1)
+        .copy(takenAntsToPheromoneUpdate = 0)
+      val table = Pheromone.create(cfg, pathEdges, 2, new Random(0))
+      for (updates <- 1 to 2) {
+        table.pheromoneUpdate(repo)
+        for (dim <- 0 until 2) {
+          val buckets = table match {
+            case edgeTable: TwoDimPheromone => edgeTable.pheromone(dim)(edges.head.cantorValue)
+            case itemTable: ItemTwoDimPheromone => itemTable.pheromone(dim)(edges.head.node2.number)
+            case _ => throw new AssertionError("Expected a 2D pheromone table")
+          }
+          // Both contributors traverse 0 -> 1 and select item 1: two increments per update.
+          assertEqualsDouble(buckets.head, 1.0 + updates * 2 * cfg.increment, 1.0e-12)
+        }
+      }
+    }
+  }
+
   test("combination helpers preserve reference results in both table implementations") {
     val cases = Vector(
       (GetType.WeightedCombination, Vector(1.0, 4.0, 9.0, 16.0), 6.928203230275509),

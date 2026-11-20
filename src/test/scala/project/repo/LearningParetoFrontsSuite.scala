@@ -3,6 +3,8 @@ package project.repo
 import project.graph.Node
 import project.solution.{BaseSolution, MokpSolution}
 
+import scala.util.Random
+
 class LearningParetoFrontsSuite extends munit.FunSuite {
   private val sameNodes: (BaseSolution, BaseSolution) => Boolean = (first, second) => first.isEquivalentTo(second)
 
@@ -75,6 +77,39 @@ class LearningParetoFrontsSuite extends munit.FunSuite {
 
     repo.addSolutions(2, Vector.empty)
     assertFronts(repo.learningParetoFronts, Vector(Vector(better), Vector(a, b, c), Vector(d, e)))
+  }
+
+  test("learning front ranks match strict dominance across dimensions, ties, input orders, and front limits") {
+    def referenceFronts(candidates: IndexedSeq[BaseSolution]): IndexedSeq[IndexedSeq[BaseSolution]] = {
+      def dominates(first: BaseSolution, second: BaseSolution): Boolean = {
+        val scores = first.evaluation.zip(second.evaluation)
+        scores.forall { case (a, b) => a <= b } && scores.exists { case (a, b) => a < b }
+      }
+
+      if (candidates.isEmpty) Vector.empty
+      else {
+        val (front, rest) = candidates.partition(candidate => !candidates.exists(dominates(_, candidate)))
+        front +: referenceFronts(rest)
+      }
+    }
+
+    for (dimensions <- Vector(1, 2, 3); seed <- 0 until 8) {
+      val rnd = new Random(seed)
+      val candidates = Vector.tabulate(20) { id =>
+        BaseSolution(Vector(Node(id)), Vector.fill(dimensions)(rnd.nextInt(7).toDouble - 3))
+      }
+      // Equal evaluations must share a rank even when the solutions themselves differ.
+      val batch = candidates :+ BaseSolution(Vector(Node(20)), candidates.head.evaluation)
+      val expected = referenceFronts(batch)
+
+      for (limit <- Vector(1, 3, batch.size); input <- Vector(batch, rnd.shuffle(batch))) {
+        val repo = new ParetoSolutionRepo(paretoFrontsCount = limit, dimensions = dimensions)
+        repo.addSolutions(0, input)
+        assertFronts(repo.learningParetoFronts, expected.take(limit))
+        repo.addSolutions(1, input.reverse)
+        assertFronts(repo.learningParetoFronts, expected.take(limit))
+      }
+    }
   }
 
   test("deduplicate equivalent solutions without refreshing their admission age") {
