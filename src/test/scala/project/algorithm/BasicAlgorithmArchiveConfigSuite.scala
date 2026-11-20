@@ -18,7 +18,7 @@ class BasicAlgorithmArchiveConfigSuite extends munit.FunSuite {
 
   // Each ant has one possible move, yielding four distinct solutions in two iterations.
   private class SequentialProblem(objectives: Int = 2) extends BaseProblem[Int](
-    (0 to 4).map(Node(_)), (1 to 4).map(id => Edge(Node(0), Node(id))), Node(0), objectives, Seq.empty
+    (0 to 4).map(Node), (1 to 4).map(id => Edge(Node(0), Node(id))), Node(0), objectives, Seq.empty
   ) {
     private var nextItem = 0
     override protected def initState: Int = {

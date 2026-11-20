@@ -13,13 +13,13 @@ class MokpProblem(
     heuristicMode: MokpProblem.HeuristicMode = MokpProblem.HeuristicMode.DynamicRemainingCapacity
 )
     extends BaseProblem[MokpState](
-      nodes = ((0 until data.itemsCount).map(Node(_)) :+ Node(data.itemsCount)).toVector,
+      nodes = ((0 until data.itemsCount).map(Node) :+ Node(data.itemsCount)).toVector,
       edges = MokpProblem.edges(data.itemsCount),
       startingNode = Node(data.itemsCount),
       dimensions = 2,
       matrices = Seq.empty
     ) {
-  private val itemNodes = (0 until data.itemsCount).map(Node(_)).toSet
+  private val itemNodes = (0 until data.itemsCount).map(Node).toSet
   private val objectiveValues = data.objectives.map(_.map(_.toDouble).toArray).toArray
   private val constraintValues = data.constraints.map(_.toArray).toArray
   private val capacities = data.capacities.toArray
@@ -134,7 +134,7 @@ object MokpProblem {
   }
 
   private def edges(itemsCount: Int): Seq[Edge] = {
-    val itemNodes = (0 until itemsCount).map(Node(_))
+    val itemNodes = (0 until itemsCount).map(Node)
     val startNode = Node(itemsCount)
     for {
       from <- itemNodes :+ startNode

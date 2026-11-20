@@ -13,7 +13,7 @@ class SolutionEquivalenceSuite extends munit.FunSuite {
   )
 
   test("retain distinct tours with equal objective values") {
-    val cities = (0 to 2).map(Node(_))
+    val cities = (0 to 2).map(Node)
     val matrix = (for {
       from <- cities
       to <- cities
