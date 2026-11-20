@@ -101,32 +101,34 @@ class SolutionEquivalenceSuite extends munit.FunSuite {
   }
 
   test("hash collisions do not make different solutions equivalent") {
-    var hashesComputed = 0
-    def collidingSolution(nodes: Seq[Node]): BaseSolution = new BaseSolution(
-      new scala.collection.immutable.AbstractSeq[Node] {
-        override def length: Int = nodes.length
-        override def apply(index: Int): Node = nodes(index)
-        override def iterator: Iterator[Node] = nodes.iterator
-        override def hashCode: Int = {
-          hashesComputed += 1
-          0
+    for (dimensions <- Vector(1, 2, 3)) {
+      var hashesComputed = 0
+      def collidingSolution(nodes: Seq[Node]): BaseSolution = new BaseSolution(
+        new scala.collection.immutable.AbstractSeq[Node] {
+          override def length: Int = nodes.length
+          override def apply(index: Int): Node = nodes(index)
+          override def iterator: Iterator[Node] = nodes.iterator
+          override def hashCode: Int = {
+            hashesComputed += 1
+            0
+          }
         }
+      ) {
+        override val solution: Seq[Node] = nodes
+        override val evaluation: IndexedSeq[Double] = Vector.fill(dimensions)(1.0)
       }
-    ) {
-      override val solution: Seq[Node] = nodes
-      override val evaluation: IndexedSeq[Double] = Vector(1.0)
+      val first = collidingSolution(Vector(Node(0)))
+      val second = collidingSolution(Vector(Node(1)))
+      val duplicate = collidingSolution(Vector(Node(0)))
+      val repo = new ParetoSolutionRepo(paretoFrontsCount = 1, dimensions = dimensions)
+  
+      assertEquals(hashesComputed, 3)
+      for (iteration <- 0 until 5) {
+        repo.addSolutions(iteration, Vector(first, second, duplicate))
+        assertEquals(repo.globalParetoSolutions, Vector(first, second))
+        assertEquals(repo.learningParetoFronts, Vector(Vector(first, second)))
+      }
+      assertEquals(hashesComputed, 3)
     }
-    val first = collidingSolution(Vector(Node(0)))
-    val second = collidingSolution(Vector(Node(1)))
-    val duplicate = collidingSolution(Vector(Node(0)))
-    val repo = new ParetoSolutionRepo(paretoFrontsCount = 1)
-
-    assertEquals(hashesComputed, 3)
-    for (iteration <- 0 until 5) {
-      repo.addSolutions(iteration, Vector(first, second, duplicate))
-      assertEquals(repo.globalParetoSolutions, Vector(first, second))
-      assertEquals(repo.learningParetoFronts, Vector(Vector(first, second)))
-    }
-    assertEquals(hashesComputed, 3)
   }
 }

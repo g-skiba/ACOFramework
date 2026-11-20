@@ -9,6 +9,15 @@ class LearningParetoFrontsSuite extends munit.FunSuite {
   private def solution(id: Int, first: Double, second: Double): BaseSolution =
     BaseSolution(Vector(Node(id)), Vector(first, second))
 
+  private def assertFronts(
+      actual: IndexedSeq[IndexedSeq[BaseSolution]],
+      expected: IndexedSeq[IndexedSeq[BaseSolution]]
+  ): Unit = {
+    // Keep rank, membership, and multiplicity checks without imposing an order within a front.
+    assertEquals(actual.map(_.toSet), expected.map(_.toSet))
+    assertEquals(actual.map(_.size), expected.map(_.size))
+  }
+
   test("disable learning archives by default without candidate processing or changes to reporting fronts") {
     for (history <- Vector(0, 2)) {
       var equivalenceChecks = 0
@@ -53,19 +62,19 @@ class LearningParetoFrontsSuite extends munit.FunSuite {
 
     assert(repo.learningParetoFronts.isEmpty)
     repo.addSolutions(0, batch)
-    assert(repo.learningParetoFronts == Vector(Vector(a, b, c), Vector(d, e), Vector(f)))
+    assertFronts(repo.learningParetoFronts, Vector(Vector(a, b, c), Vector(d, e), Vector(f)))
     assert(repo.solutionsForLastIteration == batch)
     assert(repo.paretoSolutionsForLastIteration == Vector(a, b, c))
     assert(repo.globalParetoSolutions == Vector(a, b, c))
 
     val better = solution(7, 0, 0)
     repo.addSolutions(1, Vector(better))
-    assert(repo.learningParetoFronts == Vector(Vector(better), Vector(a, b, c), Vector(d, e)))
+    assertFronts(repo.learningParetoFronts, Vector(Vector(better), Vector(a, b, c), Vector(d, e)))
     assert(repo.paretoSolutionsForLastIteration == Vector(better))
     assert(repo.globalParetoSolutions == Vector(better))
 
     repo.addSolutions(2, Vector.empty)
-    assert(repo.learningParetoFronts == Vector(Vector(better), Vector(a, b, c), Vector(d, e)))
+    assertFronts(repo.learningParetoFronts, Vector(Vector(better), Vector(a, b, c), Vector(d, e)))
   }
 
   test("deduplicate equivalent solutions without refreshing their admission age") {

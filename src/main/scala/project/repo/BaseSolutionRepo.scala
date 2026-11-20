@@ -13,7 +13,7 @@ abstract class BaseSolutionRepo {
   }
   def globalParetoSolutions: IndexedSeq[BaseSolution]
 
-  /** Ordered learning fronts for repositories that support multiobjective learning archives. */
+  /** Learning fronts ordered by Pareto rank; solution order within a front is unspecified. */
   def learningParetoFronts: IndexedSeq[IndexedSeq[BaseSolution]]
 
   def solutionsForLastIteration: IndexedSeq[BaseSolution] = {

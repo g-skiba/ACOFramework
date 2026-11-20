@@ -27,8 +27,10 @@ class GroupedSolutionsSelectionSuite extends munit.FunSuite {
     assert(SolutionsSelectionStrategy.LastIterationAll(repo) == Vector(Vector(tradeoff, dominated, furtherDominated)))
     assert(SolutionsSelectionStrategy.LastIterationPareto(repo) == Vector(Vector(tradeoff, dominated)))
     assert(SolutionsSelectionStrategy.GlobalPareto(repo) == Vector(Vector(old, tradeoff)))
-    assert(SolutionsSelectionStrategy.ParetoFronts(repo) ==
-      Vector(Vector(old, tradeoff), Vector(dominated), Vector(furtherDominated)))
+    val fronts = SolutionsSelectionStrategy.ParetoFronts(repo)
+    // Front ranks are ordered, but membership within each front has no ordering contract.
+    assertEquals(fronts.map(_.toSet), Vector(Set(old, tradeoff), Set(dominated), Set(furtherDominated)))
+    assertEquals(fronts.map(_.size), Vector(2, 1, 1))
   }
 
   test("preserve existing single-objective selections and reject learning Pareto fronts") {

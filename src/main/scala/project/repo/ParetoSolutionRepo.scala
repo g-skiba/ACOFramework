@@ -24,7 +24,9 @@ class ParetoSolutionRepo(
   private val buildFrontsMethod: IndexedSeq[ArchiveEntry] => IndexedSeq[IndexedSeq[ArchiveEntry]] =
     if (dimensions == 2) buildFronts2DOptimized else buildFrontsSimple
     
-  /** Ordered fronts of retained learning candidates, separate from the best-ever reporting front. */
+  /** Learning fronts ordered by Pareto rank; solution order within a front is unspecified.
+    * Separate from the best-ever reporting front.
+    */
   override def learningParetoFronts: IndexedSeq[IndexedSeq[BaseSolution]] = {
     require(paretoFrontsCount > 0, "Learning Pareto fronts are disabled; ParetoFronts requires paretoFrontsCount > 0")
     learningArchive.map(_.map(_.value))
