@@ -6,8 +6,9 @@ irace_results/
 .metals
 .history
 .bloop
-target
-/project
+target/
+project/target/
+project/project/
 /logs
 /.idea/
 /.bsp/
